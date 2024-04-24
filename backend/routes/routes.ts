@@ -79,11 +79,11 @@ router.get('/courses/:courseCode/exams', async (req: Request, res: Response) => 
 router.get('/courses/:courseCode', async (req: Request, res: Response) => {
     const courseCode = req.params.courseCode;
     const course = await db.query(`
-    SELECT courseName, courseDescription
+    SELECT courseCode, courseName, courseDescription
     FROM courses
     WHERE courses.courseCode = $1
     `, [courseCode]);
-    res.status(200).json(course.rows);
+    res.status(200).json(course.rows[0]);
 });
 
 // All courses
