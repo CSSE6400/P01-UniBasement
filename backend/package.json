@@ -1,0 +1,26 @@
+{
+  "name": "unibasement-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.ts",
+  "scripts": {
+    "start": "ts-node index.ts",
+    "test": "echo \"No tests currently available\" && exit 0"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/pg": "^8.11.5",
+    "@types/uuid": "^9.0.8",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "pg": "^8.11.5",
+    "uuid": "^9.0.1"
+  },
+  "dependencies": {
+    "ts-node": "^10.9.2"
+  }
+}
