@@ -10,3 +10,10 @@ export type Exam = {
     examsemester: number
     examtype: string
 }
+
+export type Question = {
+    questionid: number
+    questiontext: string
+    questiontype: string
+    questionpng: string
+}
