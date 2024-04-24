@@ -1,8 +1,8 @@
 'use client'
 
-import { useRef } from 'react'
+import { useMemo, useRef } from 'react';
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { useParams, usePathname } from 'next/navigation';
 import clsx from 'clsx'
 import { AnimatePresence, motion, useIsPresent } from 'framer-motion'
 
@@ -33,7 +33,7 @@ function TopLevelNavItem({
   children: React.ReactNode
 }) {
   return (
-    <li className="md:hidden">
+    <li>
       <Link
         href={href}
         className="block py-1 text-sm text-zinc-600 transition hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
@@ -239,13 +239,25 @@ export const navigation: Array<NavGroup> = [
 ]
 
 export function Navigation(props: React.ComponentPropsWithoutRef<'nav'>) {
+  const {courseCode} = useParams<{courseCode: string}>()
+
+  const sideNavigation: Array<NavGroup> = useMemo(() => [
+    {
+      title: `Exams`,
+      links: [
+        { title: '2023 S1', href: `/courses/${courseCode}/exams/1` },
+        { title: '2022 S1', href: `/courses/${courseCode}/exams/2` },
+        { title: '2021 S1', href: `/courses/${courseCode}/exams/3` },
+      ],
+    },
+  ], [courseCode])
+
   return (
     <nav {...props}>
       <ul role="list">
-        <TopLevelNavItem href="/">API</TopLevelNavItem>
-        <TopLevelNavItem href="#">Documentation</TopLevelNavItem>
-        <TopLevelNavItem href="#">Support</TopLevelNavItem>
-        {navigation.map((group, groupIndex) => (
+        <TopLevelNavItem href={`/courses/${courseCode}/course-profile`}>Course Profile</TopLevelNavItem>
+        <TopLevelNavItem href={`/courses/${courseCode}/notes`}>Notes</TopLevelNavItem>
+        {sideNavigation.map((group, groupIndex) => (
           <NavigationGroup
             key={group.title}
             group={group}
