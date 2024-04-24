@@ -2,8 +2,12 @@ FROM node:latest
 
 WORKDIR /app
 
-COPY . /app
+COPY ./package.json /app
+COPY ./package-lock.json /app
+RUN npm ci
 
-RUN npm install
+COPY ./index.ts .
+COPY ./db ./db
+COPY ./routes ./routes
 
 CMD ["npm", "run", "start"]
