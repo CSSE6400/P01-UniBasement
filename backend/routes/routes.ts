@@ -122,7 +122,7 @@ interface CommentObject {
 
 // Helper functions
 
-// Recursive function to nest comments into their parent comments
+// Function to nest comments into their parent comments
 function nest(jsonData: any[]) {
     const dataDict: { [id: number]: CommentObject } = {};
     jsonData.forEach(item => dataDict[item.commentsid] = item);
