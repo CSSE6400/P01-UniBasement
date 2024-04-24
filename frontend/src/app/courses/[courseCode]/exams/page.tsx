@@ -1,20 +1,27 @@
-import { useMemo } from 'react';
-import { Course } from '@/types';
+'use client'
+import useExams from '@/api/useExams';
+import Link from 'next/link';
 
 export default function Exams({ params }: { params: { courseCode: string }}) {
-    const course: Course = useMemo(() => {
-        // query backend here
-        return {
-            coursecode: params.courseCode.toUpperCase(),
-            coursename: 'Course Name',
-            coursedescription: 'Some sort of description'
-        }
-    }, [params.courseCode])
+    const { exams, isLoading, isError } = useExams(params.courseCode);
 
     return (
         <main>
-            <h1>Exams for {course.coursecode}</h1>
+            <h1>Exams for {params.courseCode}</h1>
             There will be some cards here
+            {isLoading && <p>Loading...</p>}
+            {!isError && !isLoading && exams?.map(exam => (
+                <>
+                    <hr />
+                    <div key={exam.examid}>
+                        <Link href={`/courses/${params.courseCode}/exams/${exam.examid}`}>
+                            <h2>{exam.examyear} | S{exam.examsemester}</h2>
+                        </Link>
+                        <p>{exam.examtype}</p>
+                    </div>
+                </>
+                ))
+            }
         </main>
     );
 }
