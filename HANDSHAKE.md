@@ -56,7 +56,7 @@ None
   }
 ]
 ```
-# /exams/:examid/:questionid GET
+# /questions/:questionid GET NEEDS UPDATING
 ### Path params:
 | Name | Description |
 |----|----|
