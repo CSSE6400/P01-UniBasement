@@ -84,7 +84,7 @@ router.get('/courses/:courseCode', async (req: Request, res: Response) => {
     WHERE courses.courseCode = $1
     `, [courseCode]);
     res.status(200).json(course.rows);
-}
+});
 
 // All courses
 router.get('/courses', async (req: Request, res: Response) => {
