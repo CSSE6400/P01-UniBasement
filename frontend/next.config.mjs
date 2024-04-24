@@ -16,7 +16,6 @@ const withMDX = nextMDX({
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'mdx'],
-  basePath: '/UniBasement',
   images: {
     unoptimized: true,
   },
