@@ -63,8 +63,8 @@ router.get('/exams/:examId', async (req: Request, res: Response) => {
     res.status(200).json(exam.rows);
 });
 
-// Course by code
-router.get('/courses/:courseCode', async (req: Request, res: Response) => {
+// A course's exams by code
+router.get('/courses/:courseCode/exams', async (req: Request, res: Response) => {
     const courseCode = req.params.courseCode;
     const course = await db.query(`
     SELECT examID, examYear, examSemester, examType
@@ -73,6 +73,17 @@ router.get('/courses/:courseCode', async (req: Request, res: Response) => {
     `, [courseCode]);
     res.status(200).json(course.rows);
 });
+
+// A Courses information by code
+router.get('/courses/:courseCode', async (req: Request, res: Response) => {
+    const courseCode = req.params.courseCode;
+    const course = await db.query(`
+    SELECT courseName, courseDescription
+    FROM courses
+    WHERE courses.courseCode = $1
+    `, [courseCode]);
+    res.status(200).json(course.rows);
+}
 
 // All courses
 router.get('/courses', async (req: Request, res: Response) => {
