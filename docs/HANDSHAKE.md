@@ -17,7 +17,7 @@ None
   }
 ]
 ```
-# /courses/:courseCode GET
+# /courses/:courseCode/exams GET
 ### Path params:
 | Name | Description |
 |----|----|
@@ -35,6 +35,22 @@ None
     examtype: String - The type of the exam i.e. Midterm
   }
 ]
+
+```
+# /courses/:courseCode GET
+### Path params:
+| Name | Description |
+|----|----|
+| courseCode | String (should be 8 characters) REQUIRED |
+### Query params:
+None
+### Responses
+200 - List all exam information for one course as well as the course informatiom
+```
+{
+  courseName: String - The name of the course i.e. Software Architecture
+  courseDescription: String - A description of the course i.e. The best course ever
+}
 
 ```
 # /exams/:examid GET
