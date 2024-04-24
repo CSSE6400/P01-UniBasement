@@ -8,10 +8,6 @@ import cors from 'cors';
 import { routes } from './routes/index';
 import * as db from './db/index';
 
-const dotenv = require('dotenv');
-
-dotenv.config();
-
 const PORT: number = process.env.PORT ? parseInt(process.env.PORT) : 8080;
 
 // Make the app

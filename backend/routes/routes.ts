@@ -41,6 +41,7 @@ export const router = Router();
  * See outputs and params in HANDSHAKE.md
  *
  */ 
+
 // Comments by question id
 router.get('/questions/:questionId', async (req: Request, res: Response) => {
     const questionID = req.params.questionId;
@@ -113,8 +114,9 @@ router.get('/evan', async (req: Request, res: Response) => {
     res.status(200).json('Evan is the best');
 });
 
-// Helper functions
+// Interfaces
 
+// Used in nest helper function
 interface CommentObject {
     commentsid: number;
     parentcommentid: number | null;
@@ -129,7 +131,9 @@ interface CommentObject {
     children?: CommentObject[];
 }
 
-// Recursive function to nest comments into their parent comments
+// Helper functions
+
+// Function to nest comments into their parent comments
 function nest(jsonData: any[]) {
     const dataDict: { [id: number]: CommentObject } = {};
     jsonData.forEach(item => dataDict[item.commentsid] = item);
