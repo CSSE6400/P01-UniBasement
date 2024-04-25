@@ -43,17 +43,6 @@ export const router = Router();
  */ 
 
 
-// Gets comment (including children) by comment id
-router.get('/comments/:commentId/comments', async (req: Request, res: Response) => {
-    const questionID = req.params.questionId;
-    const question = await db.query(`
-    SELECT questionID, questionText, questionType, questionpng
-    FROM questions
-    WHERE questions.questionID = $1
-    `, [questionID]);
-    res.status(200).json(single_nest(question.rows[0], questionID);
-});
-
 // Gets comment by comment id
 router.get('/comments/:commentId', async (req: Request, res: Response) => {
     const commentID = req.params.commentId;
@@ -62,11 +51,11 @@ router.get('/comments/:commentId', async (req: Request, res: Response) => {
     FROM comments
     WHERE comments.commentsid = $1
     `, [commentID]);
-    res.status(200).json(nest(comment.rows[0]));
+    res.status(200).json(comment.rows[0]);
 });
 
 // Gets all comments by question id
-router.get('/questions/:questionIdi/comments', async (req: Request, res: Response) => {
+router.get('/questions/:questionId/comments', async (req: Request, res: Response) => {
     const questionID = req.params.questionId;
     const question = await db.query(`
     SELECT commentsid, parentcommentid, commenttext, commentpng, iscorrect, isendorsed, upvotes, downvotes, created_at, updated_at
@@ -84,7 +73,7 @@ router.get('/questions/:questionId', async (req: Request, res: Response) => {
     FROM questions
     WHERE questions.questionID = $1
     `, [questionID]);
-    res.status(200).json(nest(question.rows[0]));
+    res.status(200).json(question.rows[0]);
 });
 
 // Exam by ID
@@ -118,7 +107,7 @@ router.get('/courses/:courseCode', async (req: Request, res: Response) => {
     WHERE courses.courseCode = $1
     `, [courseCode]);
     res.status(200).json(course.rows);
-}
+});
 
 // All courses
 router.get('/courses', async (req: Request, res: Response) => {
@@ -168,13 +157,13 @@ interface CommentObject {
 // Helper functions
 
 // function to nest comments into their parent comments
-function nest(jsondata: any[]) {
-    const datadict: { [id: number]: commentobject } = {};
-    jsondata.foreach(item => datadict[item.commentsid] = item);
+function nest(jsonData: any[]) {
+    const dataDict: { [id: number]: CommentObject } = {};
+    jsonData.forEach(item => dataDict[item.commentsid] = item);
 
-    jsondata.foreach(item => {
+    jsonData.forEach(item => {
         if (item.parentcommentid !== null) {
-            const parent = datadict[item.parentcommentid];
+            const parent = dataDict[item.parentcommentid];
             if (!parent.children) {
                 parent.children = [];
             }
@@ -182,19 +171,18 @@ function nest(jsondata: any[]) {
         }
     });
 
-    const resultjsondata = jsondata.filter(item => item.parentcommentid === null);
-    return resultjsondata;
+    const resultJsonData = jsonData.filter(item => item.parentcommentid === null);
+    return resultJsonData;
 }
 
-
 // function to return one comment with its children
-function single_nest(jsondata: any[], commentID: number) {
-    const datadict: { [id: number]: commentobject } = {};
-    jsondata.foreach(item => datadict[item.commentsid] = item);
+function single_nest(jsonData: any[], commentID: number) {
+    const dataDict: { [id: number]: CommentObject } = {};
+    jsonData.forEach(item => dataDict[item.commentsid] = item);
 
-    jsondata.foreach(item => {
+    jsonData.forEach(item => {
         if (item.parentcommentid !== null) {
-            const parent = datadict[item.parentcommentid];
+            const parent = dataDict[item.parentcommentid];
             if (!parent.children) {
                 parent.children = [];
             }
@@ -202,7 +190,7 @@ function single_nest(jsondata: any[], commentID: number) {
         }
     });
 
-    const resultjsondata = jsondata.filter(item => item.commentsid !== commentID);
-    return resultjsondata;
+    const resultJsonData = jsonData.filter(item => item.commentsid !== commentID);
+    return resultJsonData;
 }
 
