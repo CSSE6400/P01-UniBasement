@@ -76,8 +76,8 @@ router.get('/questions/:questionId', async (req: Request, res: Response) => {
     res.status(200).json(question.rows[0]);
 });
 
-// Exam by ID
-router.get('/exams/:examId', async (req: Request, res: Response) => {
+// Exam questions by exam ID
+router.get('/exams/:examId/questions', async (req: Request, res: Response) => {
     const examID = req.params.examId;
     const exam = await db.query(`
     SELECT questionID, questionText, questionType, questionpng
@@ -85,6 +85,17 @@ router.get('/exams/:examId', async (req: Request, res: Response) => {
     WHERE questions.examID = $1
     `, [examID]);
     res.status(200).json(exam.rows);
+});
+
+// Exam by ID
+router.get('/exams/:examId', async (req: Request, res: Response) => {
+    const examID = req.params.examId;
+    const exams = await db.query(`
+    SELECT examID, examYear, examSemester, examType
+    FROM exams
+    WHERE exams.examID = $1
+    `, [examID]);
+    res.status(200).json(exams.rows[0]);
 });
 
 // A course's exams by code
@@ -102,11 +113,11 @@ router.get('/courses/:courseCode/exams', async (req: Request, res: Response) => 
 router.get('/courses/:courseCode', async (req: Request, res: Response) => {
     const courseCode = req.params.courseCode;
     const course = await db.query(`
-    SELECT courseName, courseDescription
+    SELECT courseCode, courseName, courseDescription
     FROM courses
     WHERE courses.courseCode = $1
     `, [courseCode]);
-    res.status(200).json(course.rows);
+    res.status(200).json(course.rows[0]);
 });
 
 // All courses

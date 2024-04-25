@@ -11,6 +11,7 @@ import { useIsInsideMobileNavigation } from '@/components/MobileNavigation'
 import { useSectionStore } from '@/components/SectionProvider'
 import { Tag } from '@/components/Tag'
 import { remToPx } from '@/lib/remToPx'
+import useExams from '@/api/useExams';
 
 interface NavGroup {
   title: string
@@ -239,18 +240,18 @@ export const navigation: Array<NavGroup> = [
 ]
 
 export function Navigation(props: React.ComponentPropsWithoutRef<'nav'>) {
-  const {courseCode} = useParams<{courseCode: string}>()
+  const { courseCode } = useParams<{courseCode: string}>()
+  const { exams, isLoading, isError } = useExams(courseCode);
 
   const sideNavigation: Array<NavGroup> = useMemo(() => [
     {
       title: `Exams`,
-      links: [
-        { title: '2023 S1', href: `/courses/${courseCode}/exams/1` },
-        { title: '2022 S1', href: `/courses/${courseCode}/exams/2` },
-        { title: '2021 S1', href: `/courses/${courseCode}/exams/3` },
-      ],
+      links: (!isLoading && !isError && !!exams) ? exams?.map((exam) => ({
+        title: `${exam.examyear} S${exam.examsemester}`,
+        href: `/courses/${courseCode}/exams/${exam.examid}`,
+      })) : []
     },
-  ], [courseCode])
+  ], [courseCode, exams, isLoading, isError])
 
   return (
     <nav {...props}>
