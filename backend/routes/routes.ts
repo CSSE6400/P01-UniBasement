@@ -1,28 +1,3 @@
-/*
-
-                    -@                
-                   .##@               
-                  .####@              
-                  @#####@             
-                . *######@            
-               .##@o@#####@           
-              /############@          
-             /##############@         
-            @######@**%######@        
-           @######`     %#####o       
-          @######@       ######%      
-        -@#######h       ######@.`    
-       /#####h**``       `**%@####@   
-      @H@*`                    `*%#@  
-     *`                            `* 
-
-
-=================================================
-
-                I USE ARCH BTW
-
-=================================================
-*/
 // Imports
 import { Router, Request, Response } from 'express'; // Import Request and Response types
 import * as db from '../db/index';
@@ -205,3 +180,14 @@ function single_nest(jsonData: any[], commentID: number) {
     return resultJsonData;
 }
 
+
+//TODO will be removed later...
+// make a generic function that always returns true
+export function alwaysTrue() {
+    return true;
+}
+
+//TODO will be removed later...
+export function alwaysFalse() {
+    return false;
+}
