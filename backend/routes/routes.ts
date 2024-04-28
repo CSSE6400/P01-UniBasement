@@ -28,14 +28,14 @@ export const router = Router();
  */
 
 // Edits a question
-router.post('/questions/:questionId/edit', async (req: Request, res: Response) => {
-    const questionID = req.params.questionId
+router.patch('/questions/:questionId/edit', async (req: Request, res: Response) => {
+    const questionId = req.params.questionId
     const { questionText, questionType, questionPNG } = req.body;
     await db.query(`
     UPDATE questions
     SET questionText = $1, questionType = $2, questionPNG = $3
-    WHERE questions.questionID = $4
-    `, [questionText, questionType, questionPNG, questionID]);
+    WHERE questions.questionId = $4
+    `, [questionText, questionType, questionPNG, questionId]);
     res.status(200).json('Question Edited!');
 });
 
@@ -59,7 +59,7 @@ router.post('/comments/:commentId/correct', async (req: Request, res: Response) 
     await db.query(`
     UPDATE comments
     SET iscorrect = true
-    WHERE commentsid = $1
+    WHERE commentId = $1
     `, [commentID]);
     res.status(200).json('Corrected!');
 });
@@ -70,7 +70,7 @@ router.post('/comments/:commentId/endorse', async (req: Request, res: Response) 
     await db.query(`
     UPDATE comments
     SET isendorsed = true
-    WHERE commentsid = $1
+    WHERE commentId = $1
     `, [commentID]);
     res.status(200).json('Endorsed!');
 });
@@ -81,7 +81,7 @@ router.post('/comments/:commentId/downvote', async (req: Request, res: Response)
     await db.query(`
     UPDATE comments
     SET downvotes = downvotes + 1
-    WHERE commentsid = $1
+    WHERE commentId = $1
     `, [commentID]);
     res.status(200).json('Downvoted!');
 });
@@ -92,7 +92,7 @@ router.post('/comments/:commentId/upvote', async (req: Request, res: Response) =
     await db.query(`
     UPDATE comments
     SET upvotes = upvotes + 1
-    WHERE commentsid = $1
+    WHERE commentId = $1
     `, [commentID]);
     res.status(200).json('Upvoted!');
 });
@@ -154,32 +154,32 @@ router.post('/courses', async (req: Request, res: Response) => {
 router.get('/comments/:commentId', async (req: Request, res: Response) => {
     const commentID = req.params.commentId;
     const comment = await db.query(`
-    SELECT commentsid, parentcommentid, commenttext, commentpng, iscorrect, isendorsed, upvotes, downvotes, created_at, updated_at
+    SELECT commentId, parentcommentId, commenttext, commentpng, iscorrect, isendorsed, upvotes, downvotes, created_at, updated_at
     FROM comments
-    WHERE comments.commentsid = $1
+    WHERE comments.commentId = $1
     `, [commentID]);
     res.status(200).json(comment.rows[0]);
 });
 
 // Gets all comments by question id
 router.get('/questions/:questionId/comments', async (req: Request, res: Response) => {
-    const questionID = req.params.questionId;
+    const questionId = req.params.questionId;
     const question = await db.query(`
-    SELECT commentsid, parentcommentid, commenttext, commentpng, iscorrect, isendorsed, upvotes, downvotes, created_at, updated_at
+    SELECT commentId, parentcommentId, commenttext, commentpng, iscorrect, isendorsed, upvotes, downvotes, created_at, updated_at
     FROM comments
-    WHERE comments.questionid = $1
-    `, [questionID]);
+    WHERE comments.questionId = $1
+    `, [questionId]);
     res.status(200).json(nest(question.rows));
 });
 
 // Gets question information by question id
 router.get('/questions/:questionId', async (req: Request, res: Response) => {
-    const questionID = req.params.questionId;
+    const questionId = req.params.questionId;
     const question = await db.query(`
-    SELECT questionID, questionText, questionType, questionpng
+    SELECT questionId, questionText, questionType, questionpng
     FROM questions
-    WHERE questions.questionID = $1
-    `, [questionID]);
+    WHERE questions.questionId = $1
+    `, [questionId]);
     res.status(200).json(question.rows[0]);
 });
 
@@ -187,7 +187,7 @@ router.get('/questions/:questionId', async (req: Request, res: Response) => {
 router.get('/exams/:examId/questions', async (req: Request, res: Response) => {
     const examID = req.params.examId;
     const exam = await db.query(`
-    SELECT questionID, questionText, questionType, questionpng
+    SELECT questionId, questionText, questionType, questionpng
     FROM questions
     WHERE questions.examID = $1
     `, [examID]);
@@ -259,8 +259,8 @@ router.get('/evan', async (req: Request, res: Response) => {
 
 // Used in nest helper function
 interface CommentObject {
-    commentsid: number;
-    parentcommentid: number | null;
+    commentId: number;
+    parentcommentId: number | null;
     commenttext: string;
     commentpng: string | null;
     iscorrect: boolean;
@@ -279,18 +279,18 @@ async function editComment(commentID: number, commentText: string, commentPNG: s
     await db.query(`
     UPDATE comments
     SET commenttext = $1, commentpng = $2
-    WHERE commentsid = $3
+    WHERE commentId = $3
     `, [commentText, commentPNG, commentID]);
 }
 
 // function to nest comments into their parent comments
 export function nest(jsonData: any[]) {
     const dataDict: { [id: number]: CommentObject } = {};
-    jsonData.forEach(item => dataDict[item.commentsid] = item);
+    jsonData.forEach(item => dataDict[item.commentId] = item);
 
     jsonData.forEach(item => {
-        if (item.parentcommentid !== null) {
-            const parent = dataDict[item.parentcommentid];
+        if (item.parentcommentId !== null) {
+            const parent = dataDict[item.parentcommentId];
             if (!parent.children) {
                 parent.children = [];
             }
@@ -298,18 +298,18 @@ export function nest(jsonData: any[]) {
         }
     });
 
-    const resultJsonData = jsonData.filter(item => item.parentcommentid === null);
+    const resultJsonData = jsonData.filter(item => item.parentcommentId === null);
     return resultJsonData;
 }
 
 // function to return one comment with its children
 export function single_nest(jsonData: any[], commentID: number) {
     const dataDict: { [id: number]: CommentObject } = {};
-    jsonData.forEach(item => dataDict[item.commentsid] = item);
+    jsonData.forEach(item => dataDict[item.commentId] = item);
 
     jsonData.forEach(item => {
-        if (item.parentcommentid !== null) {
-            const parent = dataDict[item.parentcommentid];
+        if (item.parentcommentId !== null) {
+            const parent = dataDict[item.parentcommentId];
             if (!parent.children) {
                 parent.children = [];
             }
@@ -317,7 +317,7 @@ export function single_nest(jsonData: any[], commentID: number) {
         }
     });
 
-    const resultJsonData = jsonData.filter(item => item.commentsid === commentID);
+    const resultJsonData = jsonData.filter(item => item.commentId === commentID);
     return resultJsonData;
 }
 
