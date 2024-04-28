@@ -154,7 +154,7 @@ router.post('/courses', async (req: Request, res: Response) => {
 router.get('/comments/:commentId', async (req: Request, res: Response) => {
     const commentID = req.params.commentId;
     const comment = await db.query(`
-    SELECT commentId, parentcommentId, commenttext, commentpng, iscorrect, isendorsed, upvotes, downvotes, created_at, updated_at
+    SELECT commentId, parentcommentId, commenttext, commentPNG, iscorrect, isendorsed, upvotes, downvotes, created_at, updated_at
     FROM comments
     WHERE comments.commentId = $1
     `, [commentID]);
@@ -165,7 +165,7 @@ router.get('/comments/:commentId', async (req: Request, res: Response) => {
 router.get('/questions/:questionId/comments', async (req: Request, res: Response) => {
     const questionId = req.params.questionId;
     const question = await db.query(`
-    SELECT commentId, parentcommentId, commenttext, commentpng, iscorrect, isendorsed, upvotes, downvotes, created_at, updated_at
+    SELECT commentId, parentcommentId, commenttext, commentPNG, iscorrect, isendorsed, upvotes, downvotes, created_at, updated_at
     FROM comments
     WHERE comments.questionId = $1
     `, [questionId]);
@@ -176,7 +176,7 @@ router.get('/questions/:questionId/comments', async (req: Request, res: Response
 router.get('/questions/:questionId', async (req: Request, res: Response) => {
     const questionId = req.params.questionId;
     const question = await db.query(`
-    SELECT questionId, questionText, questionType, questionpng
+    SELECT questionId, questionText, questionType, questionPNG
     FROM questions
     WHERE questions.questionId = $1
     `, [questionId]);
@@ -187,7 +187,7 @@ router.get('/questions/:questionId', async (req: Request, res: Response) => {
 router.get('/exams/:examId/questions', async (req: Request, res: Response) => {
     const examID = req.params.examId;
     const exam = await db.query(`
-    SELECT questionId, questionText, questionType, questionpng
+    SELECT questionId, questionText, questionType, questionPNG
     FROM questions
     WHERE questions.examID = $1
     `, [examID]);
@@ -262,7 +262,7 @@ interface CommentObject {
     commentId: number;
     parentcommentId: number | null;
     commenttext: string;
-    commentpng: string | null;
+    commentPNG: string | null;
     iscorrect: boolean;
     isendorsed: boolean;
     upvotes: number;
@@ -275,10 +275,10 @@ interface CommentObject {
 // Helper functions
 
 // function to edit / delete a comment
-async function editComment(commentID: number, commentText: string, commentPNG: string) {
+async function editComment(commentId: number, commentText: string, commentPNG: string) {
     await db.query(`
     UPDATE comments
-    SET commenttext = $1, commentpng = $2
+    SET commentText = $1, commentPNG = $2
     WHERE commentId = $3
     `, [commentText, commentPNG, commentID]);
 }

@@ -42,7 +42,7 @@ export const setupTables = () => {
         parentCommentId INTEGER,
 
         commentText TEXT,
-        commentPng BYTEA, 
+        commentPNG BYTEA, 
         
         isCorrect BOOLEAN NOT NULL DEFAULT FALSE,
         isEndorsed BOOLEAN NOT NULL DEFAULT FALSE,
