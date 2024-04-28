@@ -13,8 +13,8 @@ export default function Exams({ params }: { params: { courseCode: string }}) {
             {!isError && !isLoading && exams?.map(exam => (
                 <>
                     <hr />
-                    <div key={exam.examid}>
-                        <Link href={`/courses/${params.courseCode}/exams/${exam.examid}`}>
+                    <div key={exam.examId}>
+                        <Link href={`/courses/${params.courseCode}/exams/${exam.examId}`}>
                             <h2>{exam.examyear} | S{exam.examsemester}</h2>
                         </Link>
                         <p>{exam.examtype}</p>

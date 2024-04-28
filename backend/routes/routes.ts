@@ -104,21 +104,21 @@ router.post('/comments/:commentId/upvote', async (req: Request, res: Response) =
 
 // Adds a new comment to the database
 router.post('/comments', async (req: Request, res: Response) => {
-    const { parentCommentID, commentText, commentPNG, isCorrect, isEndorsed, upvotes, downvotes } = req.body;
+    const { parentCommentId, commentText, commentPNG, isCorrect, isEndorsed, upvotes, downvotes } = req.body;
     await db.query(`
-    INSERT INTO comments (parentCommentID, commentText, commentPNG, isCorrect, isEndorsed, upvotes, downvotes)
+    INSERT INTO comments (parentCommentId, commentText, commentPNG, isCorrect, isEndorsed, upvotes, downvotes)
     VALUES ($1, $2, $3, $4, $5, $6, $7)
-    `, [parentCommentID, commentText, commentPNG, isCorrect, isEndorsed, upvotes, downvotes]);
+    `, [parentCommentId, commentText, commentPNG, isCorrect, isEndorsed, upvotes, downvotes]);
     res.status(201).json('Comment Added!');
 });
 
 // Adds a new question to the database
 router.post('/questions', async (req: Request, res: Response) => {
-    const { examID, questionText, questionType, questionPNG } = req.body;
+    const { examId, questionText, questionType, questionPNG } = req.body;
     await db.query(`
-    INSERT INTO questions (examID, questionText, questionType, questionPNG)
+    INSERT INTO questions (examId, questionText, questionType, questionPNG)
     VALUES ($1, $2, $3, $4)
-    `, [examID, questionText, questionType, questionPNG]);
+    `, [examId, questionText, questionType, questionPNG]);
     res.status(201).json('Question Added!');
 });
 
@@ -154,7 +154,7 @@ router.post('/courses', async (req: Request, res: Response) => {
 router.get('/comments/:commentId', async (req: Request, res: Response) => {
     const commentID = req.params.commentId;
     const comment = await db.query(`
-    SELECT commentId, parentcommentId, commenttext, commentPNG, iscorrect, isendorsed, upvotes, downvotes, created_at, updated_at
+    SELECT commentId, parentCommentId, commenttext, commentpng, iscorrect, isendorsed, upvotes, downvotes, created_at, updated_at
     FROM comments
     WHERE comments.commentId = $1
     `, [commentID]);
@@ -165,7 +165,7 @@ router.get('/comments/:commentId', async (req: Request, res: Response) => {
 router.get('/questions/:questionId/comments', async (req: Request, res: Response) => {
     const questionId = req.params.questionId;
     const question = await db.query(`
-    SELECT commentId, parentcommentId, commenttext, commentPNG, iscorrect, isendorsed, upvotes, downvotes, created_at, updated_at
+    SELECT commentId, parentCommentId, commenttext, commentpng, iscorrect, isendorsed, upvotes, downvotes, created_at, updated_at
     FROM comments
     WHERE comments.questionId = $1
     `, [questionId]);
@@ -185,23 +185,23 @@ router.get('/questions/:questionId', async (req: Request, res: Response) => {
 
 // Exam questions by exam ID
 router.get('/exams/:examId/questions', async (req: Request, res: Response) => {
-    const examID = req.params.examId;
+    const examId = req.params.examId;
     const exam = await db.query(`
     SELECT questionId, questionText, questionType, questionPNG
     FROM questions
-    WHERE questions.examID = $1
-    `, [examID]);
+    WHERE questions.examId = $1
+    `, [examId]);
     res.status(200).json(exam.rows);
 });
 
 // Exam by ID
 router.get('/exams/:examId', async (req: Request, res: Response) => {
-    const examID = req.params.examId;
+    const examId = req.params.examId;
     const exams = await db.query(`
-    SELECT examID, examYear, examSemester, examType
+    SELECT examId, examYear, examSemester, examType
     FROM exams
-    WHERE exams.examID = $1
-    `, [examID]);
+    WHERE exams.examId = $1
+    `, [examId]);
     res.status(200).json(exams.rows[0]);
 });
 
@@ -209,7 +209,7 @@ router.get('/exams/:examId', async (req: Request, res: Response) => {
 router.get('/courses/:courseCode/exams', async (req: Request, res: Response) => {
     const courseCode = req.params.courseCode;
     const course = await db.query(`
-    SELECT examID, examYear, examSemester, examType
+    SELECT examId, examYear, examSemester, examType
     FROM exams
     WHERE exams.courseCode = $1
     `, [courseCode]);
@@ -260,7 +260,7 @@ router.get('/evan', async (req: Request, res: Response) => {
 // Used in nest helper function
 interface CommentObject {
     commentId: number;
-    parentcommentId: number | null;
+    parentCommentId: number | null;
     commenttext: string;
     commentPNG: string | null;
     iscorrect: boolean;
@@ -289,8 +289,8 @@ export function nest(jsonData: any[]) {
     jsonData.forEach(item => dataDict[item.commentId] = item);
 
     jsonData.forEach(item => {
-        if (item.parentcommentId !== null) {
-            const parent = dataDict[item.parentcommentId];
+        if (item.parentCommentId !== null) {
+            const parent = dataDict[item.parentCommentId];
             if (!parent.children) {
                 parent.children = [];
             }
@@ -298,7 +298,7 @@ export function nest(jsonData: any[]) {
         }
     });
 
-    const resultJsonData = jsonData.filter(item => item.parentcommentId === null);
+    const resultJsonData = jsonData.filter(item => item.parentCommentId === null);
     return resultJsonData;
 }
 
@@ -308,8 +308,8 @@ export function single_nest(jsonData: any[], commentID: number) {
     jsonData.forEach(item => dataDict[item.commentId] = item);
 
     jsonData.forEach(item => {
-        if (item.parentcommentId !== null) {
-            const parent = dataDict[item.parentcommentId];
+        if (item.parentCommentId !== null) {
+            const parent = dataDict[item.parentCommentId];
             if (!parent.children) {
                 parent.children = [];
             }

@@ -30,7 +30,7 @@ export const setupTables = () => {
     
     CREATE TABLE IF NOT EXISTS questions (
         questionId SERIAL PRIMARY KEY,
-        examId INTEGER REFERENCES exams(examID),
+        examId INTEGER REFERENCES exams(examId),
         questionText TEXT,
         questionPng BYTEA, 
         questionType VARCHAR(20)
