@@ -143,7 +143,7 @@ interface CommentObject {
 // Helper functions
 
 // function to nest comments into their parent comments
-function nest(jsonData: any[]) {
+export function nest(jsonData: any[]) {
     const dataDict: { [id: number]: CommentObject } = {};
     jsonData.forEach(item => dataDict[item.commentsid] = item);
 
@@ -162,7 +162,7 @@ function nest(jsonData: any[]) {
 }
 
 // function to return one comment with its children
-function single_nest(jsonData: any[], commentID: number) {
+export function single_nest(jsonData: any[], commentID: number) {
     const dataDict: { [id: number]: CommentObject } = {};
     jsonData.forEach(item => dataDict[item.commentsid] = item);
 
@@ -176,18 +176,7 @@ function single_nest(jsonData: any[], commentID: number) {
         }
     });
 
-    const resultJsonData = jsonData.filter(item => item.commentsid !== commentID);
+    const resultJsonData = jsonData.filter(item => item.commentsid === commentID);
     return resultJsonData;
 }
 
-
-//TODO will be removed later...
-// make a generic function that always returns true
-export function alwaysTrue() {
-    return true;
-}
-
-//TODO will be removed later...
-export function alwaysFalse() {
-    return false;
-}
