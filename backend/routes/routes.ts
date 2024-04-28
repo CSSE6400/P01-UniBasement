@@ -41,59 +41,59 @@ router.patch('/questions/:questionId/edit', async (req: Request, res: Response) 
 
 // Deletes a comment
 router.post('/comments/:commentId/delete', async (req: Request, res: Response) => {
-    const commentID = req.params.commentId;
-    editComment(+commentID, '', '');
+    const commentId = req.params.commentId;
+    editComment(+commentId, '', '');
     res.status(200).json('Comment Deleted!');
 });
 
 // Edits a comment
 router.post('/comments/:commentId/edit', async (req: Request, res: Response) => {
-    const commentID = req.params.commentId;
-    editComment(+commentID, req.body.commentText, req.body.commentPNG);
+    const commentId = req.params.commentId;
+    editComment(+commentId, req.body.commentText, req.body.commentPNG);
     res.status(200).json('Comment Edited!');
 });
 
 // Sets a comment as correct
 router.post('/comments/:commentId/correct', async (req: Request, res: Response) => {
-    const commentID = req.params.commentId;
+    const commentId = req.params.commentId;
     await db.query(`
     UPDATE comments
     SET iscorrect = true
     WHERE commentId = $1
-    `, [commentID]);
+    `, [commentId]);
     res.status(200).json('Corrected!');
 });
 
 // Endorses a comment
 router.post('/comments/:commentId/endorse', async (req: Request, res: Response) => {
-    const commentID = req.params.commentId;
+    const commentId = req.params.commentId;
     await db.query(`
     UPDATE comments
     SET isendorsed = true
     WHERE commentId = $1
-    `, [commentID]);
+    `, [commentId]);
     res.status(200).json('Endorsed!');
 });
 
 // Downvotes a comment
 router.post('/comments/:commentId/downvote', async (req: Request, res: Response) => {
-    const commentID = req.params.commentId;
+    const commentId = req.params.commentId;
     await db.query(`
     UPDATE comments
     SET downvotes = downvotes + 1
     WHERE commentId = $1
-    `, [commentID]);
+    `, [commentId]);
     res.status(200).json('Downvoted!');
 });
 
 // Upvotes a comment
 router.post('/comments/:commentId/upvote', async (req: Request, res: Response) => {
-    const commentID = req.params.commentId;
+    const commentId = req.params.commentId;
     await db.query(`
     UPDATE comments
     SET upvotes = upvotes + 1
     WHERE commentId = $1
-    `, [commentID]);
+    `, [commentId]);
     res.status(200).json('Upvoted!');
 });
 
@@ -152,12 +152,12 @@ router.post('/courses', async (req: Request, res: Response) => {
 
 // Gets comment by comment id
 router.get('/comments/:commentId', async (req: Request, res: Response) => {
-    const commentID = req.params.commentId;
+    const commentId = req.params.commentId;
     const comment = await db.query(`
     SELECT commentId, parentCommentId, commenttext, commentpng, iscorrect, isendorsed, upvotes, downvotes, created_at, updated_at
     FROM comments
     WHERE comments.commentId = $1
-    `, [commentID]);
+    `, [commentId]);
     res.status(200).json(comment.rows[0]);
 });
 
@@ -176,7 +176,7 @@ router.get('/questions/:questionId/comments', async (req: Request, res: Response
 router.get('/questions/:questionId', async (req: Request, res: Response) => {
     const questionId = req.params.questionId;
     const question = await db.query(`
-    SELECT questionId, questionText, questionType, questionpng
+    SELECT questionId, questionText, questionType, questionPNG
     FROM questions
     WHERE questions.questionId = $1
     `, [questionId]);
@@ -187,7 +187,7 @@ router.get('/questions/:questionId', async (req: Request, res: Response) => {
 router.get('/exams/:examId/questions', async (req: Request, res: Response) => {
     const examId = req.params.examId;
     const exam = await db.query(`
-    SELECT questionId, questionText, questionType, questionpng
+    SELECT questionId, questionText, questionType, questionPNG
     FROM questions
     WHERE questions.examId = $1
     `, [examId]);
@@ -262,7 +262,7 @@ interface CommentObject {
     commentId: number;
     parentCommentId: number | null;
     commenttext: string;
-    commentpng: string | null;
+    commentPNG: string | null;
     iscorrect: boolean;
     isendorsed: boolean;
     upvotes: number;
@@ -275,12 +275,12 @@ interface CommentObject {
 // Helper functions
 
 // function to edit / delete a comment
-async function editComment(commentID: number, commentText: string, commentPNG: string) {
+async function editComment(commentId: number, commentText: string, commentPNG: string) {
     await db.query(`
     UPDATE comments
-    SET commenttext = $1, commentpng = $2
+    SET commentText = $1, commentPNG = $2
     WHERE commentId = $3
-    `, [commentText, commentPNG, commentID]);
+    `, [commentText, commentPNG, commentId]);
 }
 
 // function to nest comments into their parent comments
@@ -303,7 +303,7 @@ export function nest(jsonData: any[]) {
 }
 
 // function to return one comment with its children
-export function single_nest(jsonData: any[], commentID: number) {
+export function single_nest(jsonData: any[], commentId: number) {
     const dataDict: { [id: number]: CommentObject } = {};
     jsonData.forEach(item => dataDict[item.commentId] = item);
 
@@ -317,7 +317,7 @@ export function single_nest(jsonData: any[], commentID: number) {
         }
     });
 
-    const resultJsonData = jsonData.filter(item => item.commentId === commentID);
+    const resultJsonData = jsonData.filter(item => item.commentId === commentId);
     return resultJsonData;
 }
 
