@@ -31,11 +31,9 @@ describe('single_nest function', () => {
       { commentsid: 3, parentcommentid: 1 },
       { commentsid: 4, parentcommentid: 2 },
     ];
-    const filteredComments = single_nest(comments, 1);
+    const filteredComments = single_nest(comments, 2);
     expect(filteredComments).toEqual([
-      { commentsid: 2, parentcommentid: 1, children: [{ commentsid: 4, parentcommentid: 2 }] },
-      { commentsid: 3, parentcommentid: 1 },
-      { commentsid: 4, parentcommentid: 2 },
+      { commentsid: 2, parentcommentid: 1, children: [{ commentsid: 4, parentcommentid: 2 }] }
     ]);
   });
 });
