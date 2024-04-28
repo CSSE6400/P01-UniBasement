@@ -42,14 +42,14 @@ router.post('/questions/:questionId/edit', async (req: Request, res: Response) =
 // Deletes a comment
 router.post('/comments/:commentId/delete', async (req: Request, res: Response) => {
     const commentID = req.params.commentId;
-    editComment(commentID, '', '');
+    editComment(+commentID, '', '');
     res.status(200).json('Comment Deleted!');
 });
 
 // Edits a comment
 router.post('/comments/:commentId/edit', async (req: Request, res: Response) => {
     const commentID = req.params.commentId;
-    editComment(commentID, req.body.commentText, req.body.commentPNG);
+    editComment(+commentID, req.body.commentText, req.body.commentPNG);
     res.status(200).json('Comment Edited!');
 });
 
