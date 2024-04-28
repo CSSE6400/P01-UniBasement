@@ -143,7 +143,7 @@ interface CommentObject {
 // Helper functions
 
 // function to nest comments into their parent comments
-export function nest(jsonData: any[]) {
+function nest(jsonData: any[]) {
     const dataDict: { [id: number]: CommentObject } = {};
     jsonData.forEach(item => dataDict[item.commentsid] = item);
 
@@ -162,7 +162,7 @@ export function nest(jsonData: any[]) {
 }
 
 // function to return one comment with its children
-export function single_nest(jsonData: any[], commentID: number) {
+function single_nest(jsonData: any[], commentID: number) {
     const dataDict: { [id: number]: CommentObject } = {};
     jsonData.forEach(item => dataDict[item.commentsid] = item);
 
@@ -179,3 +179,4 @@ export function single_nest(jsonData: any[], commentID: number) {
     const resultJsonData = jsonData.filter(item => item.commentsid !== commentID);
     return resultJsonData;
 }
+
