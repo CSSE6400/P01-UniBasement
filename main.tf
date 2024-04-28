@@ -199,7 +199,7 @@ resource "aws_ecr_repository" "unibasement_backend" {
 
 
 resource "aws_security_group" "unibasement_backend" {
-    name = "unibasement"
+    name = "unibasement_backend"
     description = "unibasement Security Group"
   
     ingress {
