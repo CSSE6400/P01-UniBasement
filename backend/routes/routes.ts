@@ -29,7 +29,7 @@ export const router = Router();
 
 // Edits a question
 router.post('/questions/:questionId/edit', async (req: Request, res: Response) => {
-    const questionID = req.params.question
+    const questionID = req.params.questionId
     const { questionText, questionType, questionPNG } = req.body;
     await db.query(`
     UPDATE questions
