@@ -303,7 +303,7 @@ export function nest(jsonData: any[]) {
 }
 
 // function to return one comment with its children
-export function single_nest(jsonData: any[], commentID: number) {
+export function single_nest(jsonData: any[], commentId: number) {
     const dataDict: { [id: number]: CommentObject } = {};
     jsonData.forEach(item => dataDict[item.commentId] = item);
 
