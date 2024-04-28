@@ -17,12 +17,34 @@ export const router = Router();
  *
  */
 
+/*
+ * Deletes
+ * =======
+ */
+
+/*
+ * Edits
+ * =====
+ */
+
+// Edits a question
+router.post('/questions/:questionId/edit', async (req: Request, res: Response) => {
+    const questionID = req.params.question
+    const { questionText, questionType, questionPNG } = req.body;
+    await db.query(`
+    UPDATE questions
+    SET questionText = $1, questionType = $2, questionPNG = $3
+    WHERE questions.questionID = $4
+    `, [questionText, questionType, questionPNG, questionID]);
+    res.status(200).json('Question Edited!');
+});
+
 // Deletes a comment
 router.post('/comments/:commentId/delete', async (req: Request, res: Response) => {
     const commentID = req.params.commentId;
     editComment(commentID, '', '');
     res.status(200).json('Comment Deleted!');
-}
+});
 
 // Edits a comment
 router.post('/comments/:commentId/edit', async (req: Request, res: Response) => {
@@ -75,6 +97,11 @@ router.post('/comments/:commentId/upvote', async (req: Request, res: Response) =
     res.status(200).json('Upvoted!');
 });
 
+/*
+ * Adds
+ * =====
+ */
+
 // Adds a new comment to the database
 router.post('/comments', async (req: Request, res: Response) => {
     const { parentCommentID, commentText, commentPNG, isCorrect, isEndorsed, upvotes, downvotes } = req.body;
@@ -103,7 +130,7 @@ router.post('/exams', async (req: Request, res: Response) => {
     VALUES ($1, $2, $3, $4)
     `, [examYear, examSemester, examType, courseCode]);
     res.status(201).json('Exam Added!');
-}
+});
 
 // Adds a new Course to the database
 router.post('/courses', async (req: Request, res: Response) => {
