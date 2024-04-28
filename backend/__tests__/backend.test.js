@@ -32,6 +32,13 @@ describe('nest function', () => {
     ]);
   });
 
+  // Test when the comments array is empty
+  test('should handle empty array', () => {
+    const comments = [];
+    const nestedComments = nest(comments);
+    expect(nestedComments).toEqual([]);
+  });
+
   // Test when comments are nested at multiple levels
   test('should handle multi-level nested comments', () => {
     const comments = [
@@ -126,5 +133,22 @@ describe('single_nest function', () => {
     expect(nestedComments).toEqual([
       { commentsid: 2, parentcommentid: 1, children: [{ commentsid: 3, parentcommentid: 2 }] },
     ]);
+  });
+
+  // Test when the commentID is null
+  test('should handle null commentID', () => {
+    const comments = [
+      { commentsid: 1, parentcommentid: null },
+      { commentsid: 2, parentcommentid: 1 },
+    ];
+    const nestedComments = single_nest(comments, null);
+    expect(nestedComments).toEqual([]);
+  });
+
+  // Test when the comments array is empty
+  test('should handle empty array', () => {
+    const comments = [];
+    const nestedComments = single_nest(comments, 1);
+    expect(nestedComments).toEqual([]);
   });
 });
