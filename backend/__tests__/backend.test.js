@@ -1,4 +1,4 @@
-const { alwaysTrue, alwaysFalse, single_nest, nest } = require('../routes/routes');
+const { single_nest, nest } = require('../routes/routes');
 
 describe('nest function', () => {
   test('should correctly nest comments', () => {
