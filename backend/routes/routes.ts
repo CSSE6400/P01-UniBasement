@@ -205,3 +205,9 @@ function single_nest(jsonData: any[], commentID: number) {
     return resultJsonData;
 }
 
+
+
+// make a generic function that always returns true
+export function alwaysTrue() {
+    return true;
+}
