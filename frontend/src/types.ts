@@ -5,7 +5,7 @@ export type Course = {
 }
 
 export type Exam = {
-    examid: number
+    examId: number
     examyear: number
     examsemester: number
     examtype: string

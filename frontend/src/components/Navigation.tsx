@@ -248,7 +248,7 @@ export function Navigation(props: React.ComponentPropsWithoutRef<'nav'>) {
       title: `Exams`,
       links: (!isLoading && !isError && !!exams) ? exams?.map((exam) => ({
         title: `${exam.examyear} S${exam.examsemester}`,
-        href: `/courses/${courseCode}/exams/${exam.examid}`,
+        href: `/courses/${courseCode}/exams/${exam.examId}`,
       })) : []
     },
   ], [courseCode, exams, isLoading, isError])

@@ -23,4 +23,4 @@
 | Name | Type | Description | other |
 |----|----|----|----|
 | questionId | Serial | Just the id for the questions database | reference to the questions table |
-| commentsId | Serial | Just the id for the database | key |
+| commentId | Serial | Just the id for the database | key |

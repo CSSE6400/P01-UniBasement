@@ -21,34 +21,34 @@ export const setupTables = () => {
     );
 
      CREATE TABLE IF NOT EXISTS exams (
-        examID SERIAL PRIMARY KEY,
+        examId SERIAL PRIMARY KEY,
         courseCode VARCHAR(8) REFERENCES courses(courseCode),
         examYear INTEGER, 
         examSemester Integer, 
         examType VARCHAR(20)
     );
-
+    
     CREATE TABLE IF NOT EXISTS questions (
-        questionID SERIAL PRIMARY KEY,
-        examID INTEGER REFERENCES exams(examID),
+        questionId SERIAL PRIMARY KEY,
+        examId INTEGER REFERENCES exams(examId),
         questionText TEXT,
         questionPng BYTEA, 
         questionType VARCHAR(20)
     );
 
     CREATE TABLE IF NOT EXISTS comments (
-        commentsID SERIAL PRIMARY KEY,
-        questionID INTEGER REFERENCES questions(questionID),
-        parentCommentID INTEGER,
+        commentId SERIAL PRIMARY KEY,
+        questionId INTEGER REFERENCES questions(questionID),
+        parentCommentId INTEGER,
 
         commentText TEXT,
         commentPng BYTEA, 
         
-        isCorrect BOOLEAN,
-        isEndorsed BOOLEAN,
+        isCorrect BOOLEAN NOT NULL DEFAULT FALSE,
+        isEndorsed BOOLEAN NOT NULL DEFAULT FALSE,
         
-        upvotes INTEGER,
-        downvotes INTEGER,
+        upvotes INTEGER NOT NULL DEFAULT 0,
+        downvotes INTEGER NOT NULL DEFAULT 0,
 
         created_at TIMESTAMP NOT NULL DEFAULT NOW(),
         updated_at TIMESTAMP NOT NULL DEFAULT NOW()
