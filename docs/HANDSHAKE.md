@@ -53,7 +53,7 @@ None
 ```
 [
   {
-    examid: Integer - The id for the exam, used for database i.e. 1
+    examId: Integer - The id for the exam, used for database i.e. 1
     examyear: Integer - The year the exam took place i.e. 2023
     examsemester: Interger [1 - 3] - First = 1, Second = 2, Summer = 3 i.e. 2
     examtype: String - The type of the exam i.e. Midterm
@@ -62,33 +62,33 @@ None
 
 ```
 
-# /exams/:examid GET
+# /exams/:examId GET
 ### Description
 Gets the exam information from an exam id
 ### Path params:
 | Name | Description |
 |----|----|
-| examid | Integer - The exam id REQUIRED |
+| examId | Integer - The exam id REQUIRED |
 ### Query params:
 None
 ### Responses
 200 - List all exam information for one course as well as the course informatiom
 ```
 {
-  examid: Integer - The id for the exam, used for database i.e. 1
+  examId: Integer - The id for the exam, used for database i.e. 1
   examyear: Integer - The year the exam took place i.e. 2023
   examsemester: Interger [1 - 3] - First = 1, Second = 2, Summer = 3 i.e. 2
   examtype: String - The type of the exam i.e. Midterm
 }
 ```
 
-# /exams/:examid/questions GET
+# /exams/:examId/questions GET
 ### Description
 Gets the questions from an exam id
 ### Path params:
 | Name | Description |
 |----|----|
-| examid | Integer - The exam id REQUIRED |
+| examId | Integer - The exam id REQUIRED |
 ### Query params:
 None
 ### Responses
@@ -134,8 +134,8 @@ None
 ```
 [
   {
-    commentsid: Integer - The id for the comment, used for database i.e. 1
-    parentcommentid - The id for the parent comment used for replies, null if no parent i.e. 1
+    commentId: Integer - The id for the comment, used for database i.e. 1
+    parentCommentId - The id for the parent comment used for replies, null if no parent i.e. 1
     commenttext: String - The year the exam took place i.e. What is 2 + 2 in Python3
     commentpng: BYTEA - A picture of the exam question
     iscorrect: boolean - Is the comment correct i.e. true
@@ -161,8 +161,8 @@ None
 200 - List all exam information for one course as well as the course informatiom
 ```
 {
-  commentsid: Integer - The id for the comment, used for database i.e. 1
-  parentcommentid - The id for the parent comment used for replies, null if no parent i.e. 1
+  commentId: Integer - The id for the comment, used for database i.e. 1
+  parentCommentId - The id for the parent comment used for replies, null if no parent i.e. 1
   commenttext: String - The year the exam took place i.e. What is 2 + 2 in Python3
   commentpng: BYTEA - A picture of the exam question
   iscorrect: boolean - Is the comment correct i.e. true
