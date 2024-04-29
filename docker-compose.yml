@@ -1,10 +1,10 @@
 version: "3.8"
 
 services:
-  node:
+  backend:
     build:
       dockerfile: Dockerfile
-      context: .
+      context: ./backend
     environment:
       PORT: 8080
       DB_USER: "postgres" 
@@ -31,3 +31,15 @@ services:
       - 8081:8080
     depends_on:
       - db
+    
+        #  frontend:
+        #    build:
+        #      dockerfile: Dockerfile
+        #      context: ./frontend
+        #    environment:
+        #      PORT: 3000
+        #      BACKEND_PORT: 8080
+        #    ports:
+        #      - 3000:3000
+        #    depends_on:
+        #      - backend
