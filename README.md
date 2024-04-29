@@ -12,3 +12,6 @@ A couple o' lads n shit
 
 ## Deploy
 Run ```terraform apply```
+
+## Tests
+To run tests locally run ```npm test```
