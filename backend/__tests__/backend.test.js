@@ -3,7 +3,7 @@ const { single_nest, nest } = require("../routes/routes");
 // All tests for the nest function
 describe("nest function", () => {
   // Test when all comments are top-level (no parent)
-  test("should handle top-level comments", () => {
+  test("Should handle top-level comments", () => {
     const comments = [
       { commentId: 1, parentCommentId: null },
       { commentId: 2, parentCommentId: null },
@@ -13,7 +13,7 @@ describe("nest function", () => {
   });
 
   // Test when all comments are nested under a single parent
-  test("should handle nested comments", () => {
+  test("Should handle nested comments", () => {
     const comments = [
       { commentId: 1, parentCommentId: null },
       { commentId: 2, parentCommentId: 1 },
@@ -33,14 +33,14 @@ describe("nest function", () => {
   });
 
   // Test when the comments array is empty
-  test("should handle empty array", () => {
+  test("Should handle empty array", () => {
     const comments = [];
     const nestedComments = nest(comments);
     expect(nestedComments).toEqual([]);
   });
 
   // Test when comments are nested at multiple levels
-  test("should handle multi-level nested comments", () => {
+  test("Should handle multi-level nested comments", () => {
     const comments = [
       { commentId: 1, parentCommentId: null },
       { commentId: 2, parentCommentId: 1 },
@@ -63,7 +63,7 @@ describe("nest function", () => {
   });
 
   // Test when there are multiple top-level comments
-  test("should handle multiple top-level comments", () => {
+  test("Should handle multiple top-level comments", () => {
     const comments = [
       { commentId: 1, parentCommentId: null },
       { commentId: 2, parentCommentId: null },
@@ -83,8 +83,8 @@ describe("nest function", () => {
 
 // All tests for the single_nest function
 describe("single_nest function", () => {
-  // Test when the commentID does not exist in the comments
-  test("should handle non-existent commentID", () => {
+  // Test when the commentId does not exist in the comments
+  test("Should handle non-existent commentId", () => {
     const comments = [
       { commentId: 1, parentCommentId: null },
       { commentId: 2, parentCommentId: 1 },
@@ -93,8 +93,8 @@ describe("single_nest function", () => {
     expect(nestedComments).toEqual([]);
   });
 
-  // Test when the commentID is a top-level comment
-  test("should handle top-level commentID", () => {
+  // Test when the commentId is a top-level comment
+  test("Should handle top-level commentId", () => {
     const comments = [
       { commentId: 1, parentCommentId: null },
       { commentId: 2, parentCommentId: 1 },
@@ -109,8 +109,8 @@ describe("single_nest function", () => {
     ]);
   });
 
-  // Test when the commentID is a nested comment
-  test("should handle nested commentID", () => {
+  // Test when the commentId is a nested comment
+  test("Should handle nested commentId", () => {
     const comments = [
       { commentId: 1, parentCommentId: null },
       { commentId: 2, parentCommentId: 1 },
@@ -119,8 +119,8 @@ describe("single_nest function", () => {
     expect(nestedComments).toEqual([{ commentId: 2, parentCommentId: 1 }]);
   });
 
-  // Test when the commentID has children
-  test("should handle commentID with children", () => {
+  // Test when the commentId has children
+  test("Should handle commentId with children", () => {
     const comments = [
       { commentId: 1, parentCommentId: null },
       { commentId: 2, parentCommentId: 1 },
@@ -136,8 +136,8 @@ describe("single_nest function", () => {
     ]);
   });
 
-  // Test when the commentID is null
-  test("should handle null commentID", () => {
+  // Test when the commentId is null
+  test("Should handle null commentId", () => {
     const comments = [
       { commentId: 1, parentCommentId: null },
       { commentId: 2, parentCommentId: 1 },
@@ -147,7 +147,7 @@ describe("single_nest function", () => {
   });
 
   // Test when the comments array is empty
-  test("should handle empty array", () => {
+  test("Should handle empty array", () => {
     const comments = [];
     const nestedComments = single_nest(comments, 1);
     expect(nestedComments).toEqual([]);

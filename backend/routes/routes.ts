@@ -7,28 +7,20 @@ const { exec } = require('child_process');
 // Export Routers
 export const router = Router();
 
-// Routes
-
 /*
- * Post Requests below
- * ===================
+ * Routes
+ * ======
+ */
+/*
+ * Puts
+ * ====
  *
  * Inputs and params are described within HANDSHAKE.md
  *
  */
 
-/*
- * Deletes
- * =======
- */
-
-/*
- * Edits
- * =====
- */
-
 // Edits a question
-router.patch('/questions/:questionId/edit', async (req: Request, res: Response) => {
+router.put('/questions/:questionId/edit', async (req: Request, res: Response) => {
     const questionId = req.params.questionId
     const { questionText, questionType, questionPNG } = req.body;
     await db.query(`
@@ -40,21 +32,29 @@ router.patch('/questions/:questionId/edit', async (req: Request, res: Response) 
 });
 
 // Deletes a comment
-router.post('/comments/:commentId/delete', async (req: Request, res: Response) => {
+router.put('/comments/:commentId/delete', async (req: Request, res: Response) => {
     const commentId = req.params.commentId;
     editComment(+commentId, '', '');
     res.status(200).json('Comment Deleted!');
 });
 
 // Edits a comment
-router.post('/comments/:commentId/edit', async (req: Request, res: Response) => {
+router.put('/comments/:commentId/edit', async (req: Request, res: Response) => {
     const commentId = req.params.commentId;
     editComment(+commentId, req.body.commentText, req.body.commentPNG);
     res.status(200).json('Comment Edited!');
 });
 
+/*
+ * Patches
+ * =======
+ *
+ * Inputs and params are described within HANDSHAKE.md
+ *
+ */
+
 // Sets a comment as correct
-router.post('/comments/:commentId/correct', async (req: Request, res: Response) => {
+router.patch('/comments/:commentId/correct', async (req: Request, res: Response) => {
     const commentId = req.params.commentId;
     await db.query(`
     UPDATE comments
@@ -65,7 +65,7 @@ router.post('/comments/:commentId/correct', async (req: Request, res: Response) 
 });
 
 // Endorses a comment
-router.post('/comments/:commentId/endorse', async (req: Request, res: Response) => {
+router.patch('/comments/:commentId/endorse', async (req: Request, res: Response) => {
     const commentId = req.params.commentId;
     await db.query(`
     UPDATE comments
@@ -76,7 +76,7 @@ router.post('/comments/:commentId/endorse', async (req: Request, res: Response) 
 });
 
 // Downvotes a comment
-router.post('/comments/:commentId/downvote', async (req: Request, res: Response) => {
+router.patch('/comments/:commentId/downvote', async (req: Request, res: Response) => {
     const commentId = req.params.commentId;
     await db.query(`
     UPDATE comments
@@ -87,7 +87,7 @@ router.post('/comments/:commentId/downvote', async (req: Request, res: Response)
 });
 
 // Upvotes a comment
-router.post('/comments/:commentId/upvote', async (req: Request, res: Response) => {
+router.patch('/comments/:commentId/upvote', async (req: Request, res: Response) => {
     const commentId = req.params.commentId;
     await db.query(`
     UPDATE comments
@@ -98,8 +98,11 @@ router.post('/comments/:commentId/upvote', async (req: Request, res: Response) =
 });
 
 /*
- * Adds
- * =====
+ * Post Requests below
+ * ===================
+ *
+ * Inputs and params are described within HANDSHAKE.md
+ *
  */
 
 // Adds a new comment to the database
