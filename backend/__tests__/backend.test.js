@@ -83,8 +83,8 @@ describe("nest function", () => {
 
 // All tests for the single_nest function
 describe("single_nest function", () => {
-  // Test when the commentID does not exist in the comments
-  test("Should handle non-existent commentID", () => {
+  // Test when the commentId does not exist in the comments
+  test("Should handle non-existent commentId", () => {
     const comments = [
       { commentId: 1, parentCommentId: null },
       { commentId: 2, parentCommentId: 1 },
@@ -93,8 +93,8 @@ describe("single_nest function", () => {
     expect(nestedComments).toEqual([]);
   });
 
-  // Test when the commentID is a top-level comment
-  test("Should handle top-level commentID", () => {
+  // Test when the commentId is a top-level comment
+  test("Should handle top-level commentId", () => {
     const comments = [
       { commentId: 1, parentCommentId: null },
       { commentId: 2, parentCommentId: 1 },
@@ -109,8 +109,8 @@ describe("single_nest function", () => {
     ]);
   });
 
-  // Test when the commentID is a nested comment
-  test("Should handle nested commentID", () => {
+  // Test when the commentId is a nested comment
+  test("Should handle nested commentId", () => {
     const comments = [
       { commentId: 1, parentCommentId: null },
       { commentId: 2, parentCommentId: 1 },
@@ -119,8 +119,8 @@ describe("single_nest function", () => {
     expect(nestedComments).toEqual([{ commentId: 2, parentCommentId: 1 }]);
   });
 
-  // Test when the commentID has children
-  test("Should handle commentID with children", () => {
+  // Test when the commentId has children
+  test("Should handle commentId with children", () => {
     const comments = [
       { commentId: 1, parentCommentId: null },
       { commentId: 2, parentCommentId: 1 },
@@ -136,8 +136,8 @@ describe("single_nest function", () => {
     ]);
   });
 
-  // Test when the commentID is null
-  test("Should handle null commentID", () => {
+  // Test when the commentId is null
+  test("Should handle null commentId", () => {
     const comments = [
       { commentId: 1, parentCommentId: null },
       { commentId: 2, parentCommentId: 1 },
