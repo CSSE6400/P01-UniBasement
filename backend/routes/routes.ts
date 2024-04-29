@@ -9,22 +9,13 @@ export const router = Router();
 
 // Routes
 
+
 /*
- * Post Requests below
- * ===================
+ * Puts
+ * ====
  *
  * Inputs and params are described within HANDSHAKE.md
  *
- */
-
-/*
- * Deletes
- * =======
- */
-
-/*
- * Edits
- * =====
  */
 
 // Edits a question
@@ -52,6 +43,14 @@ router.put('/comments/:commentId/edit', async (req: Request, res: Response) => {
     editComment(+commentId, req.body.commentText, req.body.commentPNG);
     res.status(200).json('Comment Edited!');
 });
+
+/*
+ * Patches
+ * =======
+ *
+ * Inputs and params are described within HANDSHAKE.md
+ *
+ */
 
 // Sets a comment as correct
 router.patch('/comments/:commentId/correct', async (req: Request, res: Response) => {
@@ -98,8 +97,11 @@ router.patch('/comments/:commentId/upvote', async (req: Request, res: Response) 
 });
 
 /*
- * Adds
- * =====
+ * Post Requests below
+ * ===================
+ *
+ * Inputs and params are described within HANDSHAKE.md
+ *
  */
 
 // Adds a new comment to the database
