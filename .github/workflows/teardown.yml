@@ -3,14 +3,8 @@ name: Manual AWS Teardown
 on:
   workflow_dispatch:
     inputs:
-      awsAccessKeyId:
-        description: 'AWS Access Key ID'
-        required: true
-      awsSecretAccessKey:
-        description: 'AWS Secret Access Key'
-        required: true
-      awsSessionToken:
-        description: 'AWS Session Token'
+      awsCredentials:
+        description: 'AWS Credentials'
         required: true
 
 jobs:
@@ -25,14 +19,10 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: 20.x
-
+        
     - name: Teardown to AWS
       run: |
-      run: |
-        echo "::add-mask::${{ github.event.inputs.awsAccessKeyId }}"
-        echo "::add-mask::${{ github.event.inputs.awsSecretAccessKey }}"
-        echo "::add-mask::${{ github.event.inputs.awsSessionToken }}"
-        export AWS_ACCESS_KEY_ID=${{ github.event.inputs.awsAccessKeyId }}
-        export AWS_SECRET_ACCESS_KEY=${{ github.event.inputs.awsSecretAccessKey }}
-        export AWS_SESSION_TOKEN=${{ github.event.inputs.awsSessionToken }}
+        echo "${{ github.event.inputs.awsCredentials }}" > credentials.txt
+        export $(cat credentials.txt | xargs)
+        rm credentials.txt
         ./teardown.sh
