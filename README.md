@@ -8,9 +8,7 @@ UniBasement is designed to empower students to understand the concepts in a deep
 
 ## What Does UniBasement Do?
 
-Test preparations is one of the most arduous times of University; the stress and struggle of having an upcoming test but having no answers for past exam papers. This not only creates stress for the students preparing for the exam, but it creates additional work for the teaching staff. UniBasement is an open-source platform to connect university students with past exam answers to ensure that they can improve the efficacy of their study!
-
-UniBasement is designed to empower students to understand the concepts in a deeper manner, at the forefront of the platform is the desire to enable students to have a deeper understanding of the content they are taught and to work with their peers to develop their collective understanding. Within the modern world, studying is more than ever stressful and makes student anxious, easy access to materials to enable students to study in a more effective manner is essential and UniBasement intends to make studying for final exams an easier affair.
+UniBasement transforms the way students prepare for exams. It allows students to post answers to past exam questions, fostering a community-driven learning environment. Other users can upvote or downvote these answers, ensuring the most accurate and helpful responses rise to the top. This interactive approach makes studying more efficient and promotes a deeper understanding of the subject matter. With UniBasement, exam preparation becomes a less daunting and more collaborative process.
 
 ## Authors
 
