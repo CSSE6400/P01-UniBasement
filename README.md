@@ -14,7 +14,23 @@ UniBasement is designed to empower students to understand the concepts in a deep
 
 ## Authors
 
-Evan Hughes FanClub
+This project is brought to you by the Evan Hughes FanClub. Our team consists of:
+
+### Frontend
+
+- [Olivia Ronda](https://github.com/vilnor)
+- [Pramith Kodalli](https://github.com/PramithKodali)
+- [Tristan Duncombe](https://github.com/tristanduncombe)
+
+### Backend
+
+- [Shanon Lakshan Chandrasekara](https://github.com/86LAK)
+- [Jackson Trenarry](https://github.com/JTrenarry)
+- [Ibrahim Cassim](https://github.com/IbrahimCassim)
+
+### DevOps
+
+- [Shanon Lakshan Chandrasekara](https://github.com/86LAK)
 
 ## Deployment
 
