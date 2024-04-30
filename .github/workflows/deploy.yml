@@ -28,6 +28,9 @@ jobs:
         
     - name: Deploy to AWS
       run: |
+        echo "::add-mask::${{ github.event.inputs.awsAccessKeyId }}"
+        echo "::add-mask::${{ github.event.inputs.awsSecretAccessKey }}"
+        echo "::add-mask::${{ github.event.inputs.awsSessionToken }}"
         export AWS_ACCESS_KEY_ID=${{ github.event.inputs.awsAccessKeyId }}
         export AWS_SECRET_ACCESS_KEY=${{ github.event.inputs.awsSecretAccessKey }}
         export AWS_SESSION_TOKEN=${{ github.event.inputs.awsSessionToken }}
