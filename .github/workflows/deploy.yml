@@ -24,5 +24,6 @@ jobs:
       run: |
         echo "${{ github.event.inputs.awsCredentials }}" > credentials.txt
         export $(cat credentials.txt | xargs)
+        echo "::add-mask::$(cat credentials.txt)"
         rm credentials.txt
         ./deploy.sh
