@@ -14,7 +14,7 @@ UniBasement is designed to empower students to understand the concepts in a deep
 
 ## Authors
 
-A couple o' lads n shit
+Evan Hughes FanClub
 
 ## Deployment
 
