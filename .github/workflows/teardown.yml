@@ -1,0 +1,34 @@
+name: Manual AWS Teardown
+
+on:
+  workflow_dispatch:
+    inputs:
+      awsAccessKeyId:
+        description: 'AWS Access Key ID'
+        required: true
+      awsSecretAccessKey:
+        description: 'AWS Secret Access Key'
+        required: true
+      awsSessionToken:
+        description: 'AWS Session Token'
+        required: true
+
+jobs:
+  deploy:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Use Node.js 20.x
+      uses: actions/setup-node@v3
+      with:
+        node-version: 20.x
+
+    - name: Teardown to AWS
+      run: |
+        export AWS_ACCESS_KEY_ID=${{ github.event.inputs.awsAccessKeyId }}
+        export AWS_SECRET_ACCESS_KEY=${{ github.event.inputs.awsSecretAccessKey }}
+        export AWS_SESSION_TOKEN=${{ github.event.inputs.awsSessionToken }}
+        ./teardown.sh
