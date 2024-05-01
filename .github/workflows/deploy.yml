@@ -21,5 +21,8 @@ jobs:
     - name: Deploy to AWS
       run: |
         echo "::add-mask::${{ github.event.inputs.awsCredentials }}"
+        echo "${{ github.event.inputs.awsCredentials }}" > credentials.txt
+        export $(cat credentials.txt | xargs)
+        rm credentials.txt
         terraform init
         terraform apply -auto-approve
