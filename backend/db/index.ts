@@ -22,7 +22,7 @@ export const setupTables = () => {
 
      CREATE TABLE IF NOT EXISTS exams (
         "examId" SERIAL PRIMARY KEY,
-        "courseCode" VARCHAR(8) REFERENCES courses(courseCode),
+        "courseCode" VARCHAR(8) REFERENCES courses("courseCode"),
         "examYear" INTEGER, 
         "examSemester" Integer, 
         "examType" VARCHAR(20)
@@ -30,15 +30,15 @@ export const setupTables = () => {
     
     CREATE TABLE IF NOT EXISTS questions (
         "questionId" SERIAL PRIMARY KEY,
-        "examId" INTEGER REFERENCES exams(examId),
+        "examId" INTEGER REFERENCES exams("examId"),
         "questionText" TEXT,
-        "questionPng" BYTEA, 
+        "questionPNG" BYTEA, 
         "questionType" VARCHAR(20)
     );
 
     CREATE TABLE IF NOT EXISTS comments (
         "commentId" SERIAL PRIMARY KEY,
-        "questionId" INTEGER REFERENCES questions(questionID),
+        "questionId" INTEGER REFERENCES questions("questionId"),
         "parentCommentId" INTEGER,
 
         "commentText" TEXT,
