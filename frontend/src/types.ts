@@ -17,3 +17,17 @@ export type Question = {
     questionType: string
     questionPng: string
 }
+
+export type Comment = {
+    commentId: number
+    parentCommentId: number | null
+    commentText: string
+    commentPNG: string | null
+    isCorrect: boolean
+    isEndorsed: boolean
+    upvotes: number
+    downvotes: number
+    created_at: string
+    updated_at: string
+    children?: Comment[]
+}
