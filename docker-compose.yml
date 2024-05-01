@@ -31,15 +31,20 @@ services:
       - 8081:8080
     depends_on:
       - db
-    
-        #  frontend:
-        #    build:
-        #      dockerfile: Dockerfile
-        #      context: ./frontend
-        #    environment:
-        #      PORT: 3000
-        #      BACKEND_PORT: 8080
-        #    ports:
-        #      - 3000:3000
-        #    depends_on:
-        #      - backend
+
+
+  frontend:
+    build:
+      dockerfile: Dockerfile
+      context: ./frontend
+    restart: always
+    volumes:
+      - ./frontend/src:/app/src
+      - /app/node_modules
+      - /app/.next
+    environment:
+      NEXT_PUBLIC_API_URL: "http://localhost:8080"
+    ports:
+      - 3000:3000
+    depends_on:
+      - backend
