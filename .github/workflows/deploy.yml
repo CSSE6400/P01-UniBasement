@@ -18,19 +18,17 @@ jobs:
       with:
         node-version: 20.x
 
-    - uses: levibostian/action-hide-sensitive-inputs@v1
+    - name: Mask sensitive inputs
+      uses: levibostian/action-hide-sensitive-inputs@v1
 
     - name: Set AWS Credentials as Environment Variables and Save to File
       run: |
         echo "$AWS_CREDENTIALS" > credentials.txt
-        export AWS_ACCESS_KEY_ID=$(awk 'NR==1' credentials.txt)
-        export AWS_SECRET_ACCESS_KEY=$(awk 'NR==2' credentials.txt)
-        export AWS_SESSION_TOKEN=$(awk 'NR==3' credentials.txt)
-
-    - name: Deploy to AWS
-      run: |
         export AWS_ACCESS_KEY_ID=$(grep -oP '(?<=AWS_ACCESS_KEY_ID=)\S+' credentials.txt)
         export AWS_SECRET_ACCESS_KEY=$(grep -oP '(?<=AWS_SECRET_ACCESS_KEY=)\S+' credentials.txt)
         export AWS_SESSION_TOKEN=$(grep -oP '(?<=AWS_SESSION_TOKEN=)\S+' credentials.txt)
+
+    - name: Deploy to AWS
+      run: |
         terraform init
         terraform apply -auto-approve
