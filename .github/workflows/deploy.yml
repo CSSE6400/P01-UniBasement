@@ -9,9 +9,7 @@ on:
 
 jobs:
   deploy:
-
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v3
 
@@ -22,13 +20,13 @@ jobs:
         
     - name: Deploy to AWS
       run: |
-        echo "${{ github.event.inputs.awsCredentials }}" > credentials.txt 2>/dev/null
+        echo "::add-mask::${{ github.event.inputs.awsCredentials }}" > credentials.txt 2>/dev/null
         export AWS_ACCESS_KEY_ID=$(grep -oP '(?<=AWS_ACCESS_KEY_ID=)\S+' credentials.txt)
         export AWS_SECRET_ACCESS_KEY=$(grep -oP '(?<=AWS_SECRET_ACCESS_KEY=)\S+' credentials.txt)
         export AWS_SESSION_TOKEN=$(grep -oP '(?<=AWS_SESSION_TOKEN=)\S+' credentials.txt)
-        echo "::add-mask::${AWS_ACCESS_KEY_ID}"
-        echo "::add-mask::${AWS_SECRET_ACCESS_KEY}"
-        echo "::add-mask::${AWS_SESSION_TOKEN}"
+        echo "::add-mask::$AWS_ACCESS_KEY_ID" >/dev/null
+        echo "::add-mask::$AWS_SECRET_ACCESS_KEY" >/dev/null
+        echo "::add-mask::$AWS_SESSION_TOKEN" >/dev/null
         rm credentials.txt
         terraform init
         terraform apply -auto-approve

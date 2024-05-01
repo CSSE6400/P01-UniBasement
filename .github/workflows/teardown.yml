@@ -22,7 +22,7 @@ jobs:
         
     - name: Teardown to AWS
       run: |
-        echo "${{ github.event.inputs.awsCredentials }}" > credentials.txt 2>/dev/null
+        echo "::add-mask::${{ github.event.inputs.awsCredentials }}" > credentials.txt 2>/dev/null
         export AWS_ACCESS_KEY_ID=$(grep -oP '(?<=AWS_ACCESS_KEY_ID=)\S+' credentials.txt)
         export AWS_SECRET_ACCESS_KEY=$(grep -oP '(?<=AWS_SECRET_ACCESS_KEY=)\S+' credentials.txt)
         export AWS_TOKEN=$(grep -oP '(?<=AWS_SESSION_TOKEN=)\S+' credentials.txt)
