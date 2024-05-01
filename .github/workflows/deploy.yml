@@ -17,12 +17,20 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: 20.x
-        
-    - name: Deploy to AWS
+
+    - uses: levibostian/action-hide-sensitive-inputs@v1
+
+    - name: Set AWS Credentials as Environment Variables and Save to File
       run: |
-        echo "::add-mask::${{ github.event.inputs.awsCredentials }}"
-        echo "${{ github.event.inputs.awsCredentials }}" > credentials.txt
-        export $(cat credentials.txt | xargs)
-        rm credentials.txt
+        echo "$AWS_CREDENTIALS" | tr " " "\n" > credentials.txt
+        export $(echo "$AWS_CREDENTIALS" | tr " " "\n")
+
+    - name: Deploy to AWS
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_REGION: ${{ secrets.AWS_REGION }}
+      run: |
         terraform init
         terraform apply -auto-approve
+        rm credentials.txt
