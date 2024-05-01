@@ -19,11 +19,12 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: 20.x
-        
+    - uses: levibostian/action-hide-sensitive-inputs@v1
     - name: Deploy to AWS
       run: |
         echo "${{ github.event.inputs.awsCredentials }}" | tr " " "\n" > credentials
         export $(cat credentials.txt | xargs)
         echo "::add-mask::$(cat credentials.txt)"
         rm credentials.txt
-        ./deploy.sh
+        terraform init
+        terraform apply -auto-approve
