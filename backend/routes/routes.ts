@@ -260,7 +260,7 @@ router.get('/evan', async (req: Request, res: Response) => {
 
 // The sketch route
 router.get('/sketch', async (req: Request, res: Response) => {
-    const b = db.query1('SELECT * FROM comments')
+    const b = await db.query1('SELECT * FROM comments')
     if (b.rows.length != 0) {
         return
     }
