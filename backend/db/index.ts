@@ -15,43 +15,41 @@ const pool = new Pool({
 export const setupTables = () => {
      const query = `
      CREATE TABLE IF NOT EXISTS courses (
-        courseCode VARCHAR(8) PRIMARY KEY,
-        courseName VARCHAR(100),
-        courseDescription TEXT
+        "courseCode" VARCHAR(8) PRIMARY KEY,
+        "courseName" VARCHAR(100),
+        "courseDescription" TEXT
     );
 
      CREATE TABLE IF NOT EXISTS exams (
-        examId SERIAL PRIMARY KEY,
-        courseCode VARCHAR(8) REFERENCES courses(courseCode),
-        examYear INTEGER, 
-        examSemester Integer, 
-        examType VARCHAR(20)
+        "examId" SERIAL PRIMARY KEY,
+        "courseCode" VARCHAR(8) REFERENCES courses("courseCode"),
+        "examYear" INTEGER, 
+        "examSemester" Integer, 
+        "examType" VARCHAR(20)
     );
     
     CREATE TABLE IF NOT EXISTS questions (
-        questionId SERIAL PRIMARY KEY,
-        examId INTEGER REFERENCES exams(examId),
-        questionText TEXT,
-        questionPng BYTEA, 
-        questionType VARCHAR(20)
+        "questionId" SERIAL PRIMARY KEY,
+        "examId" INTEGER REFERENCES exams("examId"),
+        "questionText" TEXT,
+        "questionPNG" BYTEA, 
+        "questionType" VARCHAR(20)
     );
 
     CREATE TABLE IF NOT EXISTS comments (
-        commentId SERIAL PRIMARY KEY,
-        questionId INTEGER REFERENCES questions(questionID),
-        parentCommentId INTEGER,
+        "commentId" SERIAL PRIMARY KEY,
+        "questionId" INTEGER REFERENCES questions("questionId"),
+        "parentCommentId" INTEGER,
 
-        commentText TEXT,
-        commentPNG BYTEA, 
-        
-        isCorrect BOOLEAN NOT NULL DEFAULT FALSE,
-        isEndorsed BOOLEAN NOT NULL DEFAULT FALSE,
-        
-        upvotes INTEGER NOT NULL DEFAULT 0,
-        downvotes INTEGER NOT NULL DEFAULT 0,
+        "commentText" TEXT,
+        "commentPNG" BYTEA, 
+        "isCorrect" BOOLEAN NOT NULL DEFAULT FALSE,
+        "isEndorsed" BOOLEAN NOT NULL DEFAULT FALSE,
+        "upvotes" INTEGER NOT NULL DEFAULT 0,
+        "downvotes" INTEGER NOT NULL DEFAULT 0,
 
-        created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-        updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+        "created_at" TIMESTAMP NOT NULL DEFAULT NOW(),
+        "updated_at" TIMESTAMP NOT NULL DEFAULT NOW()
     );`;  
     pool.query(query);
 }
