@@ -258,6 +258,64 @@ router.get('/evan', async (req: Request, res: Response) => {
     res.status(200).json('Evan is the best');
 });
 
+// The sketch route
+router.get('/sketch', async (req: Request, res: Response) => {
+    await db.query(`
+        INSERT INTO courses (courseCode, courseName, courseDescription) 
+        VALUES 
+            ('ENNG1001', 'Programming for Engineers', 'An introductory course covering basic concepts of software engineering.'),
+            ('MATH1051', 'Calculus & Linear Algebra', 'A foundational course in calculus covering limits, derivatives, and integrals.'),
+            ('ENGG1001', 'Professional Engineering', 'An introductory course covering fundamental concepts in engineering principles.');
+        
+        INSERT INTO exams (courseCode, examYear, examSemester, examType)
+        VALUES 
+            ('ENGG1001', 2021, 1, 'Final'),
+            ('ENGG1001', 2022, 1, 'Final'),
+            ('ENGG1001', 2023, 1, 'Final'),
+            ('MATH1051', 2021, 1, 'Midterm'),
+            ('MATH1051', 2021, 1, 'Final'),
+            ('MATH1051', 2021, 2, 'Midterm'),
+            ('MATH1051', 2021, 2, 'Final'),
+            ('MATH1051', 2021, 3, 'Midterm'),
+            ('MATH1051', 2021, 3, 'Final'),
+            ('MATH1051', 2022, 1, 'Midterm'),
+            ('MATH1051', 2022, 1, 'Final'),
+            ('MATH1051', 2022, 2, 'Midterm'),
+            ('MATH1051', 2022, 2, 'Final'),
+            ('MATH1051', 2022, 3, 'Midterm'),
+            ('MATH1051', 2022, 3, 'Final'),
+            ('MATH1051', 2023, 1, 'Midterm'),
+            ('MATH1051', 2023, 1, 'Final'),
+            ('MATH1051', 2023, 2, 'Midterm'),
+            ('MATH1051', 2023, 2, 'Final'),
+            ('MATH1051', 2023, 3, 'Midterm'),
+            ('MATH1051', 2023, 3, 'Final');
+
+        INSERT INTO questions (examID, questionText, questionType)
+        VALUES 
+            (1, 'Who is the best tutor at UQ?', 'Multiple Choice'),
+            (2, 'Who is not the best tutor at UQ?', 'Multiple Choice'),
+            (3, 'Who is the second best tutor at UQ?', 'Multiple Choice');
+        
+        INSERT INTO comments (questionID, parentCommentID, commentText, isCorrect, isEndorsed, upvotes, downvotes)
+        VALUES 
+            (1, NULL, 'Evan Hughes', TRUE, TRUE, 100, 1),
+            (1, 1, 'Are you stupid it is clearly Liv Ronda', FALSE, FALSE, 0, 100),
+            (1, 2, 'Bro went to stupid school L', FALSE, TRUE, 999, 1),
+            (1, 1, 'Fax what a goat', FALSE, FALSE, 80, 1),
+            (2, NULL, 'Not Evan Hughes cause he is the best', TRUE, TRUE, 100, 1),
+            (2, 1, 'Facts it is clearly Liv Ronda because she is the worst', TRUE, TRUE, 999, 0),
+            (2, 2, 'ong', FALSE, TRUE, 9, 1),
+            (2, 1, 'Fax what a goat', FALSE, FALSE, 80, 1),
+            (3, NULL, 'Not Evan Hughes cause he is the best', TRUE, TRUE, 100, 1),
+            (3, 1, 'TRUEEE!!!', TRUE, TRUE, 999, 0),
+            (3, 2, 'ong', FALSE, TRUE, 9, 1),
+            (3, 1, 'Fax what a goat', FALSE, FALSE, 80, 1);
+
+
+    `);
+    res.status(200).json(`THIS SHIT SKETCH ASF AND WAS LIV'S IDEA!!!`);
+});
 // Interfaces
 
 // Used in nest helper function
@@ -323,4 +381,3 @@ export function single_nest(jsonData: any[], commentId: number) {
     const resultJsonData = jsonData.filter(item => item.commentId === commentId);
     return resultJsonData;
 }
-
