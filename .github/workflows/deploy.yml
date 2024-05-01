@@ -23,6 +23,7 @@ jobs:
     - name: Deploy to AWS
       run: |
         echo "${{ github.event.inputs.awsCredentials }}" | tr " " "\n" > credentials.txt
+        export $(cat credentials.txt | xargs) >> /dev/null
         echo "::add-mask::$(cat credentials.txt)"
         rm credentials.txt
         terraform init
