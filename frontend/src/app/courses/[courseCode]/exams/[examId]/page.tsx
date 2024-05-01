@@ -9,17 +9,17 @@ export default function Exam({ params }: { params: { courseCode: string, examId:
 
     return (
         <main>
-            <h1>{`${params.courseCode} ${exam?.examtype}`}</h1>
-            <h2>{`${exam?.examyear} Semester ${exam?.examsemester}`}</h2>
+            <h1>{`${params.courseCode} ${exam?.examType}`}</h1>
+            <h2>{`${exam?.examYear} Semester ${exam?.examSemester}`}</h2>
             {isLoadingQuestions && <p>Loading...</p>}
             {!isErrorQuestions && !isLoadingQuestions && questions?.map(question => (
                 <>
                     <hr />
-                    <div key={question.questionid}>
-                        <Link href={`/courses/${params.courseCode}/exams/${question.questionid}`}>
-                            <h2>{question.questiontype}</h2>
+                    <div key={question.questionId}>
+                        <Link href={`/courses/${params.courseCode}/exams/${params.examId}/${question.questionId}`}>
+                            <h2>{question.questionType}</h2>
                         </Link>
-                        <p>{question.questiontext}</p>
+                        <p>{question.questionText}</p>
                     </div>
                 </>
                 ))
