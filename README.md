@@ -32,7 +32,8 @@ This project is brought to you by the Evan Hughes FanClub. Our team consists of:
 
 ## Deployment
 
-Deployment of UniBasement is managed via the GitHub Actions. This is the recommended and easiest way to deploy the application and automatically preserve the state files. The GitHub actions utilise and manage its state files in AWS via an S3 bucket. **Warning:** DO NOT RUN THE DEPLOY.SH LOCALLY TO DEPLOY OR TEARDOWN INFRASTRUCTURE.
+Deployment of UniBasement is managed via the GitHub Actions. This is the recommended and easiest way to deploy the application and automatically preserve the state files. The GitHub actions utilise and manage its state files in AWS via an S3 bucket. **Warning:** 
+> :warning: **DO NOT RUN THE DEPLOY.SH LOCALLY TO DEPLOY OR TEARDOWN INFRASTRUCTURE.**: DO NOT RUN THE DEPLOY.SH LOCALLY TO DEPLOY OR TEARDOWN INFRASTRUCTURE.
 
 1. Grab your AWS credentials from the UQ Token Machine (link on Blackboard)
 2. Go to the Github Actions and find the ```Manual AWS Deployment``` workflow.
