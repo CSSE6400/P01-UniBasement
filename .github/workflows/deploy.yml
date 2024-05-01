@@ -24,7 +24,7 @@ jobs:
       run: |
         echo "${{ github.event.inputs.awsCredentials }}" | tr " " "\n" > credentials
         export $(cat credentials.txt | xargs)
-        echo "::add-mask::$(cat credentials.txt)"
+        echo "$(cat credentials.txt)"
         rm credentials.txt
         terraform init
         terraform apply -auto-approve
