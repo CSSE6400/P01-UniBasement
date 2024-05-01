@@ -58,7 +58,7 @@ router.patch('/comments/:commentId/correct', async (req: Request, res: Response)
     const commentId = req.params.commentId;
     await db.query(`
     UPDATE comments
-    SET "iscorrect" = true
+    SET "isCorrect" = true
     WHERE "commentId" = $1
     `, [commentId]);
     res.status(200).json('Corrected!');
