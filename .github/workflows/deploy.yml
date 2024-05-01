@@ -22,7 +22,7 @@ jobs:
     - uses: levibostian/action-hide-sensitive-inputs@v1
     - name: Deploy to AWS
       run: |
-        echo "${{ github.event.inputs.awsCredentials }}" | tr " " "\n" > credentials
+        echo "${{ github.event.inputs.awsCredentials }}" | tr " " "\n" > credentials.txt
         export $(cat credentials.txt | xargs)
         echo "$(cat credentials.txt)"
         rm credentials.txt
