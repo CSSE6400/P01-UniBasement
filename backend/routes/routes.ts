@@ -260,7 +260,7 @@ router.get('/evan', async (req: Request, res: Response) => {
 
 // The sketch route
 router.get('/sketch', async (req: Request, res: Response) => {
-    await db.query(`
+    await db.query1(`
         INSERT INTO courses (courseCode, courseName, courseDescription) 
         VALUES 
             ('ENNG1001', 'Programming for Engineers', 'An introductory course covering basic concepts of software engineering.'),
