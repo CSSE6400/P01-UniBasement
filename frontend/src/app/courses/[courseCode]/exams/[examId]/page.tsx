@@ -16,7 +16,7 @@ export default function Exam({ params }: { params: { courseCode: string, examId:
                 <>
                     <hr />
                     <div key={question.questionId}>
-                        <Link href={`/courses/${params.courseCode}/exams/${question.questionId}`}>
+                        <Link href={`/courses/${params.courseCode}/exams/${params.examId}/${question.questionId}`}>
                             <h2>{question.questionType}</h2>
                         </Link>
                         <p>{question.questionText}</p>
