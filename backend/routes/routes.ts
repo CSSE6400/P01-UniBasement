@@ -260,6 +260,11 @@ router.get('/evan', async (req: Request, res: Response) => {
 
 // The sketch route
 router.get('/sketch', async (req: Request, res: Response) => {
+    const b = db.query('SELECT * FROM comments')
+    if (b.rows.length != 0) {
+        return
+    }
+
     await db.query1(`
         INSERT INTO courses ("courseCode", "courseName", "courseDescription") 
         VALUES 
