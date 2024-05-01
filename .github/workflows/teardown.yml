@@ -26,4 +26,5 @@ jobs:
         export $(cat credentials.txt | xargs)
         echo "::add-mask::$(cat credentials.txt)"
         rm credentials.txt
-        ./teardown.sh
+        terraform init
+        terraform destroy -auto-approve
