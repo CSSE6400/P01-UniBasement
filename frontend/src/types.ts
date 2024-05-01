@@ -15,7 +15,7 @@ export type Question = {
     questionId: number
     questionText: string
     questionType: string
-    questionPng: string
+    questionPNG: string
 }
 
 export type Comment = {
