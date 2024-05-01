@@ -260,7 +260,7 @@ router.get('/evan', async (req: Request, res: Response) => {
 
 // The sketch route
 router.get('/sketch', async (req: Request, res: Response) => {
-    const b = await db.query1('SELECT * FROM comments')
+    const b = await db.query1('SELECT * FROM ')
     if (b.rows.length != 0) {
         return
     }
@@ -270,7 +270,7 @@ router.get('/sketch', async (req: Request, res: Response) => {
         VALUES 
             ('ENGG1001', 'Programming for Engineers', 'An introductory course covering basic concepts of software engineering.'),
             ('MATH1051', 'Calculus & Linear Algebra', 'A foundational course in calculus covering limits, derivatives, and integrals.'),
-            ('ENGG1001', 'Professional Engineering', 'An introductory course covering fundamental concepts in engineering principles.');
+            ('ENGG1100', 'Professional Engineering', 'An introductory course covering fundamental concepts in engineering principles.');
         
         INSERT INTO exams ("courseCode", "examYear", "examSemester", "examType")
         VALUES 
