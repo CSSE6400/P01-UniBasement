@@ -9,11 +9,11 @@ export default function CourseProfile({ params }: { params: { courseCode: string
         <main>
             {isLoading && <p>Loading...</p>}
             {!isError && !isLoading && (
-                <div key={course!.coursecode}>
-                    <Link href={`/courses/${course!.coursecode}/course-profile`}>
-                        <h2>{course!.coursecode} | {course!.coursename}</h2>
+                <div key={course!.courseCode}>
+                    <Link href={`/courses/${course!.courseCode}/course-profile`}>
+                        <h2>{course!.courseCode} | {course!.courseName}</h2>
                     </Link>
-                    <p>{course!.coursedescription}</p>
+                    <p>{course!.courseDescription}</p>
                 </div>
             )}
         </main>
