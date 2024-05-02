@@ -253,7 +253,7 @@ router.post('/questions', async (req: Request<any, any, QuestionBodyParams>, res
         return;
     }
 
-    const { rowCount } = await db.query(`SELECT "examId" exams WHERE "examId" = $1`, [examId]);
+    const { rowCount } = await db.query(`SELECT "examId" FROM exams WHERE "examId" = $1`, [examId]);
     if (rowCount === 0) {
         res.status(404).json('Exam not found!');
         return;
@@ -267,7 +267,7 @@ router.post('/questions', async (req: Request<any, any, QuestionBodyParams>, res
     res.status(201).json('Question Added!');
 });
 
-// Adds a new exam to the databasecustomersscustomerss
+// Adds a new exam to the database
 router.post('/exams', async (req: Request<any, any, ExamBodyParams>, res: Response) => {
     const {
         examYear,
@@ -278,13 +278,13 @@ router.post('/exams', async (req: Request<any, any, ExamBodyParams>, res: Respon
 
     // Check key
     if (!courseCode) {
-        res.status(400).json('Missing courseCode!');
+        res.status(400).json('Missing courseCode');
         return;
     }
 
-    const { rowCount } = await db.query(`SELECT "courseCode" courses WHERE "courseCode" = $1`, [courseCode]);
+    const { rowCount } = await db.query(`SELECT "courseCode" FROM courses WHERE "courseCode" = $1`, [courseCode]);
     if (rowCount === 0) {
-        res.status(404).json('Exam not found!');
+        res.status(404).json('Course not found');
         return;
     }
 
@@ -293,29 +293,34 @@ router.post('/exams', async (req: Request<any, any, ExamBodyParams>, res: Respon
     VALUES ($1, $2, $3, $4)
     `, [examYear, examSemester, examType, courseCode]);
 
-    res.status(201).json('Exam Added!');
+    res.status(201).json('Exam created');
 });
 
 // Adds a new Course to the database
 router.post('/courses', async (req: Request<any, any, CourseBodyParams>, res: Response) => {
-    const {
-        courseCode,
-        courseName,
-        courseDescription,
-    } = req.body;
+  const {
+      courseCode,
+      courseName,
+      courseDescription,
+  } = req.body;
 
-    const { rowCount } = await db.query(`SELECT courseCode FROM courses WHERE courseCode = $1`, [courseCode]);
-    if (rowCount !== 0) {
-        res.status(400).json('Course already exists!');
-        return;
-    }
+  if (!courseCode) {
+      res.status(400).json('Course Code is required');
+      return;
+  }
 
-    await db.query(`
-    INSERT INTO courses ("courseCode", "courseName", "courseDescription")
-    VALUES ($1, $2, $3)
-    `, [courseCode, courseName, courseDescription]);
+  const { rowCount } = await db.query(`SELECT "courseCode" FROM courses WHERE "courseCode" = $1`, [courseCode]);
+  if (rowCount !== 0) {
+      res.status(409).json('Course Code already exists');
+      return;
+  }
 
-    res.status(201).json('Course Added!');
+  await db.query(`
+  INSERT INTO courses ("courseCode", "courseName", "courseDescription")
+  VALUES ($1, $2, $3)
+  `, [courseCode, courseName, courseDescription]);
+
+  res.status(201).json('Course Added!');
 });
 
 /*
@@ -367,28 +372,39 @@ router.get('/questions/:questionId', async (req: Request<QuestionRouteParams>, r
 
 // Exam questions by exam ID
 router.get('/exams/:examId/questions', async (req: Request<ExamRouteParams>, res: Response) => {
-    const { examId } = req.params;
+  const { examId } = req.params;
 
-    const { rows } = await db.query<Question>(`
-    SELECT "questionId", "questionText", "questionType", "questionPNG"
-    FROM questions
-    WHERE questions."examId" = $1
-    `, [examId]);
+  const { rows } = await db.query<Question>(`
+  SELECT "questionId", "questionText", "questionType", "questionPNG"
+  FROM questions
+  WHERE questions."examId" = $1
+  `, [examId]);
 
-    res.status(200).json(rows);
+  if (rows.length === 0) {
+      res.status(404).json('No questions found for this exam');
+      return;
+  }
+
+  res.status(200).json(rows);
 });
+
 
 // Exam by ID
 router.get('/exams/:examId', async (req: Request<ExamRouteParams>, res: Response) => {
-    const { examId } = req.params;
+  const { examId } = req.params;
 
-    const { rows } = await db.query<Exam>(`
-    SELECT "examId", "examYear", "examSemester", "examType"
-    FROM exams
-    WHERE exams."examId" = $1
-    `, [examId]);
+  const { rows } = await db.query<Exam>(`
+  SELECT "examId", "examYear", "examSemester", "examType"
+  FROM exams
+  WHERE exams."examId" = $1
+  `, [examId]);
 
-    res.status(200).json(rows[0]);
+  if (rows.length === 0) {
+      res.status(404).json('Exam not found');
+      return;
+  }
+
+  res.status(200).json(rows[0]);
 });
 
 // A course's exams by code
@@ -406,15 +422,20 @@ router.get('/courses/:courseCode/exams', async (req: Request<CourseRouteParams>,
 
 // A Courses information by code
 router.get('/courses/:courseCode', async (req: Request<CourseRouteParams>, res: Response) => {
-    const { courseCode } = req.params;
+  const { courseCode } = req.params;
 
-    const { rows } = await db.query<Course>(`
-    SELECT "courseCode", "courseName", "courseDescription"
-    FROM courses
-    WHERE courses."courseCode" = $1
-    `, [courseCode]);
+  const { rows } = await db.query<Course>(`
+  SELECT "courseCode", "courseName", "courseDescription"
+  FROM courses
+  WHERE courses."courseCode" = $1
+  `, [courseCode]);
 
-    res.status(200).json(rows[0]);
+  if (rows.length === 0) {
+      res.status(404).json('Course not found');
+      return;
+  }
+
+  res.status(200).json(rows[0]);
 });
 
 // All courses
