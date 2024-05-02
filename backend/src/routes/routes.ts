@@ -304,7 +304,7 @@ router.post('/courses', async (req: Request<any, any, CourseBodyParams>, res: Re
         courseDescription,
     } = req.body;
 
-    const { rowCount } = await db.query(`SELECT courseCode FROM courses WHERE courseCode = $1`, [courseCode]);
+    const { rowCount } = await db.query(`SELECT "courseCode" FROM courses WHERE "courseCode" = $1`, [courseCode]);
     if (rowCount !== 0) {
         res.status(400).json('Course already exists!');
         return;
