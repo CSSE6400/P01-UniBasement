@@ -18,7 +18,7 @@ class TestQuestions(BaseCase):
         "questionPNG": None
       }
 
-      response = requests.put(self.host() + '/questions' + str(questionId) + '/edit', json=body)
+      response = requests.put(self.host() + '/questions/' + str(questionId) + '/edit', json=body)
 
       self.assertEqual(200, response.status_code)
       self.assertEqual('Question edited', response.json())
@@ -31,7 +31,7 @@ class TestQuestions(BaseCase):
             "questionType": "Multiple Choice",
             "questionPNG": None
         }
-        response = requests.put(self.host() + '/questions' + str(questionId) + '/edit', json=body)
+        response = requests.put(self.host() + '/questions/' + str(questionId) + '/edit', json=body)
         self.assertEqual(404, response.status_code)
         self.assertEqual('Question not found', response.json())
 
