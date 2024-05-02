@@ -69,7 +69,7 @@ router.put('/questions/:questionId/edit', async (req: Request<QuestionRouteParam
 
     const { rowCount } = await db.query(query, args);
     if (rowCount === 0) {
-        res.status(401).json('Question not found!');
+        res.status(404).json('Question not found!');
         return;
     }
 
@@ -87,7 +87,7 @@ router.put('/comments/:commentId/edit', async (req: Request<CommentRouteParams, 
 
     const { rowCount } = await editComment(commentId, req.body.commentText, req.body.commentPNG);
     if (rowCount === 0) {
-        res.status(401).json('Question not found!');
+        res.status(404).json('Question not found!');
         return;
     }
 
@@ -108,7 +108,7 @@ router.patch('/comments/:commentId/delete', async (req: Request<CommentRoutePara
 
     const { rowCount } = await editComment(commentId, '', '');
     if (rowCount === 0) {
-        res.status(401).json('Question not found!');
+        res.status(404).json('Question not found!');
         return;
     }
 
@@ -125,7 +125,7 @@ router.patch('/comments/:commentId/correct', async (req: Request<CommentRoutePar
     WHERE "commentId" = $1
     `, [commentId]);
     if (rowCount === 0) {
-        res.status(400).json('Comment not found!');
+        res.status(404).json('Comment not found!');
         return;
     }
 
@@ -142,7 +142,7 @@ router.patch('/comments/:commentId/endorse', async (req: Request<CommentRoutePar
     WHERE "commentId" = $1
     `, [commentId]);
     if (rowCount === 0) {
-        res.status(400).json('Comment not found!');
+        res.status(404).json('Comment not found!');
         return;
     }
 
@@ -159,7 +159,7 @@ router.patch('/comments/:commentId/downvote', async (req: Request<CommentRoutePa
     WHERE "commentId" = $1
     `, [commentId]);
     if (rowCount === 0) {
-        res.status(400).json('Comment not found!');
+        res.status(404).json('Comment not found!');
         return;
     }
 
@@ -176,7 +176,7 @@ router.patch('/comments/:commentId/upvote', async (req: Request<CommentRoutePara
     WHERE "commentId" = $1
     `, [commentId]);
     if (rowCount === 0) {
-        res.status(400).json('Comment not found!');
+        res.status(404).json('Comment not found!');
         return;
     }
 
@@ -212,7 +212,7 @@ router.post('/comments', async (req: Request<any, any, CommentBodyParams>, res: 
 
     const { rowCount } = await db.query(`SELECT "questionId" FROM questions WHERE "questionId" = $1`, [questionId]);
     if (rowCount === 0) {
-        res.status(401).json('Question not found!');
+        res.status(404).json('Question not found!');
         return;
     }
 
@@ -220,7 +220,7 @@ router.post('/comments', async (req: Request<any, any, CommentBodyParams>, res: 
     if (parentCommentId) {
         const { rowCount, rows } = await db.query<Partial<IComment>>(`SELECT "commentId", "questionId" FROM comments WHERE "commentId" = $1`, [parentCommentId]);
         if (rowCount === 0) {
-            res.status(402).json('Parent comment not found!');
+            res.status(404).json('Parent comment not found!');
             return;
         }
         const parentComment = rows[0];
@@ -255,7 +255,7 @@ router.post('/questions', async (req: Request<any, any, QuestionBodyParams>, res
 
     const { rowCount } = await db.query(`SELECT "examId" exams WHERE "examId" = $1`, [examId]);
     if (rowCount === 0) {
-        res.status(401).json('Exam not found!');
+        res.status(404).json('Exam not found!');
         return;
     }
 
@@ -284,7 +284,7 @@ router.post('/exams', async (req: Request<any, any, ExamBodyParams>, res: Respon
 
     const { rowCount } = await db.query(`SELECT "courseCode" courses WHERE "courseCode" = $1`, [courseCode]);
     if (rowCount === 0) {
-        res.status(401).json('Exam not found!');
+        res.status(404).json('Exam not found!');
         return;
     }
 
@@ -298,24 +298,29 @@ router.post('/exams', async (req: Request<any, any, ExamBodyParams>, res: Respon
 
 // Adds a new Course to the database
 router.post('/courses', async (req: Request<any, any, CourseBodyParams>, res: Response) => {
-    const {
-        courseCode,
-        courseName,
-        courseDescription,
-    } = req.body;
+  const {
+      courseCode,
+      courseName,
+      courseDescription,
+  } = req.body;
 
-    const { rowCount } = await db.query(`SELECT courseCode FROM courses WHERE courseCode = $1`, [courseCode]);
-    if (rowCount !== 0) {
-        res.status(400).json('Course already exists!');
-        return;
-    }
+  if (!courseCode) {
+      res.status(400).json('Course Code is required');
+      return;
+  }
 
-    await db.query(`
-    INSERT INTO courses ("courseCode", "courseName", "courseDescription")
-    VALUES ($1, $2, $3)
-    `, [courseCode, courseName, courseDescription]);
+  const { rowCount } = await db.query(`SELECT "courseCode" FROM courses WHERE "courseCode" = $1`, [courseCode]);
+  if (rowCount !== 0) {
+      res.status(409).json('Course Code already exists');
+      return;
+  }
 
-    res.status(201).json('Course Added!');
+  await db.query(`
+  INSERT INTO courses ("courseCode", "courseName", "courseDescription")
+  VALUES ($1, $2, $3)
+  `, [courseCode, courseName, courseDescription]);
+
+  res.status(201).json('Course Added!');
 });
 
 /*
@@ -406,15 +411,20 @@ router.get('/courses/:courseCode/exams', async (req: Request<CourseRouteParams>,
 
 // A Courses information by code
 router.get('/courses/:courseCode', async (req: Request<CourseRouteParams>, res: Response) => {
-    const { courseCode } = req.params;
+  const { courseCode } = req.params;
 
-    const { rows } = await db.query<Course>(`
-    SELECT "courseCode", "courseName", "courseDescription"
-    FROM courses
-    WHERE courses."courseCode" = $1
-    `, [courseCode]);
+  const { rows } = await db.query<Course>(`
+  SELECT "courseCode", "courseName", "courseDescription"
+  FROM courses
+  WHERE courses."courseCode" = $1
+  `, [courseCode]);
 
-    res.status(200).json(rows[0]);
+  if (rows.length === 0) {
+      res.status(404).json('Course not found');
+      return;
+  }
+
+  res.status(200).json(rows[0]);
 });
 
 // All courses
