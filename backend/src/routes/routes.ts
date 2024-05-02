@@ -64,7 +64,7 @@ router.put('/questions/:questionId/edit', async (req: Request<QuestionRouteParam
         count++;
     }
 
-    query += `"updated_at" = NOW() WHERE "questionId" = $${count}::int`
+    query += `WHERE "questionId" = $${count}::int`
     args.push(questionId);
 
     const { rowCount } = await db.query(query, args);
@@ -121,7 +121,7 @@ router.patch('/comments/:commentId/correct', async (req: Request<CommentRoutePar
 
     const { rowCount } = await db.query(`
     UPDATE comments
-    SET "isCorrect" = true
+    SET "isCorrect" = true, updated_at = NOW()
     WHERE "commentId" = $1
     `, [commentId]);
     if (rowCount === 0) {
@@ -138,7 +138,7 @@ router.patch('/comments/:commentId/endorse', async (req: Request<CommentRoutePar
 
     const { rowCount } = await db.query(`
     UPDATE comments
-    SET "isEndorsed" = true
+    SET "isEndorsed" = true, updated_at = NOW()
     WHERE "commentId" = $1
     `, [commentId]);
     if (rowCount === 0) {
@@ -155,7 +155,7 @@ router.patch('/comments/:commentId/downvote', async (req: Request<CommentRoutePa
 
     const { rowCount } = await db.query(`
     UPDATE comments
-    SET "downvotes" = "downvotes" + 1
+    SET "downvotes" = "downvotes" + 1, updated_at = NOW()
     WHERE "commentId" = $1
     `, [commentId]);
     if (rowCount === 0) {
@@ -172,7 +172,7 @@ router.patch('/comments/:commentId/upvote', async (req: Request<CommentRoutePara
 
     const { rowCount } = await db.query(`
     UPDATE comments
-    SET "upvotes" = "upvotes" + 1
+    SET "upvotes" = "upvotes" + 1, updated_at = NOW()
     WHERE "commentId" = $1
     `, [commentId]);
     if (rowCount === 0) {
@@ -225,7 +225,7 @@ router.post('/comments', async (req: Request<any, any, CommentBodyParams>, res: 
         }
         const parentComment = rows[0];
         if (parentComment.questionId !== questionId) {
-            res.status(403).json('Parent comment is not from the same question!');
+            res.status(400).json('Parent comment is not from the same question!');
             return;
         }
     }
