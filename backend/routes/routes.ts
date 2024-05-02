@@ -27,9 +27,9 @@ router.put('/questions/:questionId/edit', async (req: Request, res: Response) =>
         res.status(400).json('No changes made!');
         return;
     }
-    var args = [];
-    var query = `UPDATE questions SET `
-    var count = 1;
+    let args = [];
+    let query = `UPDATE questions SET `
+    let count = 1;
     if (questionText) {
         query += `"questionText" = $${count}::text, `
         args.push(questionText);
@@ -442,9 +442,9 @@ interface CommentObject {
 
 // function to edit / delete a comment
 async function editComment(commentId: number, commentText: string, commentPNG: string) {
-    var args = [];
-    var query = `UPDATE questions SET `
-    var count = 1;
+    let args = [];
+    let query = `UPDATE questions SET `
+    let count = 1;
     if (commentText) {
         query += `"commentText" = $${count}::text, `
         args.push(commentText);
