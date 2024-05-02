@@ -1,8 +1,21 @@
 // Imports
 import { Router, Request, Response } from 'express'; // Import Request and Response types
-import * as db from '../db/index';
-import { v4 as uuidv4, validate } from 'uuid';
-const { exec } = require('child_process');
+import * as db from '../db';
+import {
+    Comment as IComment,
+    CommentBodyParams,
+    CommentRouteParams,
+    Course,
+    CourseBodyParams,
+    CourseQueryParams,
+    CourseRouteParams,
+    Exam,
+    ExamBodyParams,
+    ExamRouteParams,
+    Question,
+    QuestionBodyParams,
+    QuestionRouteParams,
+} from '../types';
 
 // Export Routers
 export const router = Router();
@@ -20,52 +33,64 @@ export const router = Router();
  */
 
 // Edits a question
-router.put('/questions/:questionId/edit', async (req: Request, res: Response) => {
-    const questionId = req.params.questionId
+router.put('/questions/:questionId/edit', async (req: Request<QuestionRouteParams, any, QuestionBodyParams>, res: Response) => {
+    const { questionId } = req.params;
     const { questionText, questionType, questionPNG } = req.body;
+
     if (!questionText && !questionType && !questionPNG) {
         res.status(400).json('No changes made!');
         return;
     }
-    let args = [];
-    let query = `UPDATE questions SET `
+
+    const args = [];
     let count = 1;
+    let query = `UPDATE questions SET `;
+
     if (questionText) {
         query += `"questionText" = $${count}::text, `
         args.push(questionText);
         count++;
     }
+
     if (questionType) {
         query += `"questionType" = $${count}::text, `
         args.push(questionType);
         count++;
     }
+
     if (questionPNG) {
         query += `"questionPNG" = $${count}::text, `
         args.push(questionPNG);
         count++;
     }
+
     query += `"updated_at" = NOW() WHERE "questionId" = $${count}::int`
-    const r = await db.query(query, args);
-    if (r.rowCount === 0) {
+    args.push(questionId);
+
+    const { rowCount } = await db.query(query, args);
+    if (rowCount === 0) {
         res.status(401).json('Question not found!');
         return;
     }
+
     res.status(200).json('Question Edited!');
 });
 
 // Edits a comment
-router.put('/comments/:commentId/edit', async (req: Request, res: Response) => {
-    const commentId = req.params.commentId;
+router.put('/comments/:commentId/edit', async (req: Request<CommentRouteParams, any, CommentBodyParams>, res: Response) => {
+    const { commentId } = req.params;
+
     if (!req.body.commentText && !req.body.commentPNG) {
         res.status(400).json('No changes made!');
         return;
     }
-    const count = await editComment(+commentId, req.body.commentText, req.body.commentPNG);
-    if (count.rowCount === 0) {
+
+    const { rowCount } = await editComment(commentId, req.body.commentText, req.body.commentPNG);
+    if (rowCount === 0) {
         res.status(401).json('Question not found!');
         return;
     }
+
     res.status(200).json('Comment Edited!');
 });
 
@@ -78,73 +103,83 @@ router.put('/comments/:commentId/edit', async (req: Request, res: Response) => {
  */
 
 // Deletes a comment
-router.patch('/comments/:commentId/delete', async (req: Request, res: Response) => {
-    const commentId = req.params.commentId;
-    const count = await editComment(+commentId, '', '');
-    if (count.rowCount === 0) {
+router.patch('/comments/:commentId/delete', async (req: Request<CommentRouteParams>, res: Response) => {
+    const { commentId } = req.params;
+
+    const { rowCount } = await editComment(commentId, '', '');
+    if (rowCount === 0) {
         res.status(401).json('Question not found!');
         return;
     }
+
     res.status(200).json('Comment Deleted!');
 });
 
 // Sets a comment as correct
-router.patch('/comments/:commentId/correct', async (req: Request, res: Response) => {
-    const commentId = req.params.commentId;
-    const count = await db.query(`
+router.patch('/comments/:commentId/correct', async (req: Request<CommentRouteParams>, res: Response) => {
+    const { commentId } = req.params;
+
+    const { rowCount } = await db.query(`
     UPDATE comments
     SET "isCorrect" = true
     WHERE "commentId" = $1
     `, [commentId]);
-    if (count.rowCount === 0) {
+    if (rowCount === 0) {
         res.status(400).json('Comment not found!');
         return;
     }
+
     res.status(200).json('Corrected!');
 });
 
 // Endorses a comment
-router.patch('/comments/:commentId/endorse', async (req: Request, res: Response) => {
-    const commentId = req.params.commentId;
-    const count = await db.query(`
+router.patch('/comments/:commentId/endorse', async (req: Request<CommentRouteParams>, res: Response) => {
+    const { commentId } = req.params;
+
+    const { rowCount } = await db.query(`
     UPDATE comments
     SET "isEndorsed" = true
     WHERE "commentId" = $1
     `, [commentId]);
-    if (count.rowCount === 0) {
+    if (rowCount === 0) {
         res.status(400).json('Comment not found!');
         return;
     }
+
     res.status(200).json('Endorsed!');
 });
 
 // Downvotes a comment
-router.patch('/comments/:commentId/downvote', async (req: Request, res: Response) => {
-    const commentId = req.params.commentId;
-    const count = await db.query(`
+router.patch('/comments/:commentId/downvote', async (req: Request<CommentRouteParams>, res: Response) => {
+    const { commentId } = req.params;
+
+    const { rowCount } = await db.query(`
     UPDATE comments
     SET "downvotes" = "downvotes" + 1
     WHERE "commentId" = $1
     `, [commentId]);
-    if (count.rowCount === 0) {
+    if (rowCount === 0) {
         res.status(400).json('Comment not found!');
         return;
     }
+
     res.status(200).json('Downvoted!');
 });
 
 // Upvotes a comment
-router.patch('/comments/:commentId/upvote', async (req: Request, res: Response) => {
-    const commentId = req.params.commentId;
-    const count = await db.query(`
+router.patch('/comments/:commentId/upvote', async (req: Request<CommentRouteParams>, res: Response) => {
+    const { commentId } = req.params;
+
+    const { rowCount } = await db.query(`
     UPDATE comments
     SET "upvotes" = "upvotes" + 1
     WHERE "commentId" = $1
     `, [commentId]);
-    if (count.rowCount === 0) {
+    if (rowCount === 0) {
         res.status(400).json('Comment not found!');
         return;
     }
+
     res.status(200).json('Upvoted!');
 });
 
@@ -157,90 +192,129 @@ router.patch('/comments/:commentId/upvote', async (req: Request, res: Response) 
  */
 
 // Adds a new comment to the database
-router.post('/comments', async (req: Request, res: Response) => {
-    const { questionId, parentCommentId, commentText, commentPNG, isCorrect, isEndorsed, upvotes, downvotes } = req.body;
+router.post('/comments', async (req: Request<any, any, CommentBodyParams>, res: Response) => {
+    const {
+        questionId,
+        parentCommentId,
+        commentText,
+        commentPNG,
+        isCorrect,
+        isEndorsed,
+        upvotes,
+        downvotes,
+    } = req.body;
+
     // Check key
     if (!questionId) {
         res.status(400).json('Missing questionId!');
         return;
     }
-    const r = await db.query(`SELECT "questionId" FROM questions WHERE "questionId" = $1`, [questionId]);
-    if (r.rowCount === 0) {
+
+    const { rowCount } = await db.query(`SELECT "questionId" FROM questions WHERE "questionId" = $1`, [questionId]);
+    if (rowCount === 0) {
         res.status(401).json('Question not found!');
         return;
     }
+
     // Check parent id
     if (parentCommentId) {
-        const r = await db.query(`SELECT "commentId", "questionId" FROM comments WHERE "commentId" = $1`, [parentCommentId]);
-        if (r.rowCount === 0) {
+        const { rowCount, rows } = await db.query<Partial<IComment>>(`SELECT "commentId", "questionId" FROM comments WHERE "commentId" = $1`, [parentCommentId]);
+        if (rowCount === 0) {
             res.status(402).json('Parent comment not found!');
             return;
         }
-        const a = r.rows[0];
-        if ((a as any).questionId !== questionId) {
+        const parentComment = rows[0];
+        if (parentComment.questionId !== questionId) {
             res.status(403).json('Parent comment is not from the same question!');
             return;
         }
     }
+
     await db.query(`
     INSERT INTO comments ("questionId", "parentCommentId", "commentText", "commentPNG", "isCorrect", "isEndorsed", "upvotes", "downvotes")
     VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
     `, [questionId, parentCommentId, commentText, commentPNG, isCorrect, isEndorsed, upvotes, downvotes]);
+
     res.status(201).json('Comment Added!');
 });
 
 // Adds a new question to the database
-router.post('/questions', async (req: Request, res: Response) => {
-    const { examId, questionText, questionType, questionPNG } = req.body;
+router.post('/questions', async (req: Request<any, any, QuestionBodyParams>, res: Response) => {
+    const {
+        examId,
+        questionText,
+        questionType,
+        questionPNG,
+    } = req.body;
+
     // Check key
     if (!examId) {
         res.status(400).json('Missing examId!');
         return;
     }
-    const r = await db.query(`SELECT "examId" exams WHERE "examId" = $1`, [examId]);
-    if (r.rowCount === 0) {
+
+    const { rowCount } = await db.query(`SELECT "examId" exams WHERE "examId" = $1`, [examId]);
+    if (rowCount === 0) {
         res.status(401).json('Exam not found!');
         return;
     }
+
     await db.query(`
     INSERT INTO questions ("examId", "questionText", "questionType", "questionPNG")
     VALUES ($1, $2, $3, $4)
     `, [examId, questionText, questionType, questionPNG]);
+
     res.status(201).json('Question Added!');
 });
 
 // Adds a new exam to the databasecustomersscustomerss
-router.post('/exams', async (req: Request, res: Response) => {
-    const { examYear, examSemester, examType, courseCode } = req.body;
+router.post('/exams', async (req: Request<any, any, ExamBodyParams>, res: Response) => {
+    const {
+        examYear,
+        examSemester,
+        examType,
+        courseCode,
+    } = req.body;
+
     // Check key
     if (!courseCode) {
         res.status(400).json('Missing courseCode!');
         return;
     }
-    const r = await db.query(`SELECT "courseCode" courses WHERE "courseCode" = $1`, [courseCode]);
-    if (r.rowCount === 0) {
+
+    const { rowCount } = await db.query(`SELECT "courseCode" courses WHERE "courseCode" = $1`, [courseCode]);
+    if (rowCount === 0) {
         res.status(401).json('Exam not found!');
         return;
     }
+
     await db.query(`
     INSERT INTO exams ("examYear", "examSemester", "examType", "courseCode")
     VALUES ($1, $2, $3, $4)
     `, [examYear, examSemester, examType, courseCode]);
+
     res.status(201).json('Exam Added!');
 });
 
 // Adds a new Course to the database
-router.post('/courses', async (req: Request, res: Response) => {
-    const { courseCode, courseName, courseDescription } = req.body;
-    const r = await db.query(`SELECT courseCode FROM courses WHERE courseCode = $1`, [courseCode]);
-    if (r.rowCount !== 0) {
+router.post('/courses', async (req: Request<any, any, CourseBodyParams>, res: Response) => {
+    const {
+        courseCode,
+        courseName,
+        courseDescription,
+    } = req.body;
+
+    const { rowCount } = await db.query(`SELECT courseCode FROM courses WHERE courseCode = $1`, [courseCode]);
+    if (rowCount !== 0) {
         res.status(400).json('Course already exists!');
         return;
     }
+
     await db.query(`
     INSERT INTO courses ("courseCode", "courseName", "courseDescription")
     VALUES ($1, $2, $3)
     `, [courseCode, courseName, courseDescription]);
+
     res.status(201).json('Course Added!');
 });
 
@@ -250,96 +324,112 @@ router.post('/courses', async (req: Request, res: Response) => {
  *
  * See outputs and params in HANDSHAKE.md
  *
- */ 
+ */
 
 // Gets comment by comment id
-router.get('/comments/:commentId', async (req: Request, res: Response) => {
-    const commentId = req.params.commentId;
-    const comment = await db.query(`
+router.get('/comments/:commentId', async (req: Request<CommentRouteParams>, res: Response) => {
+    const { commentId } = req.params;
+
+    const { rows } = await db.query<IComment>(`
     SELECT "commentId", "questionId", "parentCommentId", "commentText", "commentPNG", "isCorrect", "isEndorsed", "upvotes", "downvotes", "created_at", "updated_at"
     FROM comments
     WHERE comments."commentId" = $1
     `, [commentId]);
-    res.status(200).json(comment.rows[0]);
+
+    res.status(200).json(rows[0]);
 });
 
 // Gets all comments by question id
-router.get('/questions/:questionId/comments', async (req: Request, res: Response) => {
-    const questionId = req.params.questionId;
-    const question = await db.query(`
+router.get('/questions/:questionId/comments', async (req: Request<QuestionRouteParams>, res: Response) => {
+    const { questionId } = req.params;
+
+    const { rows } = await db.query<IComment>(`
     SELECT "commentId", "parentCommentId", "commentText", "commentPNG", "isCorrect", "isEndorsed", "upvotes", "downvotes", "created_at", "updated_at"
     FROM comments
     WHERE comments."questionId" = $1
     `, [questionId]);
-    res.status(200).json(nest(question.rows));
+
+    res.status(200).json(nest(rows));
 });
 
 // Gets question information by question id
-router.get('/questions/:questionId', async (req: Request, res: Response) => {
-    const questionId = req.params.questionId;
-    const question = await db.query(`
+router.get('/questions/:questionId', async (req: Request<QuestionRouteParams>, res: Response) => {
+    const { questionId } = req.params;
+
+    const { rows } = await db.query<Question>(`
     SELECT "questionId", "questionText", "questionType", "questionPNG"
     FROM questions
     WHERE questions."questionId" = $1
     `, [questionId]);
-    res.status(200).json(question.rows[0]);
+
+    res.status(200).json(rows[0]);
 });
 
 // Exam questions by exam ID
-router.get('/exams/:examId/questions', async (req: Request, res: Response) => {
-    const examId = req.params.examId;
-    const exam = await db.query(`
+router.get('/exams/:examId/questions', async (req: Request<ExamRouteParams>, res: Response) => {
+    const { examId } = req.params;
+
+    const { rows } = await db.query<Question>(`
     SELECT "questionId", "questionText", "questionType", "questionPNG"
     FROM questions
     WHERE questions."examId" = $1
     `, [examId]);
-    res.status(200).json(exam.rows);
+
+    res.status(200).json(rows);
 });
 
 // Exam by ID
-router.get('/exams/:examId', async (req: Request, res: Response) => {
-    const examId = req.params.examId;
-    const exams = await db.query(`
+router.get('/exams/:examId', async (req: Request<ExamRouteParams>, res: Response) => {
+    const { examId } = req.params;
+
+    const { rows } = await db.query<Exam>(`
     SELECT "examId", "examYear", "examSemester", "examType"
     FROM exams
     WHERE exams."examId" = $1
     `, [examId]);
-    res.status(200).json(exams.rows[0]);
+
+    res.status(200).json(rows[0]);
 });
 
 // A course's exams by code
-router.get('/courses/:courseCode/exams', async (req: Request, res: Response) => {
-    const courseCode = req.params.courseCode;
-    const course = await db.query(`
+router.get('/courses/:courseCode/exams', async (req: Request<CourseRouteParams>, res: Response) => {
+    const { courseCode } = req.params;
+
+    const { rows } = await db.query<Exam>(`
     SELECT "examId", "examYear", "examSemester", "examType"
     FROM exams
     WHERE exams."courseCode" = $1
     `, [courseCode]);
-    res.status(200).json(course.rows);
+
+    res.status(200).json(rows);
 });
 
 // A Courses information by code
-router.get('/courses/:courseCode', async (req: Request, res: Response) => {
-    const courseCode = req.params.courseCode;
-    const course = await db.query(`
+router.get('/courses/:courseCode', async (req: Request<CourseRouteParams>, res: Response) => {
+    const { courseCode } = req.params;
+
+    const { rows } = await db.query<Course>(`
     SELECT "courseCode", "courseName", "courseDescription"
     FROM courses
     WHERE courses."courseCode" = $1
     `, [courseCode]);
-    res.status(200).json(course.rows[0]);
+
+    res.status(200).json(rows[0]);
 });
 
 // All courses
-router.get('/courses', async (req: Request, res: Response) => {
-    const offet = req.query.offset ?? 0;
+router.get('/courses', async (req: Request<any, any, any, CourseQueryParams>, res: Response) => {
+    const offset = req.query.offset ?? 0;
     const limit = req.query.limit ?? 100;
-    const courses = await db.query(`
+
+    const { rows } = await db.query<Course>(`
     SELECT "courseCode", "courseName", "courseDescription" 
     FROM courses 
     LIMIT $1 
     OFFSET $2
-    `, [limit, offet]);
-    res.status(200).json(courses.rows);
+    `, [limit, offset]);
+
+    res.status(200).json(rows);
 });
 
 // Health Check
@@ -419,51 +509,39 @@ router.get('/sketch', async (req: Request, res: Response) => {
     `);
     res.status(200).json(`THIS SHIT SKETCH ASF AND WAS LIV'S IDEA!!!`);
 });
-// Interfaces
-
-// Used in nest helper function
-interface CommentObject {
-    commentId: number;
-    questionId: number;
-    parentCommentId: number | null;
-    commenttext: string;
-    commentPNG: string | null;
-    iscorrect: boolean;
-    isendorsed: boolean;
-    upvotes: number;
-    downvotes: number;
-    created_at: string;
-    updated_at: string;
-    children?: CommentObject[];
-}
 
 // Helper functions
 
 // function to edit / delete a comment
-async function editComment(commentId: number, commentText: string, commentPNG: string) {
-    let args = [];
+async function editComment(commentId: number, commentText?: string | null, commentPNG?: string | null) {
+    const args = [];
     let query = `UPDATE questions SET `
     let count = 1;
+
     if (commentText) {
         query += `"commentText" = $${count}::text, `
         args.push(commentText);
         count++;
     }
+
     if (commentPNG) {
         query += `"commentPNG" = $${count}::text, `
         args.push(commentPNG);
         count++;
     }
+
     query += `"updated_at" = NOW() WHERE "commentId" = $${count}::int`
+    args.push(commentId)
+
     return await db.query(query, args);
 }
 
 // function to nest comments into their parent comments
-export function nest(jsonData: any[]) {
-    const dataDict: { [id: number]: CommentObject } = {};
-    jsonData.forEach(item => dataDict[item.commentId] = item);
+export function nest(commentRows: IComment[]) {
+    const dataDict: { [id: number]: IComment } = {};
+    commentRows.forEach(item => dataDict[item.commentId] = item);
 
-    jsonData.forEach(item => {
+    commentRows.forEach(item => {
         if (item.parentCommentId !== null) {
             const parent = dataDict[item.parentCommentId];
             if (!parent.children) {
@@ -473,16 +551,16 @@ export function nest(jsonData: any[]) {
         }
     });
 
-    const resultJsonData = jsonData.filter(item => item.parentCommentId === null);
+    const resultJsonData = commentRows.filter(item => item.parentCommentId === null);
     return resultJsonData;
 }
 
 // function to return one comment with its children
-export function single_nest(jsonData: any[], commentId: number) {
-    const dataDict: { [id: number]: CommentObject } = {};
-    jsonData.forEach(item => dataDict[item.commentId] = item);
+export function single_nest(commentRows: IComment[], commentId: number) {
+    const dataDict: { [id: number]: IComment } = {};
+    commentRows.forEach(item => dataDict[item.commentId] = item);
 
-    jsonData.forEach(item => {
+    commentRows.forEach(item => {
         if (item.parentCommentId !== null) {
             const parent = dataDict[item.parentCommentId];
             if (!parent.children) {
@@ -492,6 +570,6 @@ export function single_nest(jsonData: any[], commentId: number) {
         }
     });
 
-    const resultJsonData = jsonData.filter(item => item.commentId === commentId);
+    const resultJsonData = commentRows.filter(item => item.commentId === commentId);
     return resultJsonData;
 }

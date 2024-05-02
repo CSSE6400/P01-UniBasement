@@ -1,19 +1,33 @@
 export type Course = {
-    coursecode: string
-    coursename: string
-    coursedescription: string
+    courseCode: string
+    courseName: string
+    courseDescription: string
 }
 
 export type Exam = {
     examId: number
-    examyear: number
-    examsemester: number
-    examtype: string
+    examYear: number
+    examSemester: number
+    examType: string
 }
 
 export type Question = {
-    questionid: number
-    questiontext: string
-    questiontype: string
-    questionpng: string
+    questionId: number
+    questionText: string
+    questionType: string
+    questionPNG: string
+}
+
+export type Comment = {
+    commentId: number
+    parentCommentId: number | null
+    commentText: string
+    commentPNG: string | null
+    isCorrect: boolean
+    isEndorsed: boolean
+    upvotes: number
+    downvotes: number
+    created_at: string
+    updated_at: string
+    children?: Comment[]
 }

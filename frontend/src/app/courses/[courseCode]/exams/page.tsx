@@ -15,9 +15,9 @@ export default function Exams({ params }: { params: { courseCode: string }}) {
                     <hr />
                     <div key={exam.examId}>
                         <Link href={`/courses/${params.courseCode}/exams/${exam.examId}`}>
-                            <h2>{exam.examyear} | S{exam.examsemester}</h2>
+                            <h2>{exam.examYear} | S{exam.examSemester}</h2>
                         </Link>
-                        <p>{exam.examtype}</p>
+                        <p>{exam.examType}</p>
                     </div>
                 </>
                 ))
