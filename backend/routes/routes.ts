@@ -5,11 +5,14 @@ import {
     Comment as IComment,
     CommentBodyParams,
     CommentRouteParams,
+    Course,
     CourseBodyParams,
     CourseQueryParams,
     CourseRouteParams,
+    Exam,
     ExamBodyParams,
     ExamRouteParams,
+    Question,
     QuestionBodyParams,
     QuestionRouteParams,
 } from '../types';
@@ -215,13 +218,13 @@ router.post('/comments', async (req: Request<any, any, CommentBodyParams>, res: 
 
     // Check parent id
     if (parentCommentId) {
-        const { rowCount, rows } = await db.query(`SELECT "commentId", "questionId" FROM comments WHERE "commentId" = $1`, [parentCommentId]);
+        const { rowCount, rows } = await db.query<Partial<IComment>>(`SELECT "commentId", "questionId" FROM comments WHERE "commentId" = $1`, [parentCommentId]);
         if (rowCount === 0) {
             res.status(402).json('Parent comment not found!');
             return;
         }
-        const a = rows[0];
-        if ((a as any).questionId !== questionId) {
+        const parentComment = rows[0];
+        if (parentComment.questionId !== questionId) {
             res.status(403).json('Parent comment is not from the same question!');
             return;
         }
@@ -327,7 +330,7 @@ router.post('/courses', async (req: Request<any, any, CourseBodyParams>, res: Re
 router.get('/comments/:commentId', async (req: Request<CommentRouteParams>, res: Response) => {
     const { commentId } = req.params;
 
-    const { rows } = await db.query(`
+    const { rows } = await db.query<IComment>(`
     SELECT "commentId", "questionId", "parentCommentId", "commentText", "commentPNG", "isCorrect", "isEndorsed", "upvotes", "downvotes", "created_at", "updated_at"
     FROM comments
     WHERE comments."commentId" = $1
@@ -340,7 +343,7 @@ router.get('/comments/:commentId', async (req: Request<CommentRouteParams>, res:
 router.get('/questions/:questionId/comments', async (req: Request<QuestionRouteParams>, res: Response) => {
     const { questionId } = req.params;
 
-    const { rows } = await db.query(`
+    const { rows } = await db.query<IComment>(`
     SELECT "commentId", "parentCommentId", "commentText", "commentPNG", "isCorrect", "isEndorsed", "upvotes", "downvotes", "created_at", "updated_at"
     FROM comments
     WHERE comments."questionId" = $1
@@ -353,7 +356,7 @@ router.get('/questions/:questionId/comments', async (req: Request<QuestionRouteP
 router.get('/questions/:questionId', async (req: Request<QuestionRouteParams>, res: Response) => {
     const { questionId } = req.params;
 
-    const { rows } = await db.query(`
+    const { rows } = await db.query<Question>(`
     SELECT "questionId", "questionText", "questionType", "questionPNG"
     FROM questions
     WHERE questions."questionId" = $1
@@ -366,7 +369,7 @@ router.get('/questions/:questionId', async (req: Request<QuestionRouteParams>, r
 router.get('/exams/:examId/questions', async (req: Request<ExamRouteParams>, res: Response) => {
     const { examId } = req.params;
 
-    const { rows } = await db.query(`
+    const { rows } = await db.query<Question>(`
     SELECT "questionId", "questionText", "questionType", "questionPNG"
     FROM questions
     WHERE questions."examId" = $1
@@ -379,7 +382,7 @@ router.get('/exams/:examId/questions', async (req: Request<ExamRouteParams>, res
 router.get('/exams/:examId', async (req: Request<ExamRouteParams>, res: Response) => {
     const { examId } = req.params;
 
-    const { rows } = await db.query(`
+    const { rows } = await db.query<Exam>(`
     SELECT "examId", "examYear", "examSemester", "examType"
     FROM exams
     WHERE exams."examId" = $1
@@ -392,7 +395,7 @@ router.get('/exams/:examId', async (req: Request<ExamRouteParams>, res: Response
 router.get('/courses/:courseCode/exams', async (req: Request<CourseRouteParams>, res: Response) => {
     const { courseCode } = req.params;
 
-    const { rows } = await db.query(`
+    const { rows } = await db.query<Exam>(`
     SELECT "examId", "examYear", "examSemester", "examType"
     FROM exams
     WHERE exams."courseCode" = $1
@@ -405,7 +408,7 @@ router.get('/courses/:courseCode/exams', async (req: Request<CourseRouteParams>,
 router.get('/courses/:courseCode', async (req: Request<CourseRouteParams>, res: Response) => {
     const { courseCode } = req.params;
 
-    const { rows } = await db.query(`
+    const { rows } = await db.query<Course>(`
     SELECT "courseCode", "courseName", "courseDescription"
     FROM courses
     WHERE courses."courseCode" = $1
@@ -419,7 +422,7 @@ router.get('/courses', async (req: Request<any, any, any, CourseQueryParams>, re
     const offset = req.query.offset ?? 0;
     const limit = req.query.limit ?? 100;
 
-    const { rows } = await db.query(`
+    const { rows } = await db.query<Course>(`
     SELECT "courseCode", "courseName", "courseDescription" 
     FROM courses 
     LIMIT $1 
@@ -535,11 +538,11 @@ async function editComment(commentId: number, commentText?: string | null, comme
 }
 
 // function to nest comments into their parent comments
-export function nest(jsonData: any[]) {
+export function nest(commentRows: IComment[]) {
     const dataDict: { [id: number]: IComment } = {};
-    jsonData.forEach(item => dataDict[item.commentId] = item);
+    commentRows.forEach(item => dataDict[item.commentId] = item);
 
-    jsonData.forEach(item => {
+    commentRows.forEach(item => {
         if (item.parentCommentId !== null) {
             const parent = dataDict[item.parentCommentId];
             if (!parent.children) {
@@ -549,16 +552,16 @@ export function nest(jsonData: any[]) {
         }
     });
 
-    const resultJsonData = jsonData.filter(item => item.parentCommentId === null);
+    const resultJsonData = commentRows.filter(item => item.parentCommentId === null);
     return resultJsonData;
 }
 
 // function to return one comment with its children
-export function single_nest(jsonData: any[], commentId: number) {
+export function single_nest(commentRows: IComment[], commentId: number) {
     const dataDict: { [id: number]: IComment } = {};
-    jsonData.forEach(item => dataDict[item.commentId] = item);
+    commentRows.forEach(item => dataDict[item.commentId] = item);
 
-    jsonData.forEach(item => {
+    commentRows.forEach(item => {
         if (item.parentCommentId !== null) {
             const parent = dataDict[item.parentCommentId];
             if (!parent.children) {
@@ -568,6 +571,6 @@ export function single_nest(jsonData: any[], commentId: number) {
         }
     });
 
-    const resultJsonData = jsonData.filter(item => item.commentId === commentId);
+    const resultJsonData = commentRows.filter(item => item.commentId === commentId);
     return resultJsonData;
 }

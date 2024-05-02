@@ -30,6 +30,7 @@ export type Comment = {
     created_at: string
     updated_at: string
     children?: Comment[]
+    questionId?: number
 }
 
 

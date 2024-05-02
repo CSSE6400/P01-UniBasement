@@ -1,5 +1,5 @@
 // Imports
-import { Pool } from 'pg'
+import { Pool, QueryResultRow } from 'pg';
 
 const pool = new Pool({
     user: process.env.DB_USER,
@@ -54,14 +54,14 @@ export const setupTables = () => {
     pool.query(query);
 }
 
-export const query1 = (text: any) => {
-    return pool.query(text);
+export function query1<Result extends QueryResultRow>(text: any) {
+    return pool.query<Result>(text);
 }
 
-export const query = (text: any, params: any) => {
-    return pool.query(text, params);
+export function query<Result extends QueryResultRow>(text: any, params: any) {
+    return pool.query<Result>(text, params);
 }
 
-export const query3 = (text: any, params: any, callback: any) => {
-    return pool.query(text, params, callback);
+export function query3<Result extends QueryResultRow>(text: any, params: any, callback: any) {
+    return pool.query<Result>(text, params, callback);
 }
