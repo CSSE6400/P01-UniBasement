@@ -1,6 +1,5 @@
 import unittest
 import requests
-import random
 
 from .base import BaseCase
 
