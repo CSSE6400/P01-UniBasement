@@ -64,16 +64,16 @@ router.put('/questions/:questionId/edit', async (req: Request<QuestionRouteParam
         count++;
     }
 
-    query += `WHERE "questionId" = $${count}::int`
+    query += `"updated_at" = NOW() WHERE "questionId" = $${count}::int`
     args.push(questionId);
 
     const { rowCount } = await db.query(query, args);
     if (rowCount === 0) {
-        res.status(404).json('Question not found');
+        res.status(404).json('Question not found!');
         return;
     }
 
-    res.status(200).json('Question updated');
+    res.status(200).json('Question Edited!');
 });
 
 // Edits a comment
@@ -121,7 +121,7 @@ router.patch('/comments/:commentId/correct', async (req: Request<CommentRoutePar
 
     const { rowCount } = await db.query(`
     UPDATE comments
-    SET "isCorrect" = true, updated_at = NOW()
+    SET "isCorrect" = true
     WHERE "commentId" = $1
     `, [commentId]);
     if (rowCount === 0) {
@@ -138,7 +138,7 @@ router.patch('/comments/:commentId/endorse', async (req: Request<CommentRoutePar
 
     const { rowCount } = await db.query(`
     UPDATE comments
-    SET "isEndorsed" = true, updated_at = NOW()
+    SET "isEndorsed" = true
     WHERE "commentId" = $1
     `, [commentId]);
     if (rowCount === 0) {
@@ -155,7 +155,7 @@ router.patch('/comments/:commentId/downvote', async (req: Request<CommentRoutePa
 
     const { rowCount } = await db.query(`
     UPDATE comments
-    SET "downvotes" = "downvotes" + 1, updated_at = NOW()
+    SET "downvotes" = "downvotes" + 1
     WHERE "commentId" = $1
     `, [commentId]);
     if (rowCount === 0) {
@@ -172,7 +172,7 @@ router.patch('/comments/:commentId/upvote', async (req: Request<CommentRoutePara
 
     const { rowCount } = await db.query(`
     UPDATE comments
-    SET "upvotes" = "upvotes" + 1, updated_at = NOW()
+    SET "upvotes" = "upvotes" + 1
     WHERE "commentId" = $1
     `, [commentId]);
     if (rowCount === 0) {
