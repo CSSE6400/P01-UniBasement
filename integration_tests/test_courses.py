@@ -70,7 +70,24 @@ class TestUser(BaseCase):
         self.assertEqual('Course Code already exists', response.json())
 
 
-#TODO write test cases for above two cases on post
+
+    def test_course_get_exam_by_code(self):
+        """
+        Checks for a 200 response from the /courses/:courseCode/exams endpoint
+        Checks for the correct response message
+        """
+        courseCode = "ENGG1001"
+
+        expectedExamsForCourse = [
+            {"examId": 1, "examYear": 2021, "examSemester": 1, "examType": "Final"},
+            {"examId": 2, "examYear": 2022, "examSemester": 1, "examType": "Final"},
+            {"examId": 3, "examYear": 2023, "examSemester": 1, "examType": "Final"}
+        ]
+
+        response = requests.get(self.host() + '/courses/' + courseCode + '/exams')
+        self.assertEqual(200, response.status_code)
+        self.assertEqual(expectedExamsForCourse, response.json())
+
 
 
 
