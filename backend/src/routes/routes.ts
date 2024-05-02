@@ -284,7 +284,7 @@ router.post('/exams', async (req: Request<any, any, ExamBodyParams>, res: Respon
 
     const { rowCount } = await db.query(`SELECT "courseCode" courses WHERE "courseCode" = $1`, [courseCode]);
     if (rowCount === 0) {
-        res.status(401).json('Exam not found!');
+        res.status(404).json('Exam not found!');
         return;
     }
 
@@ -298,24 +298,29 @@ router.post('/exams', async (req: Request<any, any, ExamBodyParams>, res: Respon
 
 // Adds a new Course to the database
 router.post('/courses', async (req: Request<any, any, CourseBodyParams>, res: Response) => {
-    const {
-        courseCode,
-        courseName,
-        courseDescription,
-    } = req.body;
+  const {
+      courseCode,
+      courseName,
+      courseDescription,
+  } = req.body;
 
-    const { rowCount } = await db.query(`SELECT "courseCode" FROM courses WHERE "courseCode" = $1`, [courseCode]);
-    if (rowCount !== 0) {
-        res.status(400).json('Course already exists!');
-        return;
-    }
+  if (!courseCode) {
+      res.status(400).json('Course Code is required');
+      return;
+  }
 
-    await db.query(`
-    INSERT INTO courses ("courseCode", "courseName", "courseDescription")
-    VALUES ($1, $2, $3)
-    `, [courseCode, courseName, courseDescription]);
+  const { rowCount } = await db.query(`SELECT "courseCode" FROM courses WHERE "courseCode" = $1`, [courseCode]);
+  if (rowCount !== 0) {
+      res.status(409).json('Course Code already exists');
+      return;
+  }
 
-    res.status(201).json('Course Added!');
+  await db.query(`
+  INSERT INTO courses ("courseCode", "courseName", "courseDescription")
+  VALUES ($1, $2, $3)
+  `, [courseCode, courseName, courseDescription]);
+
+  res.status(201).json('Course Added!');
 });
 
 /*
