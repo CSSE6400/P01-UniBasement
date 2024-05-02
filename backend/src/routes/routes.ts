@@ -64,7 +64,7 @@ router.put('/questions/:questionId/edit', async (req: Request<QuestionRouteParam
         count++;
     }
 
-    query += `"updated_at" = NOW() WHERE "questionId" = $${count}::int`
+    query += `WHERE "questionId" = $${count}::int`
     args.push(questionId);
 
     const { rowCount } = await db.query(query, args);
