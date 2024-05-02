@@ -39,7 +39,7 @@ class TestUser(BaseCase):
 
         self.assertEqual(400, response.status_code)
 
-        self.assertEqual('Course Code cannot be null', response.json())
+        self.assertEqual('Course Code is required', response.json())
 
 
     def test_course_post_duplicate_coursecode(self):
@@ -61,7 +61,7 @@ class TestUser(BaseCase):
         # Should error as duplicate when posting same course again.
         response = requests.post(self.host() + '/courses', json=course_data, headers={'Accept': 'application/json'})
 
-        self.assertEqual(400, response.status_code)
+        self.assertEqual(409, response.status_code)
 
         self.assertEqual('Course Code already exists', response.json())
 
@@ -84,9 +84,33 @@ class TestUser(BaseCase):
         self.assertEqual(expectedExamsForCourse, response.json())
 
 
+    def test_course_get_course(self):
+        """
+        Checks for a 200 response from the /courses/:courseCode endpoint
+        Checks for the correct response message
+        """
+        courseCode = "ENGG1001"
 
+        expectedCourse = {
+            "courseCode": "ENGG1001",
+            "courseName": "Programming for Engineers",
+            "courseDescription": "An introductory course covering basic concepts of software engineering."
+        }
 
+        response = requests.get(self.host() + '/courses/' + courseCode)
+        self.assertEqual(200, response.status_code)
+        self.assertEqual(expectedCourse, response.json())
 
+    def test_course_get_course_not_found(self):
+        """
+        Checks for a 404 response from the /courses/:courseCode endpoint
+        Checks for the correct response message
+        """
+        courseCode = "ENGG1000"
+
+        response = requests.get(self.host() + '/courses/' + courseCode)
+        self.assertEqual(404, response.status_code)
+        self.assertEqual('Course not found', response.json())
 
 
 if __name__ == '__main__':

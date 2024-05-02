@@ -411,15 +411,20 @@ router.get('/courses/:courseCode/exams', async (req: Request<CourseRouteParams>,
 
 // A Courses information by code
 router.get('/courses/:courseCode', async (req: Request<CourseRouteParams>, res: Response) => {
-    const { courseCode } = req.params;
+  const { courseCode } = req.params;
 
-    const { rows } = await db.query<Course>(`
-    SELECT "courseCode", "courseName", "courseDescription"
-    FROM courses
-    WHERE courses."courseCode" = $1
-    `, [courseCode]);
+  const { rows } = await db.query<Course>(`
+  SELECT "courseCode", "courseName", "courseDescription"
+  FROM courses
+  WHERE courses."courseCode" = $1
+  `, [courseCode]);
 
-    res.status(200).json(rows[0]);
+  if (rows.length === 0) {
+      res.status(404).json('Course not found');
+      return;
+  }
+
+  res.status(200).json(rows[0]);
 });
 
 // All courses
