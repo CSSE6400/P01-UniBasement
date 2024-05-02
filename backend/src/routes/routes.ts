@@ -253,7 +253,7 @@ router.post('/questions', async (req: Request<any, any, QuestionBodyParams>, res
         return;
     }
 
-    const { rowCount } = await db.query(`SELECT "examId" exams WHERE "examId" = $1`, [examId]);
+    const { rowCount } = await db.query(`SELECT "examId" FROM exams WHERE "examId" = $1`, [examId]);
     if (rowCount === 0) {
         res.status(404).json('Exam not found!');
         return;
@@ -278,13 +278,13 @@ router.post('/exams', async (req: Request<any, any, ExamBodyParams>, res: Respon
 
     // Check key
     if (!courseCode) {
-        res.status(400).json('Missing courseCode!');
+        res.status(400).json('Missing courseCode');
         return;
     }
 
-    const { rowCount } = await db.query(`SELECT "courseCode" courses WHERE "courseCode" = $1`, [courseCode]);
+    const { rowCount } = await db.query(`SELECT "courseCode" FROM courses WHERE "courseCode" = $1`, [courseCode]);
     if (rowCount === 0) {
-        res.status(404).json('Exam not found!');
+        res.status(404).json('Course not found');
         return;
     }
 
@@ -293,7 +293,7 @@ router.post('/exams', async (req: Request<any, any, ExamBodyParams>, res: Respon
     VALUES ($1, $2, $3, $4)
     `, [examYear, examSemester, examType, courseCode]);
 
-    res.status(201).json('Exam Added!');
+    res.status(201).json('Exam created');
 });
 
 // Adds a new Course to the database
