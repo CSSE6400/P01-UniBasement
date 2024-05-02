@@ -64,13 +64,15 @@ class TestUser(BaseCase):
         examId = 1
         expectedBody = [{
             "questionId": 1,
-            "questionText": [{'questionId': 1, 'questionTest': 'Who is the best tutor at UQ?'}]
+            "questionText": "Who is the best tutor at UQ?",
+            "questionType": "Multiple Choice",
+            "questionPNG": None
         }]
         response = requests.get(self.host() + f'/exams/{examId}/questions')
         self.assertEqual(200, response.status_code)
         self.assertEqual(expectedBody, response.json())
 
-    
+
     def test_exam_get_questions_by_examId_not_found(self):
         """
         Checks for a 404 response from the /exam endpoint
