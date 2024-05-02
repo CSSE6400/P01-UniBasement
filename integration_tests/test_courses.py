@@ -113,5 +113,27 @@ class TestUser(BaseCase):
         self.assertEqual('Course not found', response.json())
 
 
+    def test_course_get_all(self):
+        """
+        Checks for a 200 response from the /courses endpoint
+        Checks for the correct response message
+        """
+        expectedCourses = [
+            {"courseCode": "ENGG1001", "courseName": "Programming for Engineers", "courseDescription": "An introductory course covering basic concepts of software engineering."},
+            {"courseCode": "DECO2500", "courseName": "Human Computer Interaction", "courseDescription": "Models of action, perception, cognition and interaction in human-machine systems. Methods of interaction analysis and interaction representation. Human-machine system evaluation. Practical implementation. Introduction to user and use-centred design principles. Broader topics may include: societal considerations, groupware, multimedia, media perspectives."},
+            {"courseCode": "MATH1051", "courseName": "Calculus & Linear Algebra", "courseDescription": "A foundational course in calculus covering limits, derivatives, and integrals."}
+        ]
+
+        response = requests.get(self.host() + '/courses')
+        self.assertEqual(200, response.status_code)
+
+        # Check if each expected course is included in the response
+        for expectedCourse in expectedCourses:
+            self.assertIn(expectedCourse, response.json())
+
+
+
+
+
 if __name__ == '__main__':
     unittest.main()
