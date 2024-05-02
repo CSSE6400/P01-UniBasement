@@ -23,25 +23,41 @@ export const router = Router();
 router.put('/questions/:questionId/edit', async (req: Request, res: Response) => {
     const questionId = req.params.questionId
     const { questionText, questionType, questionPNG } = req.body;
-    await db.query(`
+    if (!questionText && !questionType && !questionPNG) {
+        res.status(400).json('No changes made!');
+        return;
+    }
+    const count = await db.query(`
     UPDATE questions
     SET questionText = $1, questionType = $2, questionPNG = $3
     WHERE questions.questionId = $4
     `, [questionText, questionType, questionPNG, questionId]);
+    if (count.rowCount === 0) {
+        res.status(404).json('Question not found!');
+        return;
+    }
     res.status(200).json('Question Edited!');
 });
 
 // Deletes a comment
 router.put('/comments/:commentId/delete', async (req: Request, res: Response) => {
     const commentId = req.params.commentId;
-    editComment(+commentId, '', '');
+    const count = await editComment(+commentId, '', '');
+    if (count.rowCount === 0) {
+        res.status(404).json('Question not found!');
+        return;
+    }
     res.status(200).json('Comment Deleted!');
 });
 
 // Edits a comment
 router.put('/comments/:commentId/edit', async (req: Request, res: Response) => {
     const commentId = req.params.commentId;
-    editComment(+commentId, req.body.commentText, req.body.commentPNG);
+    const count = await editComment(+commentId, req.body.commentText, req.body.commentPNG);
+    if (count.rowCount === 0) {
+        res.status(404).json('Question not found!');
+        return;
+    }
     res.status(200).json('Comment Edited!');
 });
 
@@ -342,7 +358,7 @@ interface CommentObject {
 
 // function to edit / delete a comment
 async function editComment(commentId: number, commentText: string, commentPNG: string) {
-    await db.query(`
+    return await db.query(`
     UPDATE comments
     SET commentText = $1, commentPNG = $2
     WHERE commentId = $3
