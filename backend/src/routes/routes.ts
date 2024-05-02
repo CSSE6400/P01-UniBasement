@@ -38,7 +38,7 @@ router.put('/questions/:questionId/edit', async (req: Request<QuestionRouteParam
     const { questionText, questionType, questionPNG } = req.body;
 
     if (!questionText && !questionType && !questionPNG) {
-        res.status(400).json('No changes made!');
+        res.status(400).json('No changes made');
         return;
     }
 
@@ -69,11 +69,11 @@ router.put('/questions/:questionId/edit', async (req: Request<QuestionRouteParam
 
     const { rowCount } = await db.query(query, args);
     if (rowCount === 0) {
-        res.status(404).json('Question not found!');
+        res.status(404).json('Question not found');
         return;
     }
 
-    res.status(200).json('Question Edited!');
+    res.status(200).json('Question edited');
 });
 
 // Edits a comment

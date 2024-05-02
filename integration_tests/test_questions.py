@@ -40,41 +40,20 @@ class TestQuestions(BaseCase):
         # Make a PUT request without providing any changes
         # Check that the response status code is 400
         # Verify that the response message indicates no changes were made
-        pass
+        questionId = 1
+        body = {
+            "questionId": None, 
+            "questionText": None,
+            "questionType": None,
+            "questionPNG": None
+        }
 
-    def test_edit_question_invalid_params(self):
-        # Test editing a question with invalid parameters
-        # Make a PUT request with invalid parameters
-        # Check that the response status code is 400
-        # Verify that the response message indicates invalid parameters
-        pass
+        response = requests.put(self.host() + '/questions/' + str(questionId) + '/edit', json=body)
+        self.assertEqual(400, response.status_code)
+        self.assertEqual('No changes made', response.json())
 
-    def test_edit_question_missing_params(self):
-        # Test editing a question with missing parameters
-        # Make a PUT request without providing all required parameters
-        # Check that the response status code is 400
-        # Verify that the response message indicates missing parameters
-        pass
+
+    #TODO finished the first route for questions. so the rest need to be done
 
 if __name__ == '__main__':
     unittest.main()
-
-
-
-
-
-        # def test_exam_post(self):
-        # """
-        # Checks for a 201 response from the /exam endpoint
-        # Checks for the correct response message
-        # """
-        # body = {
-        #     "examYear": 2021,
-        #     "examSemester": "1",
-        #     "examType": "Final",
-        #     "courseCode": "CSSE6400"
-        # }
-
-        # response = requests.post(self.host() + '/exams', json=body)
-        # self.assertEqual(201, response.status_code)
-        # self.assertEqual('Exam created', response.json())
