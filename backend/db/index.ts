@@ -43,13 +43,13 @@ export const setupTables = () => {
 
         "commentText" TEXT,
         "commentPNG" BYTEA, 
-        "isCorrect" BOOLEAN NOT NULL DEFAULT FALSE,
-        "isEndorsed" BOOLEAN NOT NULL DEFAULT FALSE,
-        "upvotes" INTEGER NOT NULL DEFAULT 0,
-        "downvotes" INTEGER NOT NULL DEFAULT 0,
+        "isCorrect" BOOLEAN DEFAULT FALSE,
+        "isEndorsed" BOOLEAN DEFAULT FALSE,
+        "upvotes" INTEGER DEFAULT 0,
+        "downvotes" INTEGER DEFAULT 0,
 
-        "created_at" TIMESTAMP NOT NULL DEFAULT NOW(),
-        "updated_at" TIMESTAMP NOT NULL DEFAULT NOW()
+        "created_at" TIMESTAMP DEFAULT NOW(),
+        "updated_at" TIMESTAMP DEFAULT NOW()
     );`;  
     pool.query(query);
 }

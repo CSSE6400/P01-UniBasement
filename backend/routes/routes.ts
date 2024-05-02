@@ -23,25 +23,49 @@ export const router = Router();
 router.put('/questions/:questionId/edit', async (req: Request, res: Response) => {
     const questionId = req.params.questionId
     const { questionText, questionType, questionPNG } = req.body;
-    await db.query(`
-    UPDATE questions
-    SET questionText = $1, questionType = $2, questionPNG = $3
-    WHERE questions.questionId = $4
-    `, [questionText, questionType, questionPNG, questionId]);
+    if (!questionText && !questionType && !questionPNG) {
+        res.status(400).json('No changes made!');
+        return;
+    }
+    let args = [];
+    let query = `UPDATE questions SET `
+    let count = 1;
+    if (questionText) {
+        query += `"questionText" = $${count}::text, `
+        args.push(questionText);
+        count++;
+    }
+    if (questionType) {
+        query += `"questionType" = $${count}::text, `
+        args.push(questionType);
+        count++;
+    }
+    if (questionPNG) {
+        query += `"questionPNG" = $${count}::text, `
+        args.push(questionPNG);
+        count++;
+    }
+    query += `"updated_at" = NOW() WHERE "questionId" = $${count}::int`
+    const r = await db.query(query, args);
+    if (r.rowCount === 0) {
+        res.status(401).json('Question not found!');
+        return;
+    }
     res.status(200).json('Question Edited!');
-});
-
-// Deletes a comment
-router.put('/comments/:commentId/delete', async (req: Request, res: Response) => {
-    const commentId = req.params.commentId;
-    editComment(+commentId, '', '');
-    res.status(200).json('Comment Deleted!');
 });
 
 // Edits a comment
 router.put('/comments/:commentId/edit', async (req: Request, res: Response) => {
     const commentId = req.params.commentId;
-    editComment(+commentId, req.body.commentText, req.body.commentPNG);
+    if (!req.body.commentText && !req.body.commentPNG) {
+        res.status(400).json('No changes made!');
+        return;
+    }
+    const count = await editComment(+commentId, req.body.commentText, req.body.commentPNG);
+    if (count.rowCount === 0) {
+        res.status(401).json('Question not found!');
+        return;
+    }
     res.status(200).json('Comment Edited!');
 });
 
@@ -53,47 +77,74 @@ router.put('/comments/:commentId/edit', async (req: Request, res: Response) => {
  *
  */
 
+// Deletes a comment
+router.patch('/comments/:commentId/delete', async (req: Request, res: Response) => {
+    const commentId = req.params.commentId;
+    const count = await editComment(+commentId, '', '');
+    if (count.rowCount === 0) {
+        res.status(401).json('Question not found!');
+        return;
+    }
+    res.status(200).json('Comment Deleted!');
+});
+
 // Sets a comment as correct
 router.patch('/comments/:commentId/correct', async (req: Request, res: Response) => {
     const commentId = req.params.commentId;
-    await db.query(`
+    const count = await db.query(`
     UPDATE comments
     SET "isCorrect" = true
     WHERE "commentId" = $1
     `, [commentId]);
+    if (count.rowCount === 0) {
+        res.status(400).json('Comment not found!');
+        return;
+    }
     res.status(200).json('Corrected!');
 });
 
 // Endorses a comment
 router.patch('/comments/:commentId/endorse', async (req: Request, res: Response) => {
     const commentId = req.params.commentId;
-    await db.query(`
+    const count = await db.query(`
     UPDATE comments
     SET "isEndorsed" = true
     WHERE "commentId" = $1
     `, [commentId]);
+    if (count.rowCount === 0) {
+        res.status(400).json('Comment not found!');
+        return;
+    }
     res.status(200).json('Endorsed!');
 });
 
 // Downvotes a comment
 router.patch('/comments/:commentId/downvote', async (req: Request, res: Response) => {
     const commentId = req.params.commentId;
-    await db.query(`
+    const count = await db.query(`
     UPDATE comments
     SET "downvotes" = "downvotes" + 1
     WHERE "commentId" = $1
     `, [commentId]);
+    if (count.rowCount === 0) {
+        res.status(400).json('Comment not found!');
+        return;
+    }
     res.status(200).json('Downvoted!');
 });
 
 // Upvotes a comment
 router.patch('/comments/:commentId/upvote', async (req: Request, res: Response) => {
     const commentId = req.params.commentId;
-    await db.query(`
+    const count = await db.query(`
     UPDATE comments
     SET "upvotes" = "upvotes" + 1
     WHERE "commentId" = $1
     `, [commentId]);
+    if (count.rowCount === 0) {
+        res.status(400).json('Comment not found!');
+        return;
+    }
     res.status(200).json('Upvoted!');
 });
 
@@ -107,17 +158,50 @@ router.patch('/comments/:commentId/upvote', async (req: Request, res: Response) 
 
 // Adds a new comment to the database
 router.post('/comments', async (req: Request, res: Response) => {
-    const { parentCommentId, commentText, commentPNG, isCorrect, isEndorsed, upvotes, downvotes } = req.body;
+    const { questionId, parentCommentId, commentText, commentPNG, isCorrect, isEndorsed, upvotes, downvotes } = req.body;
+    // Check key
+    if (!questionId) {
+        res.status(400).json('Missing questionId!');
+        return;
+    }
+    const r = await db.query(`SELECT "questionId" FROM questions WHERE "questionId" = $1`, [questionId]);
+    if (r.rowCount === 0) {
+        res.status(401).json('Question not found!');
+        return;
+    }
+    // Check parent id
+    if (parentCommentId) {
+        const r = await db.query(`SELECT "commentId", "questionId" FROM comments WHERE "commentId" = $1`, [parentCommentId]);
+        if (r.rowCount === 0) {
+            res.status(402).json('Parent comment not found!');
+            return;
+        }
+        const a = r.rows[0];
+        if ((a as any).questionId !== questionId) {
+            res.status(403).json('Parent comment is not from the same question!');
+            return;
+        }
+    }
     await db.query(`
-    INSERT INTO comments ("parentCommentId", "commentText", "commentPNG", "isCorrect", "isEndorsed", "upvotes", "downvotes")
-    VALUES ($1, $2, $3, $4, $5, $6, $7)
-    `, [parentCommentId, commentText, commentPNG, isCorrect, isEndorsed, upvotes, downvotes]);
+    INSERT INTO comments ("questionId", "parentCommentId", "commentText", "commentPNG", "isCorrect", "isEndorsed", "upvotes", "downvotes")
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+    `, [questionId, parentCommentId, commentText, commentPNG, isCorrect, isEndorsed, upvotes, downvotes]);
     res.status(201).json('Comment Added!');
 });
 
 // Adds a new question to the database
 router.post('/questions', async (req: Request, res: Response) => {
     const { examId, questionText, questionType, questionPNG } = req.body;
+    // Check key
+    if (!examId) {
+        res.status(400).json('Missing examId!');
+        return;
+    }
+    const r = await db.query(`SELECT "examId" exams WHERE "examId" = $1`, [examId]);
+    if (r.rowCount === 0) {
+        res.status(401).json('Exam not found!');
+        return;
+    }
     await db.query(`
     INSERT INTO questions ("examId", "questionText", "questionType", "questionPNG")
     VALUES ($1, $2, $3, $4)
@@ -125,9 +209,19 @@ router.post('/questions', async (req: Request, res: Response) => {
     res.status(201).json('Question Added!');
 });
 
-// Adds a new exam to the database
+// Adds a new exam to the databasecustomersscustomerss
 router.post('/exams', async (req: Request, res: Response) => {
     const { examYear, examSemester, examType, courseCode } = req.body;
+    // Check key
+    if (!courseCode) {
+        res.status(400).json('Missing courseCode!');
+        return;
+    }
+    const r = await db.query(`SELECT "courseCode" courses WHERE "courseCode" = $1`, [courseCode]);
+    if (r.rowCount === 0) {
+        res.status(401).json('Exam not found!');
+        return;
+    }
     await db.query(`
     INSERT INTO exams ("examYear", "examSemester", "examType", "courseCode")
     VALUES ($1, $2, $3, $4)
@@ -138,6 +232,11 @@ router.post('/exams', async (req: Request, res: Response) => {
 // Adds a new Course to the database
 router.post('/courses', async (req: Request, res: Response) => {
     const { courseCode, courseName, courseDescription } = req.body;
+    const r = await db.query(`SELECT courseCode FROM courses WHERE courseCode = $1`, [courseCode]);
+    if (r.rowCount !== 0) {
+        res.status(400).json('Course already exists!');
+        return;
+    }
     await db.query(`
     INSERT INTO courses ("courseCode", "courseName", "courseDescription")
     VALUES ($1, $2, $3)
@@ -157,7 +256,7 @@ router.post('/courses', async (req: Request, res: Response) => {
 router.get('/comments/:commentId', async (req: Request, res: Response) => {
     const commentId = req.params.commentId;
     const comment = await db.query(`
-    SELECT "commentId", "parentCommentId", "commentText", "commentPNG", "isCorrect", "isEndorsed", "upvotes", "downvotes", "created_at", "updated_at"
+    SELECT "commentId", "questionId", "parentCommentId", "commentText", "commentPNG", "isCorrect", "isEndorsed", "upvotes", "downvotes", "created_at", "updated_at"
     FROM comments
     WHERE comments."commentId" = $1
     `, [commentId]);
@@ -326,6 +425,7 @@ router.get('/sketch', async (req: Request, res: Response) => {
 // Used in nest helper function
 interface CommentObject {
     commentId: number;
+    questionId: number;
     parentCommentId: number | null;
     commenttext: string;
     commentPNG: string | null;
@@ -342,11 +442,21 @@ interface CommentObject {
 
 // function to edit / delete a comment
 async function editComment(commentId: number, commentText: string, commentPNG: string) {
-    await db.query(`
-    UPDATE comments
-    SET commentText = $1, commentPNG = $2
-    WHERE commentId = $3
-    `, [commentText, commentPNG, commentId]);
+    let args = [];
+    let query = `UPDATE questions SET `
+    let count = 1;
+    if (commentText) {
+        query += `"commentText" = $${count}::text, `
+        args.push(commentText);
+        count++;
+    }
+    if (commentPNG) {
+        query += `"commentPNG" = $${count}::text, `
+        args.push(commentPNG);
+        count++;
+    }
+    query += `"updated_at" = NOW() WHERE "commentId" = $${count}::int`
+    return await db.query(query, args);
 }
 
 // function to nest comments into their parent comments
