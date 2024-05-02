@@ -6,12 +6,14 @@ from .base import BaseCase
 
 
 class TestUser(BaseCase):
-    def test_evan(self):
+    def test_exam_post(self):
         """
-        Checks for a 200 response from the evan endpoint
+        Checks for a 201 response from the /exam endpoint
+        Checks for the correct response message
         """
-        response = requests.get(self.host() + '/evan', headers={'Accept': 'application/json'})
-        self.assertEqual(200, response.status_code)
+        response = requests.get(self.host() + '/exam', headers={'Accept': 'application/json'})
+        self.assertEqual(201, response.status_code)
+        self.assertEqual("Exam Added!", response.json())
 
 
 
