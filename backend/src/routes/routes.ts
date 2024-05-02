@@ -81,7 +81,7 @@ router.put('/comments/:commentId/edit', async (req: Request<CommentRouteParams, 
     const { commentId } = req.params;
 
     if (!req.body.commentText && !req.body.commentPNG) {
-        res.status(404).json('No changes made!');
+        res.status(400).json('No changes made!');
         return;
     }
 
