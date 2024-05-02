@@ -240,7 +240,7 @@ router.get('/courses', async (req: Request, res: Response) => {
     await db.query(`
     INSERT INTO courses ("courseCode", "courseName", "courseDescription")
     VALUES ($1, $2, $3)
-    `, ["csse2301", "courseName", "courseDescription"]);
+    `, [courseCode, courseName, courseDescription]);
     res.status(201).json('Course Added!');
 });
 
