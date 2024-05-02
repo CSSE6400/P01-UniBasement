@@ -407,7 +407,6 @@ router.get('/exams/:examId', async (req: Request<ExamRouteParams>, res: Response
   res.status(200).json(rows[0]);
 });
 
-//TODO up to below
 // A course's exams by code
 router.get('/courses/:courseCode/exams', async (req: Request<CourseRouteParams>, res: Response) => {
     const { courseCode } = req.params;
