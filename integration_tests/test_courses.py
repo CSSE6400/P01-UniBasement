@@ -120,7 +120,7 @@ class TestUser(BaseCase):
         """
         expectedCourses = [
             {"courseCode": "ENGG1001", "courseName": "Programming for Engineers", "courseDescription": "An introductory course covering basic concepts of software engineering."},
-            {"courseCode": "DECO2500", "courseName": "Human Computer Interaction", "courseDescription": "Models of action, perception, cognition and interaction in human-machine systems. Methods of interaction analysis and interaction representation. Human-machine system evaluation. Practical implementation. Introduction to user and use-centred design principles. Broader topics may include: societal considerations, groupware, multimedia, media perspectives."},
+            {"courseCode": "ENGG1100", "courseName": "Professional Engineering", "courseDescription": "An introductory course covering fundamental concepts in engineering principles."},
             {"courseCode": "MATH1051", "courseName": "Calculus & Linear Algebra", "courseDescription": "A foundational course in calculus covering limits, derivatives, and integrals."}
         ]
 
