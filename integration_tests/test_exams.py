@@ -4,7 +4,7 @@ import requests
 from .base import BaseCase
 
 
-class TestUser(BaseCase):
+class TestExams(BaseCase):
     def test_exam_post(self):
         """
         Checks for a 201 response from the /exam endpoint

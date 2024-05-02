@@ -4,7 +4,7 @@ import requests
 from .base import BaseCase
 
 
-class TestUser(BaseCase):
+class TestComments(BaseCase):
     def test_evan(self):
         """
         Checks for a 200 response from the evan endpoint

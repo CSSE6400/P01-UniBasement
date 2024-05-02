@@ -4,7 +4,7 @@ import requests
 from .base import BaseCase
 
 
-class TestUser(BaseCase):
+class TestCourse(BaseCase):
 
     def test_course_post(self):
         """
