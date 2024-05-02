@@ -157,7 +157,7 @@ router.patch('/comments/:commentId/upvote', async (req: Request, res: Response) 
  */
 
 // Adds a new comment to the database
-router.get('/comments', async (req: Request, res: Response) => {
+router.post('/comments', async (req: Request, res: Response) => {
     const { questionId, parentCommentId, commentText, commentPNG, isCorrect, isEndorsed, upvotes, downvotes } = req.body;
     // Check key
     if (!questionId) {
@@ -185,7 +185,7 @@ router.get('/comments', async (req: Request, res: Response) => {
     await db.query(`
     INSERT INTO comments ("questionId", "parentCommentId", "commentText", "commentPNG", "isCorrect", "isEndorsed", "upvotes", "downvotes")
     VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-    `, [1, parentCommentId, commentText, commentPNG, isCorrect, isEndorsed, upvotes, downvotes]);
+    `, [questionId, parentCommentId, commentText, commentPNG, isCorrect, isEndorsed, upvotes, downvotes]);
     res.status(201).json('Comment Added!');
 });
 
