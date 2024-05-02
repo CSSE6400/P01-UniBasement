@@ -2,3 +2,4 @@
 *.tfstate*
 *node_modules*
 *__pycache__*
+*report.log*

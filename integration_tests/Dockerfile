@@ -13,4 +13,4 @@ COPY . tests
 RUN pip install requests pytest pytest-reportlog rfc3339-validator pendulum python-lorem
 
 # Run the unit tests
-CMD bash -c "sleep 10 && python -m pytest --report-log report.log tests"
+CMD bash -c "sleep 10 && python -m pytest -v --report-log report.log tests"

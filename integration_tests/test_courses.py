@@ -10,12 +10,6 @@ class TestUser(BaseCase):
         # Generate test data
         requests.get(self.host() + '/sketch', headers={'Accept': 'application/json'})
 
-    def tearDown(self):
-        # Delete test data
-        requests.get(self.host() + '/sketchies', headers={'Accept': 'application/json'})
-        
-
-
     def test_course_post(self):
         """
         Checks for a 201 response from the /courses endpoint
