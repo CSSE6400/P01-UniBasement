@@ -267,7 +267,7 @@ router.post('/questions', async (req: Request<any, any, QuestionBodyParams>, res
     res.status(201).json('Question Added!');
 });
 
-// Adds a new exam to the databasecustomersscustomerss
+// Adds a new exam to the database
 router.post('/exams', async (req: Request<any, any, ExamBodyParams>, res: Response) => {
     const {
         examYear,
@@ -372,30 +372,42 @@ router.get('/questions/:questionId', async (req: Request<QuestionRouteParams>, r
 
 // Exam questions by exam ID
 router.get('/exams/:examId/questions', async (req: Request<ExamRouteParams>, res: Response) => {
-    const { examId } = req.params;
+  const { examId } = req.params;
 
-    const { rows } = await db.query<Question>(`
-    SELECT "questionId", "questionText", "questionType", "questionPNG"
-    FROM questions
-    WHERE questions."examId" = $1
-    `, [examId]);
+  const { rows } = await db.query<Question>(`
+  SELECT "questionId", "questionText", "questionType", "questionPNG"
+  FROM questions
+  WHERE questions."examId" = $1
+  `, [examId]);
 
-    res.status(200).json(rows);
+  if (rows.length === 0) {
+      res.status(404).json('No questions found for this exam');
+      return;
+  }
+
+  res.status(200).json(rows);
 });
+
 
 // Exam by ID
 router.get('/exams/:examId', async (req: Request<ExamRouteParams>, res: Response) => {
-    const { examId } = req.params;
+  const { examId } = req.params;
 
-    const { rows } = await db.query<Exam>(`
-    SELECT "examId", "examYear", "examSemester", "examType"
-    FROM exams
-    WHERE exams."examId" = $1
-    `, [examId]);
+  const { rows } = await db.query<Exam>(`
+  SELECT "examId", "examYear", "examSemester", "examType"
+  FROM exams
+  WHERE exams."examId" = $1
+  `, [examId]);
 
-    res.status(200).json(rows[0]);
+  if (rows.length === 0) {
+      res.status(404).json('Exam not found');
+      return;
+  }
+
+  res.status(200).json(rows[0]);
 });
 
+//TODO up to below
 // A course's exams by code
 router.get('/courses/:courseCode/exams', async (req: Request<CourseRouteParams>, res: Response) => {
     const { courseCode } = req.params;
