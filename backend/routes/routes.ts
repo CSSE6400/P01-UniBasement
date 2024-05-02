@@ -1,8 +1,18 @@
 // Imports
 import { Router, Request, Response } from 'express'; // Import Request and Response types
 import * as db from '../db/index';
-import { v4 as uuidv4, validate } from 'uuid';
-const { exec } = require('child_process');
+import {
+    Comment as IComment,
+    CommentBodyParams,
+    CommentRouteParams,
+    CourseBodyParams,
+    CourseQueryParams,
+    CourseRouteParams,
+    ExamBodyParams,
+    ExamRouteParams,
+    QuestionBodyParams,
+    QuestionRouteParams,
+} from '../types';
 
 // Export Routers
 export const router = Router();
@@ -20,16 +30,18 @@ export const router = Router();
  */
 
 // Edits a question
-router.put('/questions/:questionId/edit', async (req: Request, res: Response) => {
+router.put('/questions/:questionId/edit', async (req: Request<QuestionRouteParams, any, QuestionBodyParams>, res: Response) => {
     const questionId = req.params.questionId
     const { questionText, questionType, questionPNG } = req.body;
     if (!questionText && !questionType && !questionPNG) {
         res.status(400).json('No changes made!');
         return;
     }
-    let args = [];
-    let query = `UPDATE questions SET `
+
+    const args = [];
     let count = 1;
+    let query = `UPDATE questions SET `;
+
     if (questionText) {
         query += `"questionText" = $${count}::text, `
         args.push(questionText);
@@ -46,6 +58,8 @@ router.put('/questions/:questionId/edit', async (req: Request, res: Response) =>
         count++;
     }
     query += `"updated_at" = NOW() WHERE "questionId" = $${count}::int`
+    args.push(questionId);
+
     const r = await db.query(query, args);
     if (r.rowCount === 0) {
         res.status(401).json('Question not found!');
@@ -55,13 +69,13 @@ router.put('/questions/:questionId/edit', async (req: Request, res: Response) =>
 });
 
 // Edits a comment
-router.put('/comments/:commentId/edit', async (req: Request, res: Response) => {
+router.put('/comments/:commentId/edit', async (req: Request<CommentRouteParams, any, CommentBodyParams>, res: Response) => {
     const commentId = req.params.commentId;
     if (!req.body.commentText && !req.body.commentPNG) {
         res.status(400).json('No changes made!');
         return;
     }
-    const count = await editComment(+commentId, req.body.commentText, req.body.commentPNG);
+    const count = await editComment(commentId, req.body.commentText, req.body.commentPNG);
     if (count.rowCount === 0) {
         res.status(401).json('Question not found!');
         return;
@@ -78,9 +92,9 @@ router.put('/comments/:commentId/edit', async (req: Request, res: Response) => {
  */
 
 // Deletes a comment
-router.patch('/comments/:commentId/delete', async (req: Request, res: Response) => {
+router.patch('/comments/:commentId/delete', async (req: Request<CommentRouteParams>, res: Response) => {
     const commentId = req.params.commentId;
-    const count = await editComment(+commentId, '', '');
+    const count = await editComment(commentId, '', '');
     if (count.rowCount === 0) {
         res.status(401).json('Question not found!');
         return;
@@ -89,7 +103,7 @@ router.patch('/comments/:commentId/delete', async (req: Request, res: Response) 
 });
 
 // Sets a comment as correct
-router.patch('/comments/:commentId/correct', async (req: Request, res: Response) => {
+router.patch('/comments/:commentId/correct', async (req: Request<CommentRouteParams>, res: Response) => {
     const commentId = req.params.commentId;
     const count = await db.query(`
     UPDATE comments
@@ -104,7 +118,7 @@ router.patch('/comments/:commentId/correct', async (req: Request, res: Response)
 });
 
 // Endorses a comment
-router.patch('/comments/:commentId/endorse', async (req: Request, res: Response) => {
+router.patch('/comments/:commentId/endorse', async (req: Request<CommentRouteParams>, res: Response) => {
     const commentId = req.params.commentId;
     const count = await db.query(`
     UPDATE comments
@@ -119,7 +133,7 @@ router.patch('/comments/:commentId/endorse', async (req: Request, res: Response)
 });
 
 // Downvotes a comment
-router.patch('/comments/:commentId/downvote', async (req: Request, res: Response) => {
+router.patch('/comments/:commentId/downvote', async (req: Request<CommentRouteParams>, res: Response) => {
     const commentId = req.params.commentId;
     const count = await db.query(`
     UPDATE comments
@@ -134,7 +148,7 @@ router.patch('/comments/:commentId/downvote', async (req: Request, res: Response
 });
 
 // Upvotes a comment
-router.patch('/comments/:commentId/upvote', async (req: Request, res: Response) => {
+router.patch('/comments/:commentId/upvote', async (req: Request<CommentRouteParams>, res: Response) => {
     const commentId = req.params.commentId;
     const count = await db.query(`
     UPDATE comments
@@ -157,7 +171,7 @@ router.patch('/comments/:commentId/upvote', async (req: Request, res: Response) 
  */
 
 // Adds a new comment to the database
-router.post('/comments', async (req: Request, res: Response) => {
+router.post('/comments', async (req: Request<any, any, CommentBodyParams>, res: Response) => {
     const { questionId, parentCommentId, commentText, commentPNG, isCorrect, isEndorsed, upvotes, downvotes } = req.body;
     // Check key
     if (!questionId) {
@@ -190,7 +204,7 @@ router.post('/comments', async (req: Request, res: Response) => {
 });
 
 // Adds a new question to the database
-router.post('/questions', async (req: Request, res: Response) => {
+router.post('/questions', async (req: Request<any, any, QuestionBodyParams>, res: Response) => {
     const { examId, questionText, questionType, questionPNG } = req.body;
     // Check key
     if (!examId) {
@@ -210,7 +224,7 @@ router.post('/questions', async (req: Request, res: Response) => {
 });
 
 // Adds a new exam to the databasecustomersscustomerss
-router.post('/exams', async (req: Request, res: Response) => {
+router.post('/exams', async (req: Request<any, any, ExamBodyParams>, res: Response) => {
     const { examYear, examSemester, examType, courseCode } = req.body;
     // Check key
     if (!courseCode) {
@@ -230,7 +244,7 @@ router.post('/exams', async (req: Request, res: Response) => {
 });
 
 // Adds a new Course to the database
-router.post('/courses', async (req: Request, res: Response) => {
+router.post('/courses', async (req: Request<any, any, CourseBodyParams>, res: Response) => {
     const { courseCode, courseName, courseDescription } = req.body;
     const r = await db.query(`SELECT courseCode FROM courses WHERE courseCode = $1`, [courseCode]);
     if (r.rowCount !== 0) {
@@ -250,10 +264,10 @@ router.post('/courses', async (req: Request, res: Response) => {
  *
  * See outputs and params in HANDSHAKE.md
  *
- */ 
+ */
 
 // Gets comment by comment id
-router.get('/comments/:commentId', async (req: Request, res: Response) => {
+router.get('/comments/:commentId', async (req: Request<CommentRouteParams>, res: Response) => {
     const commentId = req.params.commentId;
     const comment = await db.query(`
     SELECT "commentId", "questionId", "parentCommentId", "commentText", "commentPNG", "isCorrect", "isEndorsed", "upvotes", "downvotes", "created_at", "updated_at"
@@ -264,7 +278,7 @@ router.get('/comments/:commentId', async (req: Request, res: Response) => {
 });
 
 // Gets all comments by question id
-router.get('/questions/:questionId/comments', async (req: Request, res: Response) => {
+router.get('/questions/:questionId/comments', async (req: Request<QuestionRouteParams>, res: Response) => {
     const questionId = req.params.questionId;
     const question = await db.query(`
     SELECT "commentId", "parentCommentId", "commentText", "commentPNG", "isCorrect", "isEndorsed", "upvotes", "downvotes", "created_at", "updated_at"
@@ -275,7 +289,7 @@ router.get('/questions/:questionId/comments', async (req: Request, res: Response
 });
 
 // Gets question information by question id
-router.get('/questions/:questionId', async (req: Request, res: Response) => {
+router.get('/questions/:questionId', async (req: Request<QuestionRouteParams>, res: Response) => {
     const questionId = req.params.questionId;
     const question = await db.query(`
     SELECT "questionId", "questionText", "questionType", "questionPNG"
@@ -286,7 +300,7 @@ router.get('/questions/:questionId', async (req: Request, res: Response) => {
 });
 
 // Exam questions by exam ID
-router.get('/exams/:examId/questions', async (req: Request, res: Response) => {
+router.get('/exams/:examId/questions', async (req: Request<ExamRouteParams>, res: Response) => {
     const examId = req.params.examId;
     const exam = await db.query(`
     SELECT "questionId", "questionText", "questionType", "questionPNG"
@@ -297,7 +311,7 @@ router.get('/exams/:examId/questions', async (req: Request, res: Response) => {
 });
 
 // Exam by ID
-router.get('/exams/:examId', async (req: Request, res: Response) => {
+router.get('/exams/:examId', async (req: Request<ExamRouteParams>, res: Response) => {
     const examId = req.params.examId;
     const exams = await db.query(`
     SELECT "examId", "examYear", "examSemester", "examType"
@@ -308,7 +322,7 @@ router.get('/exams/:examId', async (req: Request, res: Response) => {
 });
 
 // A course's exams by code
-router.get('/courses/:courseCode/exams', async (req: Request, res: Response) => {
+router.get('/courses/:courseCode/exams', async (req: Request<CourseRouteParams>, res: Response) => {
     const courseCode = req.params.courseCode;
     const course = await db.query(`
     SELECT "examId", "examYear", "examSemester", "examType"
@@ -319,7 +333,7 @@ router.get('/courses/:courseCode/exams', async (req: Request, res: Response) => 
 });
 
 // A Courses information by code
-router.get('/courses/:courseCode', async (req: Request, res: Response) => {
+router.get('/courses/:courseCode', async (req: Request<CourseRouteParams>, res: Response) => {
     const courseCode = req.params.courseCode;
     const course = await db.query(`
     SELECT "courseCode", "courseName", "courseDescription"
@@ -330,15 +344,15 @@ router.get('/courses/:courseCode', async (req: Request, res: Response) => {
 });
 
 // All courses
-router.get('/courses', async (req: Request, res: Response) => {
-    const offet = req.query.offset ?? 0;
+router.get('/courses', async (req: Request<any, any, any, CourseQueryParams>, res: Response) => {
+    const offset = req.query.offset ?? 0;
     const limit = req.query.limit ?? 100;
     const courses = await db.query(`
     SELECT "courseCode", "courseName", "courseDescription" 
     FROM courses 
     LIMIT $1 
     OFFSET $2
-    `, [limit, offet]);
+    `, [limit, offset]);
     res.status(200).json(courses.rows);
 });
 
@@ -420,31 +434,15 @@ router.get('/sketch', async (req: Request, res: Response) => {
     `);
     res.status(200).json(`THIS SHIT SKETCH ASF AND WAS LIV'S IDEA!!!`);
 });
-// Interfaces
-
-// Used in nest helper function
-interface CommentObject {
-    commentId: number;
-    questionId: number;
-    parentCommentId: number | null;
-    commenttext: string;
-    commentPNG: string | null;
-    iscorrect: boolean;
-    isendorsed: boolean;
-    upvotes: number;
-    downvotes: number;
-    created_at: string;
-    updated_at: string;
-    children?: CommentObject[];
-}
 
 // Helper functions
 
 // function to edit / delete a comment
-async function editComment(commentId: number, commentText: string, commentPNG: string) {
-    let args = [];
+async function editComment(commentId: number, commentText?: string | null, commentPNG?: string | null) {
+    const args = [];
     let query = `UPDATE questions SET `
     let count = 1;
+
     if (commentText) {
         query += `"commentText" = $${count}::text, `
         args.push(commentText);
@@ -456,12 +454,14 @@ async function editComment(commentId: number, commentText: string, commentPNG: s
         count++;
     }
     query += `"updated_at" = NOW() WHERE "commentId" = $${count}::int`
+    args.push(commentId)
+
     return await db.query(query, args);
 }
 
 // function to nest comments into their parent comments
 export function nest(jsonData: any[]) {
-    const dataDict: { [id: number]: CommentObject } = {};
+    const dataDict: { [id: number]: IComment } = {};
     jsonData.forEach(item => dataDict[item.commentId] = item);
 
     jsonData.forEach(item => {
@@ -480,7 +480,7 @@ export function nest(jsonData: any[]) {
 
 // function to return one comment with its children
 export function single_nest(jsonData: any[], commentId: number) {
-    const dataDict: { [id: number]: CommentObject } = {};
+    const dataDict: { [id: number]: IComment } = {};
     jsonData.forEach(item => dataDict[item.commentId] = item);
 
     jsonData.forEach(item => {
