@@ -1,6 +1,6 @@
 // Imports
 import { Router, Request, Response } from 'express'; // Import Request and Response types
-import * as db from '../db/index';
+import * as db from '../db';
 import {
     Comment as IComment,
     CommentBodyParams,

@@ -1,4 +1,4 @@
-const { single_nest, nest } = require("../routes/routes");
+const { single_nest, nest } = require("../src/routes/routes");
 
 // All tests for the nest function
 describe("nest function", () => {
