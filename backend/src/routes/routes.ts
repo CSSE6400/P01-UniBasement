@@ -449,8 +449,9 @@ router.get('/evan', async (req: Request, res: Response) => {
 
 // The sketch route
 router.get('/sketch', async (req: Request, res: Response) => {
-    const b = await db.query1('SELECT * FROM courses')
+    const b = await db.query1('SELECT "examId" FROM exams WHERE "examId" = 1');
     if (b.rows.length != 0) {
+        res.status(400).json('Data already exists!');
         return
     }
 
@@ -505,8 +506,6 @@ router.get('/sketch', async (req: Request, res: Response) => {
             (3, 9, 'TRUEEE!!!', TRUE, TRUE, 999, 0),
             (3, 10, 'ong', FALSE, TRUE, 9, 1),
             (3, 9, 'Fax what a goat', FALSE, FALSE, 80, 1);
-
-
     `);
     res.status(200).json(`THIS SHIT SKETCH ASF AND WAS LIV'S IDEA!!!`);
 });
