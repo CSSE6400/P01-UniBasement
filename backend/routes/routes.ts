@@ -27,11 +27,26 @@ router.put('/questions/:questionId/edit', async (req: Request, res: Response) =>
         res.status(400).json('No changes made!');
         return;
     }
-    const count = await db.query(`
-    UPDATE questions
-    SET questionText = $1, questionType = $2, questionPNG = $3
-    WHERE questions.questionId = $4
-    `, [questionText, questionType, questionPNG, questionId]);
+    args = [];
+    query = `UPDATE questions SET `
+    count = 1;
+    if (questionText) {
+        query += `"questionText" = $${count}::text, `
+        args.push(questionText);
+        count++;
+    }
+    if (questionType) {
+        query += `"questionType" = $${count}::text, `
+        args.push(questionType);
+        count++;
+    }
+    if (questionPNG) {
+        query += `"questionPNG" = $${count}::text, `
+        args.push(questionPNG);
+        count++;
+    }
+    query += `"updated_at" = NOW() WHERE "questionId" = $${count}::int`
+    const count = await db.query(query, args);
     if (count.rowCount === 0) {
         res.status(404).json('Question not found!');
         return;
@@ -39,20 +54,13 @@ router.put('/questions/:questionId/edit', async (req: Request, res: Response) =>
     res.status(200).json('Question Edited!');
 });
 
-// Deletes a comment
-router.put('/comments/:commentId/delete', async (req: Request, res: Response) => {
-    const commentId = req.params.commentId;
-    const count = await editComment(+commentId, '', '');
-    if (count.rowCount === 0) {
-        res.status(404).json('Question not found!');
-        return;
-    }
-    res.status(200).json('Comment Deleted!');
-});
-
 // Edits a comment
 router.put('/comments/:commentId/edit', async (req: Request, res: Response) => {
     const commentId = req.params.commentId;
+    if (!req.body.commentText && !req.body.commentPNG) {
+        res.status(400).json('No changes made!');
+        return;
+    }
     const count = await editComment(+commentId, req.body.commentText, req.body.commentPNG);
     if (count.rowCount === 0) {
         res.status(404).json('Question not found!');
@@ -69,47 +77,74 @@ router.put('/comments/:commentId/edit', async (req: Request, res: Response) => {
  *
  */
 
+// Deletes a comment
+router.patch('/comments/:commentId/delete', async (req: Request, res: Response) => {
+    const commentId = req.params.commentId;
+    const count = await editComment(+commentId, '', '');
+    if (count.rowCount === 0) {
+        res.status(404).json('Question not found!');
+        return;
+    }
+    res.status(200).json('Comment Deleted!');
+});
+
 // Sets a comment as correct
 router.patch('/comments/:commentId/correct', async (req: Request, res: Response) => {
     const commentId = req.params.commentId;
-    await db.query(`
+    const count = await db.query(`
     UPDATE comments
     SET "isCorrect" = true
     WHERE "commentId" = $1
     `, [commentId]);
+    if (count.rowCount === 0) {
+        res.status(404).json('Comment not found!');
+        return;
+    }
     res.status(200).json('Corrected!');
 });
 
 // Endorses a comment
 router.patch('/comments/:commentId/endorse', async (req: Request, res: Response) => {
     const commentId = req.params.commentId;
-    await db.query(`
+    const count = await db.query(`
     UPDATE comments
     SET "isEndorsed" = true
     WHERE "commentId" = $1
     `, [commentId]);
+    if (count.rowCount === 0) {
+        res.status(404).json('Comment not found!');
+        return;
+    }
     res.status(200).json('Endorsed!');
 });
 
 // Downvotes a comment
 router.patch('/comments/:commentId/downvote', async (req: Request, res: Response) => {
     const commentId = req.params.commentId;
-    await db.query(`
+    const count = await db.query(`
     UPDATE comments
     SET "downvotes" = "downvotes" + 1
     WHERE "commentId" = $1
     `, [commentId]);
+    if (count.rowCount === 0) {
+        res.status(404).json('Comment not found!');
+        return;
+    }
     res.status(200).json('Downvoted!');
 });
 
 // Upvotes a comment
 router.patch('/comments/:commentId/upvote', async (req: Request, res: Response) => {
     const commentId = req.params.commentId;
-    await db.query(`
+    const count = await db.query(`
     UPDATE comments
     SET "upvotes" = "upvotes" + 1
     WHERE "commentId" = $1
     `, [commentId]);
+    if (count.rowCount === 0) {
+        res.status(404).json('Comment not found!');
+        return;
+    }
     res.status(200).json('Upvoted!');
 });
 
@@ -358,11 +393,21 @@ interface CommentObject {
 
 // function to edit / delete a comment
 async function editComment(commentId: number, commentText: string, commentPNG: string) {
-    return await db.query(`
-    UPDATE comments
-    SET commentText = $1, commentPNG = $2
-    WHERE commentId = $3
-    `, [commentText, commentPNG, commentId]);
+    args = [];
+    query = `UPDATE questions SET `
+    count = 1;
+    if (commentText) {
+        query += `"commentText" = $${count}::text, `
+        args.push(questionText);
+        count++;
+    }
+    if (commentPNG) {
+        query += `"commentPNG" = $${count}::text, `
+        args.push(questionType);
+        count++;
+    }
+    query += `"updated_at" = NOW() WHERE "commentId" = $${count}::int`
+    return await db.query(query, args);
 }
 
 // function to nest comments into their parent comments
