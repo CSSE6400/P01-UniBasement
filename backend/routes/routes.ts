@@ -230,7 +230,7 @@ router.post('/exams', async (req: Request, res: Response) => {
 });
 
 // Adds a new Course to the database
-router.get('/courses', async (req: Request, res: Response) => {
+router.post('/courses', async (req: Request, res: Response) => {
     const { courseCode, courseName, courseDescription } = req.body;
     const r = await db.query(`SELECT courseCode FROM courses WHERE courseCode = $1`, [courseCode]);
     if (r.rowCount !== 0) {
