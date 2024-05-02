@@ -1,13 +1,15 @@
 import unittest
 import os
-
+import requests
 
 class BaseCase(unittest.TestCase):
     def host(self):
         base = os.getenv('API_URL', "http://localhost:8080/api")
         
         if base[-1] == '/':
+            requests.get(base[:-1] + '/sketch', headers={'Accept': 'application/json'})
             return base[:-1]
+        requests.get(base + '/sketch', headers={'Accept': 'application/json'})
         return base
 
     def assertDictSubset(self, expected_subset: dict, whole: dict, dict_sort=lambda d: d['name']):

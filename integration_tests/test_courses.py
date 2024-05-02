@@ -6,9 +6,6 @@ from .base import BaseCase
 
 
 class TestUser(BaseCase):
-    def setUp(self):
-        # Generate test data
-        requests.get(self.host() + '/sketch', headers={'Accept': 'application/json'})
 
     def test_course_post(self):
         """
@@ -26,7 +23,6 @@ class TestUser(BaseCase):
         self.assertEqual(201, response.status_code)
 
         self.assertEqual('Course Added!', response.json())
-
 
     def test_course_post_null_coursecode(self):
         """
@@ -68,7 +64,6 @@ class TestUser(BaseCase):
         self.assertEqual(400, response.status_code)
 
         self.assertEqual('Course Code already exists', response.json())
-
 
 
     def test_course_get_exam_by_code(self):
