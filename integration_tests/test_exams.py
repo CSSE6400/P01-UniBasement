@@ -62,10 +62,10 @@ class TestUser(BaseCase):
         Checks for the correct response message
         """
         examId = 1
-        expectedBody = {
+        expectedBody = [{
             "questionId": 1,
             "questionText": [{'questionId': 1, 'questionTest': 'Who is the best tutor at UQ?'}]
-        }
+        }]
         response = requests.get(self.host() + f'/exams/{examId}/questions')
         self.assertEqual(200, response.status_code)
         self.assertEqual(expectedBody, response.json())
