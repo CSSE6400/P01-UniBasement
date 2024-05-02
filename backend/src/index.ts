@@ -2,11 +2,10 @@
  * Imports
  */
 import express from "express";
-import { Pool } from 'pg';
 import cors from 'cors';
 
-import { routes } from './routes/index';
-import * as db from './db/index';
+import { routes } from './routes';
+import * as db from './db';
 
 const PORT: number = process.env.PORT ? parseInt(process.env.PORT) : 8080;
 
