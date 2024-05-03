@@ -572,7 +572,7 @@ router.get('/sketch', async (req: Request, res: Response) => {
 // function to edit / delete a comment
 async function editComment(commentId: number, commentText?: string | null, commentPNG?: string | null) {
     const args = [];
-    let query = `UPDATE questions SET `
+    let query = `UPDATE comments SET `
     let count = 1;
 
     if (commentText) {
