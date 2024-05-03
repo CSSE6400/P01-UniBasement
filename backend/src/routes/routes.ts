@@ -368,20 +368,27 @@ router.get('/questions/:questionId/comments', async (req: Request<QuestionRouteP
     res.status(200).json(nest(rows));
 });
 
-//TODO this
+
 // Gets question information by question id
 router.get('/questions/:questionId', async (req: Request<QuestionRouteParams>, res: Response) => {
     const { questionId } = req.params;
+
+    // Check if the questionId exists in the database
+    const { rows : questionRows } = await db.query(`
+        SELECT "questionId"
+        From questions
+        WHERE "questionId" = $1
+    `, [questionId]);
+
+    if (questionRows.length === 0) {
+        return res.status(404).json({ error: 'Question not found' });
+    }
 
     const { rows } = await db.query<Question>(`
     SELECT "questionId", "questionText", "questionType", "questionPNG"
     FROM questions
     WHERE questions."questionId" = $1
     `, [questionId]);
-
-    if (rows.length === 0) {
-        return res.status(404).json({ error: "Question not found" });
-  }
 
   res.status(200).json(rows[0]);
 });

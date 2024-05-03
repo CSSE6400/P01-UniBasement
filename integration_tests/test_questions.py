@@ -252,14 +252,5 @@ class TestQuestions(BaseCase):
         self.assertEqual(expectedResponse, response.json())
 
 
-
-
-    # need to do testing on /questions/:questionId
-
-    #TODO go through every route i rest and add a comment above the test for which route is specifcally called. 
-
-    
-
-
 if __name__ == '__main__':
     unittest.main()
