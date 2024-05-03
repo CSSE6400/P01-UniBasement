@@ -107,12 +107,158 @@ class TestQuestions(BaseCase):
 
         response = requests.post(self.host() + '/questions', json=body)
         self.assertEqual(400, response.status_code)
-        self.assertEqual('ExamId not found', response.json())
+        self.assertEqual('Missing examId', response.json())
+
+
+# expected response for get question infromation by question id
+
+    def test_get_question_by_questionId(self):
+        """
+        Check for a 200 response from the /questions endpoint
+        Check for the correct response message
+        """
+        questionId = 1
+        expectedResponse = [
+            {
+                "commentId": 1,
+                "parentCommentId": None,
+                "commentText": "Evan Hughes",
+                "commentPNG": None,
+                "isCorrect": True,
+                "isEndorsed": True,
+                "upvotes": 100,
+                "downvotes": 1,
+                "created_at": "2024-05-03T02:36:21.849Z",
+                "updated_at": "2024-05-03T02:36:21.849Z",
+                "children": [
+                    {
+                        "commentId": 2,
+                        "parentCommentId": 1,
+                        "commentText": "Are you stupid it is clearly Liv Ronda",
+                        "commentPNG": None,
+                        "isCorrect": False,
+                        "isEndorsed": False,
+                        "upvotes": 0,
+                        "downvotes": 100,
+                        "created_at": "2024-05-03T02:36:21.849Z",
+                        "updated_at": "2024-05-03T02:36:21.849Z",
+                        "children": [
+                            {
+                                "commentId": 3,
+                                "parentCommentId": 2,
+                                "commentText": "Bro went to stupid school L",
+                                "commentPNG": None,
+                                "isCorrect": False,
+                                "isEndorsed": True,
+                                "upvotes": 999,
+                                "downvotes": 1,
+                                "created_at": "2024-05-03T02:36:21.849Z",
+                                "updated_at": "2024-05-03T02:36:21.849Z"
+                            }
+                        ]
+                    },
+                    {
+                        "commentId": 4,
+                        "parentCommentId": 1,
+                        "commentText": "Fax what a goat",
+                        "commentPNG": None,
+                        "isCorrect": False,
+                        "isEndorsed": False,
+                        "upvotes": 80,
+                        "downvotes": 1,
+                        "created_at": "2024-05-03T02:36:21.849Z",
+                        "updated_at": "2024-05-03T02:36:21.849Z"
+                    }
+                ]
+            }
+        ]
+
+        response = requests.get(self.host() + '/questions/' + str(questionId) + '/comments')
+
+        def update_timestamps(response_dict, created_at, updated_at):
+            if isinstance(response_dict, list):
+                for item in response_dict:
+                    update_timestamps(item, created_at, updated_at)
+            elif isinstance(response_dict, dict):
+                if 'created_at' in response_dict:
+                    response_dict['created_at'] = created_at
+                if 'updated_at' in response_dict:
+                    response_dict['updated_at'] = updated_at
+                for key, value in response_dict.items():
+                    if isinstance(value, (list, dict)):
+                        update_timestamps(value, created_at, updated_at)
+
+        update_timestamps(expectedResponse, response.json()[0]['created_at'], response.json()[0]['updated_at'])
+        
+        self.assertEqual(200, response.status_code)
+        self.assertEqual(expectedResponse, response.json())
+
+
+    def test_get_question_by_invalid_questionId(self):
+        """
+        Check for a 404 response from the /questions endpoint
+        Check for the correct response message
+        """
+        questionId = 3344
+        expectedResponse = {
+          'error': 'Question not found'
+        }
+        response = requests.get(self.host() + '/questions/' + str(questionId) + '/comments')
+        self.assertEqual(404, response.status_code)
+        self.assertEqual(expectedResponse, response.json())
+
+
+    def test_get_question_by_questionId_no_comments(self):
+        """
+        Check for a 200 response from the /questions endpoint
+        Check for the correct response message
+        """
+        questionId = 4
+        expectedResponse = []
+        response = requests.get(self.host() + '/questions/' + str(questionId) + '/comments')
+        self.assertEqual(200, response.status_code)
+        self.assertEqual(expectedResponse, response.json())
+
+
+    def test_get_question_information_by_id(self):
+        """
+        Check for a 200 response from the /questions endpoint
+        Check for the correct response message
+        """
+        questionId = 1
+        expectedResponse = {
+            "questionId": 1,
+            "questionText": "Who is the best tutor at UQ?",
+            "questionType": "Multiple Choice",
+            "questionPNG": None
+        }
+        response = requests.get(self.host() + '/questions/' + str(questionId))
+        self.assertEqual(200, response.status_code)
+        self.assertEqual(expectedResponse, response.json())
+
+
+    def test_get_question_information_by_invalid_id(self):
+        """
+        Check for a 404 response from the /questions endpoint
+        Check for the correct response message
+        """
+        questionId = 4486
+        expectedResponse = {
+            "error": "Question not found"
+        }
+
+        response = requests.get(self.host() + '/questions/' + str(questionId))
+        self.assertEqual(404, response.status_code)
+        self.assertEqual(expectedResponse, response.json())
 
 
 
 
+    # need to do testing on /questions/:questionId
 
+    #TODO go through every route i rest and add a comment above the test for which route is specifcally called. 
+
+    
 
 
 if __name__ == '__main__':
