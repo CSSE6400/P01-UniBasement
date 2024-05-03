@@ -76,7 +76,6 @@ router.put('/questions/:questionId/edit', async (req: Request<QuestionRouteParam
     res.status(200).json('Question edited');
 });
 
-//TODO needs to be tested
 // Edits a comment
 router.put('/comments/:commentId/edit', async (req: Request<CommentRouteParams, any, CommentBodyParams>, res: Response) => {
     const { commentId } = req.params;
@@ -88,7 +87,7 @@ router.put('/comments/:commentId/edit', async (req: Request<CommentRouteParams, 
 
     const { rowCount } = await editComment(commentId, req.body.commentText, req.body.commentPNG);
     if (rowCount === 0) {
-        res.status(404).json('Question not found');
+        res.status(404).json('Comment not found');
         return;
     }
 
