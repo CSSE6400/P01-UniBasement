@@ -96,7 +96,7 @@ router.put('/comments/:commentId/edit', async (req: Request<CommentRouteParams, 
         return;
     }
 
-    res.status(200).json('Comment Edited');
+    res.status(200).json('Comment edited');
 });
 
 /*
@@ -547,7 +547,8 @@ router.get('/sketch', async (req: Request, res: Response) => {
             (1, 'Who is the best tutor at UQ?', 'Multiple Choice'),
             (2, 'Who is not the best tutor at UQ?', 'Multiple Choice'),
             (3, 'Who is the second best tutor at UQ?', 'Multiple Choice'),
-            (4, 'A question with no comments', 'Multiple Choice');
+            (4, 'A question with no comments', 'Multiple Choice'),
+            (5, 'Question which has a comment to be edited', 'Multiple Choice');
         
         INSERT INTO comments ("questionId", "parentCommentId", "commentText", "isCorrect", "isEndorsed", "upvotes", "downvotes")
         VALUES 
@@ -562,7 +563,8 @@ router.get('/sketch', async (req: Request, res: Response) => {
             (3, NULL, 'Not Evan Hughes cause he is the best', TRUE, TRUE, 100, 1),
             (3, 9, 'TRUEEE!!!', TRUE, TRUE, 999, 0),
             (3, 10, 'ong', FALSE, TRUE, 9, 1),
-            (3, 9, 'Fax what a goat', FALSE, FALSE, 80, 1);
+            (3, 9, 'Fax what a goat', FALSE, FALSE, 80, 1),
+            (5, NULL, 'This is a comment that will be edited', TRUE, TRUE, 100, 1);
     `);
     res.status(200).json(`THIS SHIT SKETCH ASF AND WAS LIV'S IDEA!!!`);
 });
