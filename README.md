@@ -52,7 +52,8 @@ Like Deployment, a teardown of UniBasement is managed via the GitHub Actions.
 ### Basic Unit Testing
 
 The below unit testing covers basic functionality and is also run on commits. 
-1. To execute the backend tests, navigate to the `backend` directory and execute ```npm test```.
+1. To execute the backend tests, navigate to the `backend` directory 
+2. Execute ```npm test```.
 
 ### Integration Tests
 
