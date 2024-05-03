@@ -85,6 +85,11 @@ router.put('/comments/:commentId/edit', async (req: Request<CommentRouteParams, 
         return;
     }
 
+    if (!commentId) {
+        res.status(400).json('Invalid commentId');
+        return;
+    }
+
     const { rowCount } = await editComment(commentId, req.body.commentText, req.body.commentPNG);
     if (rowCount === 0) {
         res.status(404).json('Comment not found');
