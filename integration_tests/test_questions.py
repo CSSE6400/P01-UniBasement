@@ -23,7 +23,12 @@ class TestQuestions(BaseCase):
       self.assertEqual(200, response.status_code)
       self.assertEqual('Question edited', response.json())
 
+
     def test_put_edit_question_invalid_id(self):
+        """
+        Check for a 404 response from the /questions endpoint
+        Check for the correct response message
+        """
         questionId = 8686
         body = {
             "questionId": questionId,
@@ -35,11 +40,12 @@ class TestQuestions(BaseCase):
         self.assertEqual(404, response.status_code)
         self.assertEqual('Question not found', response.json())
 
+
     def test_put_edit_question_no_changes(self):
-        # Test editing a question with no changes
-        # Make a PUT request without providing any changes
-        # Check that the response status code is 400
-        # Verify that the response message indicates no changes were made
+        """
+        Check for a 400 response from the /questions endpoint
+        Check for the correct response message
+        """
         questionId = 1
         body = {
             "questionId": None, 
