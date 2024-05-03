@@ -76,6 +76,7 @@ router.put('/questions/:questionId/edit', async (req: Request<QuestionRouteParam
     res.status(200).json('Question edited');
 });
 
+//TODO needs to be tested
 // Edits a comment
 router.put('/comments/:commentId/edit', async (req: Request<CommentRouteParams, any, CommentBodyParams>, res: Response) => {
     const { commentId } = req.params;
@@ -102,6 +103,7 @@ router.put('/comments/:commentId/edit', async (req: Request<CommentRouteParams, 
  *
  */
 
+//TODO needs to be tested
 // Deletes a comment
 router.patch('/comments/:commentId/delete', async (req: Request<CommentRouteParams>, res: Response) => {
     const { commentId } = req.params;
@@ -115,6 +117,7 @@ router.patch('/comments/:commentId/delete', async (req: Request<CommentRoutePara
     res.status(200).json('Comment Deleted');
 });
 
+//TODO needs to be tested
 // Sets a comment as correct
 router.patch('/comments/:commentId/correct', async (req: Request<CommentRouteParams>, res: Response) => {
     const { commentId } = req.params;
@@ -132,6 +135,7 @@ router.patch('/comments/:commentId/correct', async (req: Request<CommentRoutePar
     res.status(200).json('Corrected');
 });
 
+//TODO needs to be tested
 // Endorses a comment
 router.patch('/comments/:commentId/endorse', async (req: Request<CommentRouteParams>, res: Response) => {
     const { commentId } = req.params;
@@ -149,6 +153,7 @@ router.patch('/comments/:commentId/endorse', async (req: Request<CommentRoutePar
     res.status(200).json('Endorsed');
 });
 
+//TODO needs to be tested
 // Downvotes a comment
 router.patch('/comments/:commentId/downvote', async (req: Request<CommentRouteParams>, res: Response) => {
     const { commentId } = req.params;
@@ -166,6 +171,7 @@ router.patch('/comments/:commentId/downvote', async (req: Request<CommentRoutePa
     res.status(200).json('Downvoted');
 });
 
+//TODO needs to be tested
 // Upvotes a comment
 router.patch('/comments/:commentId/upvote', async (req: Request<CommentRouteParams>, res: Response) => {
     const { commentId } = req.params;
@@ -191,6 +197,7 @@ router.patch('/comments/:commentId/upvote', async (req: Request<CommentRoutePara
  *
  */
 
+//TODO needs to be tested
 // Adds a new comment to the database
 router.post('/comments', async (req: Request<any, any, CommentBodyParams>, res: Response) => {
     const {
@@ -331,6 +338,7 @@ router.post('/courses', async (req: Request<any, any, CourseBodyParams>, res: Re
  *
  */
 
+//TODO needs to be tested
 // Gets comment by comment id
 router.get('/comments/:commentId', async (req: Request<CommentRouteParams>, res: Response) => {
     const { commentId } = req.params;
