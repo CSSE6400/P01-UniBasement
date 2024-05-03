@@ -38,7 +38,7 @@ router.put('/questions/:questionId/edit', async (req: Request<QuestionRouteParam
     const { questionText, questionType, questionPNG } = req.body;
 
     if (!questionText && !questionType && !questionPNG) {
-        res.status(400).json('No changes made!');
+        res.status(400).json('No changes made');
         return;
     }
 
@@ -64,16 +64,16 @@ router.put('/questions/:questionId/edit', async (req: Request<QuestionRouteParam
         count++;
     }
 
-    query += `WHERE "questionId" = $${count}::int`
+    query += `updated_at = NOW() WHERE "questionId" = $${count}::int`
     args.push(questionId);
 
     const { rowCount } = await db.query(query, args);
     if (rowCount === 0) {
-        res.status(404).json('Question not found!');
+        res.status(404).json('Question not found');
         return;
     }
 
-    res.status(200).json('Question Edited!');
+    res.status(200).json('Question edited');
 });
 
 // Edits a comment
@@ -81,17 +81,22 @@ router.put('/comments/:commentId/edit', async (req: Request<CommentRouteParams, 
     const { commentId } = req.params;
 
     if (!req.body.commentText && !req.body.commentPNG) {
-        res.status(400).json('No changes made!');
+        res.status(400).json('No changes made');
+        return;
+    }
+
+    if (!commentId) {
+        res.status(400).json('Invalid commentId');
         return;
     }
 
     const { rowCount } = await editComment(commentId, req.body.commentText, req.body.commentPNG);
     if (rowCount === 0) {
-        res.status(404).json('Question not found!');
+        res.status(404).json('Comment not found');
         return;
     }
 
-    res.status(200).json('Comment Edited!');
+    res.status(200).json('Comment Edited');
 });
 
 /*
@@ -102,85 +107,90 @@ router.put('/comments/:commentId/edit', async (req: Request<CommentRouteParams, 
  *
  */
 
+//TODO needs to be tested
 // Deletes a comment
 router.patch('/comments/:commentId/delete', async (req: Request<CommentRouteParams>, res: Response) => {
     const { commentId } = req.params;
 
     const { rowCount } = await editComment(commentId, '', '');
     if (rowCount === 0) {
-        res.status(404).json('Question not found!');
+        res.status(404).json('Question not found');
         return;
     }
 
-    res.status(200).json('Comment Deleted!');
+    res.status(200).json('Comment Deleted');
 });
 
+//TODO needs to be tested
 // Sets a comment as correct
 router.patch('/comments/:commentId/correct', async (req: Request<CommentRouteParams>, res: Response) => {
     const { commentId } = req.params;
 
     const { rowCount } = await db.query(`
     UPDATE comments
-    SET "isCorrect" = true, updated_at = NOW()
+    SET "isCorrect" = true
     WHERE "commentId" = $1
     `, [commentId]);
     if (rowCount === 0) {
-        res.status(404).json('Comment not found!');
+        res.status(404).json('Comment not found');
         return;
     }
 
-    res.status(200).json('Corrected!');
+    res.status(200).json('Corrected');
 });
 
+//TODO needs to be tested
 // Endorses a comment
 router.patch('/comments/:commentId/endorse', async (req: Request<CommentRouteParams>, res: Response) => {
     const { commentId } = req.params;
 
     const { rowCount } = await db.query(`
     UPDATE comments
-    SET "isEndorsed" = true, updated_at = NOW()
+    SET "isEndorsed" = true
     WHERE "commentId" = $1
     `, [commentId]);
     if (rowCount === 0) {
-        res.status(404).json('Comment not found!');
+        res.status(404).json('Comment not found');
         return;
     }
 
-    res.status(200).json('Endorsed!');
+    res.status(200).json('Endorsed');
 });
 
+//TODO needs to be tested
 // Downvotes a comment
 router.patch('/comments/:commentId/downvote', async (req: Request<CommentRouteParams>, res: Response) => {
     const { commentId } = req.params;
 
     const { rowCount } = await db.query(`
     UPDATE comments
-    SET "downvotes" = "downvotes" + 1, updated_at = NOW()
+    SET "downvotes" = "downvotes" + 1
     WHERE "commentId" = $1
     `, [commentId]);
     if (rowCount === 0) {
-        res.status(404).json('Comment not found!');
+        res.status(404).json('Comment not found');
         return;
     }
 
-    res.status(200).json('Downvoted!');
+    res.status(200).json('Downvoted');
 });
 
+//TODO needs to be tested
 // Upvotes a comment
 router.patch('/comments/:commentId/upvote', async (req: Request<CommentRouteParams>, res: Response) => {
     const { commentId } = req.params;
 
     const { rowCount } = await db.query(`
     UPDATE comments
-    SET "upvotes" = "upvotes" + 1, updated_at = NOW()
+    SET "upvotes" = "upvotes" + 1
     WHERE "commentId" = $1
     `, [commentId]);
     if (rowCount === 0) {
-        res.status(404).json('Comment not found!');
+        res.status(404).json('Comment not found');
         return;
     }
 
-    res.status(200).json('Upvoted!');
+    res.status(200).json('Upvoted');
 });
 
 /*
@@ -191,6 +201,7 @@ router.patch('/comments/:commentId/upvote', async (req: Request<CommentRoutePara
  *
  */
 
+//TODO needs to be tested
 // Adds a new comment to the database
 router.post('/comments', async (req: Request<any, any, CommentBodyParams>, res: Response) => {
     const {
@@ -206,13 +217,13 @@ router.post('/comments', async (req: Request<any, any, CommentBodyParams>, res: 
 
     // Check key
     if (!questionId) {
-        res.status(400).json('Missing questionId!');
+        res.status(400).json('Missing questionId');
         return;
     }
 
     const { rowCount } = await db.query(`SELECT "questionId" FROM questions WHERE "questionId" = $1`, [questionId]);
     if (rowCount === 0) {
-        res.status(404).json('Question not found!');
+        res.status(404).json('Question not found');
         return;
     }
 
@@ -220,12 +231,12 @@ router.post('/comments', async (req: Request<any, any, CommentBodyParams>, res: 
     if (parentCommentId) {
         const { rowCount, rows } = await db.query<Partial<IComment>>(`SELECT "commentId", "questionId" FROM comments WHERE "commentId" = $1`, [parentCommentId]);
         if (rowCount === 0) {
-            res.status(404).json('Parent comment not found!');
+            res.status(404).json('Parent comment not found');
             return;
         }
         const parentComment = rows[0];
         if (parentComment.questionId !== questionId) {
-            res.status(400).json('Parent comment is not from the same question!');
+            res.status(400).json('Parent comment is not from the same question');
             return;
         }
     }
@@ -235,7 +246,7 @@ router.post('/comments', async (req: Request<any, any, CommentBodyParams>, res: 
     VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
     `, [questionId, parentCommentId, commentText, commentPNG, isCorrect, isEndorsed, upvotes, downvotes]);
 
-    res.status(201).json('Comment Added!');
+    res.status(201).json('Comment Added');
 });
 
 // Adds a new question to the database
@@ -249,13 +260,13 @@ router.post('/questions', async (req: Request<any, any, QuestionBodyParams>, res
 
     // Check key
     if (!examId) {
-        res.status(400).json('Missing examId!');
+        res.status(400).json('Missing examId');
         return;
     }
 
     const { rowCount } = await db.query(`SELECT "examId" FROM exams WHERE "examId" = $1`, [examId]);
     if (rowCount === 0) {
-        res.status(404).json('Exam not found!');
+        res.status(404).json('ExamId not found');
         return;
     }
 
@@ -264,7 +275,7 @@ router.post('/questions', async (req: Request<any, any, QuestionBodyParams>, res
     VALUES ($1, $2, $3, $4)
     `, [examId, questionText, questionType, questionPNG]);
 
-    res.status(201).json('Question Added!');
+    res.status(201).json('Question added');
 });
 
 // Adds a new exam to the database
@@ -320,7 +331,7 @@ router.post('/courses', async (req: Request<any, any, CourseBodyParams>, res: Re
   VALUES ($1, $2, $3)
   `, [courseCode, courseName, courseDescription]);
 
-  res.status(201).json('Course Added!');
+  res.status(201).json('Course Added');
 });
 
 /*
@@ -331,6 +342,7 @@ router.post('/courses', async (req: Request<any, any, CourseBodyParams>, res: Re
  *
  */
 
+//TODO needs to be tested
 // Gets comment by comment id
 router.get('/comments/:commentId', async (req: Request<CommentRouteParams>, res: Response) => {
     const { commentId } = req.params;
@@ -348,18 +360,41 @@ router.get('/comments/:commentId', async (req: Request<CommentRouteParams>, res:
 router.get('/questions/:questionId/comments', async (req: Request<QuestionRouteParams>, res: Response) => {
     const { questionId } = req.params;
 
+    // Check if the questionId exists in the database
+    const { rows : questionRows } = await db.query(`
+        SELECT "questionId"
+        From questions
+        WHERE "questionId" = $1
+    `, [questionId]);
+
+    if (questionRows.length === 0) {
+        return res.status(404).json({ error: 'Question not found' });
+    }
+
     const { rows } = await db.query<IComment>(`
-    SELECT "commentId", "parentCommentId", "commentText", "commentPNG", "isCorrect", "isEndorsed", "upvotes", "downvotes", "created_at", "updated_at"
-    FROM comments
-    WHERE comments."questionId" = $1
+        SELECT "commentId", "parentCommentId", "commentText", "commentPNG", "isCorrect", "isEndorsed", "upvotes", "downvotes", "created_at", "updated_at"
+        FROM comments
+        WHERE comments."questionId" = $1
     `, [questionId]);
 
     res.status(200).json(nest(rows));
 });
 
+
 // Gets question information by question id
 router.get('/questions/:questionId', async (req: Request<QuestionRouteParams>, res: Response) => {
     const { questionId } = req.params;
+
+    // Check if the questionId exists in the database
+    const { rows : questionRows } = await db.query(`
+        SELECT "questionId"
+        From questions
+        WHERE "questionId" = $1
+    `, [questionId]);
+
+    if (questionRows.length === 0) {
+        return res.status(404).json({ error: 'Question not found' });
+    }
 
     const { rows } = await db.query<Question>(`
     SELECT "questionId", "questionText", "questionType", "questionPNG"
@@ -367,7 +402,7 @@ router.get('/questions/:questionId', async (req: Request<QuestionRouteParams>, r
     WHERE questions."questionId" = $1
     `, [questionId]);
 
-    res.status(200).json(rows[0]);
+  res.status(200).json(rows[0]);
 });
 
 // Exam questions by exam ID
@@ -472,7 +507,7 @@ router.get('/evan', async (req: Request, res: Response) => {
 router.get('/sketch', async (req: Request, res: Response) => {
     const b = await db.query1('SELECT "examId" FROM exams WHERE "examId" = 1');
     if (b.rows.length != 0) {
-        res.status(400).json('Data already exists!');
+        res.status(400).json('Data already exists');
         return
     }
 
@@ -511,7 +546,8 @@ router.get('/sketch', async (req: Request, res: Response) => {
         VALUES 
             (1, 'Who is the best tutor at UQ?', 'Multiple Choice'),
             (2, 'Who is not the best tutor at UQ?', 'Multiple Choice'),
-            (3, 'Who is the second best tutor at UQ?', 'Multiple Choice');
+            (3, 'Who is the second best tutor at UQ?', 'Multiple Choice'),
+            (4, 'A question with no comments', 'Multiple Choice');
         
         INSERT INTO comments ("questionId", "parentCommentId", "commentText", "isCorrect", "isEndorsed", "upvotes", "downvotes")
         VALUES 
