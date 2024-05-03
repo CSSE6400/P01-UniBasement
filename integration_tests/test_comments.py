@@ -21,52 +21,52 @@ class TestComments(BaseCase):
         self.assertEqual(200, response.status_code)
         self.assertEqual('Comment edited', response.json())
 
-    # def test_put_edits_comment_invalid_id(self):
-    #     """
-    #     Checks for a 404 response from the /comments endpoint
-    #     Checks for the correct response message
-    #     """
-    #     commentId = 86868686
-    #     body = {
-    #         "commentId": commentId,
-    #         "commentText": "The questionId does not exist so this should not work",
-    #         "commentPNG": None
-    #     }
+    def test_put_edits_comment_invalid_id(self):
+        """
+        Checks for a 404 response from the /comments endpoint
+        Checks for the correct response message
+        """
+        commentId = 86868686
+        body = {
+            "commentId": commentId,
+            "commentText": "The questionId does not exist so this should not work",
+            "commentPNG": None
+        }
 
-    #     response = requests.put(self.host() + '/comments/' + str(commentId) + '/edit', json=body)
-    #     self.assertEqual(404, response.status_code)
-    #     self.assertEqual('Comment not found', response.json())
+        response = requests.put(self.host() + '/comments/' + str(commentId) + '/edit', json=body)
+        self.assertEqual(404, response.status_code)
+        self.assertEqual('Comment not found', response.json())
 
 
-    # def test_put_edits_comment_no_changes(self):
-    #     """
-    #     Checks for a 400 response from the /comments endpoint
-    #     Checks for the correct response message
-    #     """
-    #     commentId = 1
-    #     body = {
-    #         "commentId": commentId,
-    #         "commentText": None,
-    #         "commentPNG": None
-    #     }
+    def test_put_edits_comment_no_changes(self):
+        """
+        Checks for a 400 response from the /comments endpoint
+        Checks for the correct response message
+        """
+        commentId = 1
+        body = {
+            "commentId": commentId,
+            "commentText": None,
+            "commentPNG": None
+        }
 
-    #     response = requests.put(self.host() + '/comments/' + str(commentId) + '/edit', json=body)
-    #     self.assertEqual(400, response.status_code)
-    #     self.assertEqual('No changes made', response.json())
+        response = requests.put(self.host() + '/comments/' + str(commentId) + '/edit', json=body)
+        self.assertEqual(400, response.status_code)
+        self.assertEqual('No changes made', response.json())
 
     # def test_put_edits_comment_none_id(self):
     #     """
     #     Checks for a 400 response from the /comments endpoint
     #     Checks for the correct response message
     #     """
-    #     commentId = None
+    #     commentId = ""
     #     body = {
     #         "commentId": commentId,
     #         "commentText": "This is a edited comment",
     #         "commentPNG": None
     #     }
 
-    #     response = requests.put(self.host() + '/comments/' + str(commentId) + '/edit', json=body)
+    #     response = requests.put(self.host() + '/comments/' + commentId + '/edit', json=body)
     #     self.assertEqual(400, response.status_code)
     #     self.assertEqual('Invalid commentId', response.json())
 
