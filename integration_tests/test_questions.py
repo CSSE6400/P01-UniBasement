@@ -5,7 +5,7 @@ from .base import BaseCase
 
 
 class TestQuestions(BaseCase):
-    def test_edit_question_successful(self):
+    def test_put_edit_question_successful(self):
       """
       Check for a 201 response from the /questions endpoint
       Check for the correct response message
@@ -23,7 +23,7 @@ class TestQuestions(BaseCase):
       self.assertEqual(200, response.status_code)
       self.assertEqual('Question edited', response.json())
 
-    def test_edit_question_invalid_id(self):
+    def test_put_edit_question_invalid_id(self):
         questionId = 8686
         body = {
             "questionId": questionId,
@@ -35,7 +35,7 @@ class TestQuestions(BaseCase):
         self.assertEqual(404, response.status_code)
         self.assertEqual('Question not found', response.json())
 
-    def test_edit_question_no_changes(self):
+    def test_put_edit_question_no_changes(self):
         # Test editing a question with no changes
         # Make a PUT request without providing any changes
         # Check that the response status code is 400
