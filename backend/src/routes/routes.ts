@@ -118,7 +118,7 @@ router.patch('/comments/:commentId/delete', async (req: Request<CommentRoutePara
         return;
     }
 
-    res.status(200).json('Comment Deleted');
+    res.status(200).json('Comment deleted');
 });
 
 //TODO needs to be tested
