@@ -10,17 +10,16 @@ class TestComments(BaseCase):
         Checks for a 200 response from the /comments endpoint
         Checks for the correct response message
         """
-        # commentId = 1
-        # body = {
-        #     "commentId": commentId,
-        #     "commentText": "This is a edited comment",
-        #     "commentPNG": None
-        # }
+        commentId = 12
+        body = {
+            "commentId": commentId,
+            "commentText": "This is a edited comment",
+            "commentPNG": None
+        }
 
-        # response = requests.put(self.host() + '/comments/' + str(commentId) + '/edit', json=body)
-        # self.assertEqual(200, response.status_code)
-        # self.assertEqual('Comment edited', response.json())
-        pass
+        response = requests.put(self.host() + '/comments/' + str(commentId) + '/edit', json=body)
+        self.assertEqual(200, response.status_code)
+        self.assertEqual('Comment edited', response.json())
 
     # def test_put_edits_comment_invalid_id(self):
     #     """
