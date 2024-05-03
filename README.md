@@ -33,7 +33,7 @@ This project is brought to you by the Evan Hughes FanClub. Our team consists of:
 ## Deployment
 
 Deployment of UniBasement is managed via the GitHub Actions. This is the recommended and easiest way to deploy the application and automatically preserve the state files. The GitHub actions utilise and manage its state files in AWS via an S3 bucket.
-> :warning: **DO NOT RUN THE DEPLOY.SH LOCALLY TO DEPLOY INFRASTRUCTURE. THIS INCLUDES RUNNING ```TERRAFORM APPLY```**: Lakshan will find you and tickle you if you do
+
 
 1. Grab your AWS credentials from the UQ Token Machine (link on Blackboard)
 2. Go to the Github Actions and find the ```Manual AWS Deployment``` workflow.
@@ -42,7 +42,6 @@ Deployment of UniBasement is managed via the GitHub Actions. This is the recomme
 ## Teardown
 
 Like Deployment, a teardown of UniBasement is managed via the GitHub Actions. 
-> :warning: **DO NOT RUN THE TEARDOWN.SH LOCALLY TO TEARDOWN INFRASTRUCTURE. THIS INCLUDES RUNNING  ```TERRAFORM DESTROY```**: Lakshan will find you and tickle you if you do
 
 1. Grab your AWS credentials from the UQ Token Machine (link on Blackboard)
 2. Go to the Github Actions and find the ```Manual AWS Teardown``` workflow.
@@ -50,4 +49,17 @@ Like Deployment, a teardown of UniBasement is managed via the GitHub Actions.
 
 ## Tests
 
-1. To execute the backend tests, navigate to the `backend` directory and execute ```npm test```.
+### Basic Unit Testing
+
+The below unit testing covers basic functionality and is also run on commits. 
+1. To execute the backend tests, navigate to the `backend` directory 
+2. Execute ```npm test```.
+
+### Integration Tests
+
+The below integration testing is a more extensive suite of tests that tests various routes and functions. 
+It can currently be run by navigating into the integration_Tests directory and running docker-compose up --build and viewing the output of the test container. The plan is to incorporate this into the workflows but for now, this is the only way. 
+
+1. Navigate to integration_tests
+2. Run ```docker-compose up --build```
+3. View the output of the integration_tests container to view the test output. 
