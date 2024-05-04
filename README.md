@@ -58,8 +58,10 @@ The below unit testing covers basic functionality and is also run on commits.
 ### Integration Tests
 
 The below integration testing is a more extensive suite of tests that tests various routes and functions. 
-It can currently be run by navigating into the integration_Tests directory and running docker-compose up --build and viewing the output of the test container. The plan is to incorporate this into the workflows but for now, this is the only way. 
+The tests can be run by executing tests.sh inside integration_tests.
 
 1. Navigate to integration_tests
-2. Run ```docker-compose up --build```
-3. View the output of the integration_tests container to view the test output. 
+2. Run tests.sh
+3. View the output of the integration_tests container to view the test output.
+
+Please note if you run docker-compose up --build to run the tests you will need to clear the DB of existing data to get an accurate result. The easiest way is to run the script as it cleans up the environment appropriately. 
