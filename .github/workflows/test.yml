@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-
+    name: Build and Unit Test
     runs-on: ubuntu-latest
 
     strategy:
@@ -32,3 +32,23 @@ jobs:
         npm run build --if-present
         npm test
       working-directory: backend
+
+  integration_tests:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+  
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+  
+      - name: Set up Docker Compose
+        run: docker-compose -f ./integration_tests/docker-compose.yml up -d
+  
+      - name: Set up Debug Logging for Integration Tests
+        run: echo "ACTIONS_STEP_DEBUG=true" >> $GITHUB_ENV
+  
+      - name: Run integration tests
+        working-directory: ./integration_tests
+        run: |
+          chmod +x ./tests.sh
+          ./tests.sh

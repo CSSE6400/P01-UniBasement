@@ -80,13 +80,13 @@ router.put('/questions/:questionId/edit', async (req: Request<QuestionRouteParam
 router.put('/comments/:commentId/edit', async (req: Request<CommentRouteParams, any, CommentBodyParams>, res: Response) => {
     const { commentId } = req.params;
 
-    if (!req.body.commentText && !req.body.commentPNG) {
-        res.status(400).json('No changes made');
+    if (!commentId) {
+        res.status(400).json('Invalid commentId');
         return;
     }
 
-    if (!commentId) {
-        res.status(400).json('Invalid commentId');
+    if (!req.body.commentText && !req.body.commentPNG) {
+        res.status(400).json('No changes made');
         return;
     }
 
@@ -96,7 +96,7 @@ router.put('/comments/:commentId/edit', async (req: Request<CommentRouteParams, 
         return;
     }
 
-    res.status(200).json('Comment Edited');
+    res.status(200).json('Comment edited');
 });
 
 /*
@@ -107,21 +107,19 @@ router.put('/comments/:commentId/edit', async (req: Request<CommentRouteParams, 
  *
  */
 
-//TODO needs to be tested
 // Deletes a comment
 router.patch('/comments/:commentId/delete', async (req: Request<CommentRouteParams>, res: Response) => {
     const { commentId } = req.params;
 
     const { rowCount } = await editComment(commentId, '', '');
     if (rowCount === 0) {
-        res.status(404).json('Question not found');
+        res.status(404).json('Comment not found');
         return;
     }
 
-    res.status(200).json('Comment Deleted');
+    res.status(200).json('Comment deleted');
 });
 
-//TODO needs to be tested
 // Sets a comment as correct
 router.patch('/comments/:commentId/correct', async (req: Request<CommentRouteParams>, res: Response) => {
     const { commentId } = req.params;
@@ -136,10 +134,26 @@ router.patch('/comments/:commentId/correct', async (req: Request<CommentRoutePar
         return;
     }
 
-    res.status(200).json('Corrected');
+    res.status(200).json('Comment marked as correct');
 });
 
-//TODO needs to be tested
+// Sets a comment as incorrect
+router.patch('/comments/:commentId/incorrect', async (req: Request<CommentRouteParams>, res: Response) => {
+    const { commentId } = req.params;
+
+    const { rowCount } = await db.query(`
+    UPDATE comments
+    SET "isCorrect" = false
+    WHERE "commentId" = $1
+    `, [commentId]);
+    if (rowCount === 0) {
+        res.status(404).json('Comment not found');
+        return;
+    }
+
+    res.status(200).json('Comment marked as incorrect');
+});
+
 // Endorses a comment
 router.patch('/comments/:commentId/endorse', async (req: Request<CommentRouteParams>, res: Response) => {
     const { commentId } = req.params;
@@ -154,10 +168,27 @@ router.patch('/comments/:commentId/endorse', async (req: Request<CommentRoutePar
         return;
     }
 
-    res.status(200).json('Endorsed');
+    res.status(200).json('Comment endorsed');
 });
 
-//TODO needs to be tested
+// Removes endorsement from a comment
+router.patch('/comments/:commentId/unendorse', async (req: Request<CommentRouteParams>, res: Response) => {
+    const { commentId } = req.params;
+
+    const { rowCount } = await db.query(`
+    UPDATE comments
+    SET "isEndorsed" = false
+    WHERE "commentId" = $1
+    `, [commentId]);
+    if (rowCount === 0) {
+        res.status(404).json('Comment not found');
+        return;
+    }
+
+    res.status(200).json('Comment removed endorsement');
+});
+
+
 // Downvotes a comment
 router.patch('/comments/:commentId/downvote', async (req: Request<CommentRouteParams>, res: Response) => {
     const { commentId } = req.params;
@@ -172,10 +203,9 @@ router.patch('/comments/:commentId/downvote', async (req: Request<CommentRoutePa
         return;
     }
 
-    res.status(200).json('Downvoted');
+    res.status(200).json('Comment downvoted');
 });
 
-//TODO needs to be tested
 // Upvotes a comment
 router.patch('/comments/:commentId/upvote', async (req: Request<CommentRouteParams>, res: Response) => {
     const { commentId } = req.params;
@@ -190,7 +220,7 @@ router.patch('/comments/:commentId/upvote', async (req: Request<CommentRoutePara
         return;
     }
 
-    res.status(200).json('Upvoted');
+    res.status(200).json('Comment upvoted');
 });
 
 /*
@@ -547,7 +577,15 @@ router.get('/sketch', async (req: Request, res: Response) => {
             (1, 'Who is the best tutor at UQ?', 'Multiple Choice'),
             (2, 'Who is not the best tutor at UQ?', 'Multiple Choice'),
             (3, 'Who is the second best tutor at UQ?', 'Multiple Choice'),
-            (4, 'A question with no comments', 'Multiple Choice');
+            (4, 'A question with no comments', 'Multiple Choice'),
+            (5, 'Question which has a comment to be edited', 'Multiple Choice'), 
+            (6, 'Question which has a comment to be deleted', 'Multiple Choice'), 
+            (7, 'Question which has a comment to be marked as correct', 'Multiple Choice'),
+            (8, 'Question which has a comment to be marked as incorrect', 'Multiple Choice'),
+            (9, 'Question which has a comment to be endorsed', 'Multiple Choice'),
+            (10, 'Question which has a comment endorsed to be removed', 'Multiple Choice'), 
+            (11, 'Question which has a comment to be upvoted', 'Multiple Choice'),
+            (12, 'Question which has a comment to be downvoted', 'Multiple Choice');
         
         INSERT INTO comments ("questionId", "parentCommentId", "commentText", "isCorrect", "isEndorsed", "upvotes", "downvotes")
         VALUES 
@@ -562,7 +600,15 @@ router.get('/sketch', async (req: Request, res: Response) => {
             (3, NULL, 'Not Evan Hughes cause he is the best', TRUE, TRUE, 100, 1),
             (3, 9, 'TRUEEE!!!', TRUE, TRUE, 999, 0),
             (3, 10, 'ong', FALSE, TRUE, 9, 1),
-            (3, 9, 'Fax what a goat', FALSE, FALSE, 80, 1);
+            (3, 9, 'Fax what a goat', FALSE, FALSE, 80, 1),
+            (5, NULL, 'This is a comment that will be edited', TRUE, TRUE, 100, 1), 
+            (6, NULL, 'This is a comment that will be deleted', TRUE, TRUE, 100, 1), 
+            (7, NULL, 'This is a comment that will be marked as correct', FALSE, FALSE, 100, 1),
+            (8, NULL, 'This is a comment that will be marked as incorrect', TRUE, TRUE, 100, 1),
+            (9, NULL, 'This is a comment that will be endorsed', TRUE, TRUE, 100, 1),
+            (10, NULL, 'This is a comment that will have its endorsement removed', TRUE, TRUE, 100, 1),
+            (11, NULL, 'This is a comment that will be upvoted', TRUE, TRUE, 100, 1),
+            (12, NULL, 'This is a comment that will be downvoted', TRUE, TRUE, 100, 1);
     `);
     res.status(200).json(`THIS SHIT SKETCH ASF AND WAS LIV'S IDEA!!!`);
 });
@@ -572,7 +618,7 @@ router.get('/sketch', async (req: Request, res: Response) => {
 // function to edit / delete a comment
 async function editComment(commentId: number, commentText?: string | null, commentPNG?: string | null) {
     const args = [];
-    let query = `UPDATE questions SET `
+    let query = `UPDATE comments SET `
     let count = 1;
 
     if (commentText) {
