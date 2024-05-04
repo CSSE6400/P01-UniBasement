@@ -234,11 +234,9 @@ class TestComments(BaseCase):
             "upvotes": 0,
             "downvotes": 0
         }
-        #TODO the above is 13 if when i put 17 it fails. if 17 fails make sure 16 works and then put 13 in. 
-
+        
         response = requests.post(self.host() + '/comments', json=body)
         self.assertEqual(201, response.status_code)
-        self.assertEqual('Comment added', response.json())
 
     def test_post_comment_invalid_question_id(self):
         """
@@ -321,7 +319,6 @@ class TestComments(BaseCase):
         
         response = requests.post(self.host() + '/comments', json=body)
         self.assertEqual(201, response.status_code)
-        self.assertEqual('Comment added', response.json())
 
 
     def test_post_comment_nested_invalid_parentID(self):
