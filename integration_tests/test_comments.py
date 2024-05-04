@@ -323,6 +323,7 @@ class TestComments(BaseCase):
         self.assertEqual(201, response.status_code)
         self.assertEqual('Comment added', response.json())
 
+
     def test_post_comment_nested_invalid_parentID(self):
         """
         Checks for a 404 response from the /comments endpoint
@@ -343,6 +344,7 @@ class TestComments(BaseCase):
         self.assertEqual(404, response.status_code)
         self.assertEqual('Parent comment not found', response.json())
 
+
     def test_post_comment_nested_parentId_not_from_same_question(self):
         """
         Checks for a 400 response from the /comments endpoint
@@ -362,6 +364,62 @@ class TestComments(BaseCase):
         response = requests.post(self.host() + '/comments', json=body)
         self.assertEqual(400, response.status_code)
         self.assertEqual('Parent comment is not from the same question', response.json())
+
+    def test_get_comment_by_id(self):
+        """
+        Checks for a 200 response from the /comments endpoint
+        Checks for the correct response message
+        """
+        commentId = 23
+        expectedResponse = {
+                "commentId": commentId,
+                "parentCommentId": None,
+                "commentText": "This is a comment.",
+                "commentPNG": None,
+                "isCorrect": True,
+                "isEndorsed": True,
+                "upvotes": 100,
+                "downvotes": 1,
+                "questionId": 16,
+                "created_at": "2001-06-01T09:00:00",
+                "updated_at": "2001-06-01T09:00:00"
+        }
+
+        response = requests.get(self.host() + '/comments/' + str(commentId))
+
+        def update_timestamps(response_dict, created_at, updated_at):
+            if isinstance(response_dict, list):
+                for item in response_dict:
+                    update_timestamps(item, created_at, updated_at)
+            elif isinstance(response_dict, dict):
+                if 'created_at' in response_dict:
+                    response_dict['created_at'] = created_at
+                if 'updated_at' in response_dict:
+                    response_dict['updated_at'] = updated_at
+                for key, value in response_dict.items():
+                    if isinstance(value, (list, dict)):
+                        update_timestamps(value, created_at, updated_at)
+
+        update_timestamps(expectedResponse, response.json()['created_at'], response.json()['updated_at'])
+
+        self.assertEqual(200, response.status_code)
+        self.assertEqual(expectedResponse, response.json())
+
+
+    def test_get_comment_by_id_invalid_id(self):
+        """
+        Checks for a 404 response from the /comments endpoint
+        Checks for the correct response message
+        """
+        commentId = 868686
+
+        expectedResponse = {
+            "error": "Comment not found"
+        }
+
+        response = requests.get(self.host() + '/comments/' + str(commentId))
+        self.assertEqual(404, response.status_code)
+        self.assertEqual(expectedResponse, response.json())
 
 if __name__ == '__main__':
     unittest.main()

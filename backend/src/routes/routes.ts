@@ -231,7 +231,6 @@ router.patch('/comments/:commentId/upvote', async (req: Request<CommentRoutePara
  *
  */
 
-//TODO needs to be tested
 // Adds a new comment to the database
 router.post('/comments', async (req: Request<any, any, CommentBodyParams>, res: Response) => {
     const {
@@ -377,18 +376,21 @@ router.post('/courses', async (req: Request<any, any, CourseBodyParams>, res: Re
  *
  */
 
-//TODO needs to be tested
 // Gets comment by comment id
 router.get('/comments/:commentId', async (req: Request<CommentRouteParams>, res: Response) => {
-    const { commentId } = req.params;
+  const { commentId } = req.params;
 
-    const { rows } = await db.query<IComment>(`
-    SELECT "commentId", "questionId", "parentCommentId", "commentText", "commentPNG", "isCorrect", "isEndorsed", "upvotes", "downvotes", "created_at", "updated_at"
-    FROM comments
-    WHERE comments."commentId" = $1
-    `, [commentId]);
+  const { rows } = await db.query<IComment>(`
+  SELECT "commentId", "questionId", "parentCommentId", "commentText", "commentPNG", "isCorrect", "isEndorsed", "upvotes", "downvotes", "created_at", "updated_at"
+  FROM comments
+  WHERE comments."commentId" = $1
+  `, [commentId]);
 
-    res.status(200).json(rows[0]);
+  if (rows.length === 0) {
+      return res.status(404).json({ error: 'Comment not found' });
+  }
+
+  res.status(200).json(rows[0]);
 });
 
 // Gets all comments by question id
