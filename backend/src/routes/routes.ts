@@ -231,7 +231,6 @@ router.patch('/comments/:commentId/upvote', async (req: Request<CommentRoutePara
  *
  */
 
-//TODO needs to be tested
 // Adds a new comment to the database
 router.post('/comments', async (req: Request<any, any, CommentBodyParams>, res: Response) => {
     const {
@@ -248,6 +247,11 @@ router.post('/comments', async (req: Request<any, any, CommentBodyParams>, res: 
     // Check key
     if (!questionId) {
         res.status(400).json('Missing questionId');
+        return;
+    }
+
+    if (!commentText && !commentPNG) {
+        res.status(400).json('Missing commentText and commentPNG');
         return;
     }
 
@@ -276,7 +280,7 @@ router.post('/comments', async (req: Request<any, any, CommentBodyParams>, res: 
     VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
     `, [questionId, parentCommentId, commentText, commentPNG, isCorrect, isEndorsed, upvotes, downvotes]);
 
-    res.status(201).json('Comment Added');
+    res.status(201).json('Comment added');
 });
 
 // Adds a new question to the database
@@ -372,18 +376,21 @@ router.post('/courses', async (req: Request<any, any, CourseBodyParams>, res: Re
  *
  */
 
-//TODO needs to be tested
 // Gets comment by comment id
 router.get('/comments/:commentId', async (req: Request<CommentRouteParams>, res: Response) => {
-    const { commentId } = req.params;
+  const { commentId } = req.params;
 
-    const { rows } = await db.query<IComment>(`
-    SELECT "commentId", "questionId", "parentCommentId", "commentText", "commentPNG", "isCorrect", "isEndorsed", "upvotes", "downvotes", "created_at", "updated_at"
-    FROM comments
-    WHERE comments."commentId" = $1
-    `, [commentId]);
+  const { rows, rowCount } = await db.query<IComment>(`
+  SELECT "commentId", "questionId", "parentCommentId", "commentText", "commentPNG", "isCorrect", "isEndorsed", "upvotes", "downvotes", "created_at", "updated_at"
+  FROM comments
+  WHERE comments."commentId" = $1
+  `, [commentId]);
 
-    res.status(200).json(rows[0]);
+  if (rowCount === 0) {
+      return res.status(404).json({ error: 'Comment not found' });
+  }
+
+  res.status(200).json(rows[0]);
 });
 
 // Gets all comments by question id
@@ -585,7 +592,11 @@ router.get('/sketch', async (req: Request, res: Response) => {
             (9, 'Question which has a comment to be endorsed', 'Multiple Choice'),
             (10, 'Question which has a comment endorsed to be removed', 'Multiple Choice'), 
             (11, 'Question which has a comment to be upvoted', 'Multiple Choice'),
-            (12, 'Question which has a comment to be downvoted', 'Multiple Choice');
+            (12, 'Question which has a comment to be downvoted', 'Multiple Choice'),
+            (13, 'Question which has no comments. And one will be added', 'Multiple Choice'),
+            (14, 'Question which has a comment. And one will be added', 'Multiple Choice'),
+            (15, 'Question which has a comment. And one will be added as nested', 'Multiple Choice'),
+            (16, 'Question which has a comment. And this is used for error checks on nesting comments with incorrect parent id.', 'Multiple Choice');
         
         INSERT INTO comments ("questionId", "parentCommentId", "commentText", "isCorrect", "isEndorsed", "upvotes", "downvotes")
         VALUES 
@@ -608,7 +619,10 @@ router.get('/sketch', async (req: Request, res: Response) => {
             (9, NULL, 'This is a comment that will be endorsed', TRUE, TRUE, 100, 1),
             (10, NULL, 'This is a comment that will have its endorsement removed', TRUE, TRUE, 100, 1),
             (11, NULL, 'This is a comment that will be upvoted', TRUE, TRUE, 100, 1),
-            (12, NULL, 'This is a comment that will be downvoted', TRUE, TRUE, 100, 1);
+            (12, NULL, 'This is a comment that will be downvoted', TRUE, TRUE, 100, 1),
+            (14, NULL, 'This is a comment that will be added', TRUE, TRUE, 100, 1),
+            (15, NULL, 'This is a comment that a test will add a nested comment to', TRUE, TRUE, 100, 1),
+            (16, NULL, 'This is a comment.', TRUE, TRUE, 100, 1);
     `);
     res.status(200).json(`THIS SHIT SKETCH ASF AND WAS LIV'S IDEA!!!`);
 });
