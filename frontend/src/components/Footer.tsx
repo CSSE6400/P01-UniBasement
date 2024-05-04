@@ -121,10 +121,10 @@ function SmallPrint() {
         &copy; Copyright {new Date().getFullYear()}. All rights reserved.
       </p>
       <div className="flex gap-4">
-        <SocialLink href="#" icon={XIcon}>
-          Follow us on X
-        </SocialLink>
-        <SocialLink href="#" icon={GitHubIcon}>
+        <SocialLink
+          href="https://github.com/CSSE6400/P01-UniBasement"
+          icon={GitHubIcon}
+        >
           Follow us on GitHub
         </SocialLink>
         <SocialLink href="#" icon={DiscordIcon}>
@@ -137,7 +137,7 @@ function SmallPrint() {
 
 export function Footer() {
   return (
-    <footer className="mx-auto w-full max-w-2xl space-y-10 pb-16 lg:max-w-5xl">
+    <footer className="mx-auto w-full max-w-4xl space-y-10 pb-16">
       <PageNavigation />
       <SmallPrint />
     </footer>
