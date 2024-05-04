@@ -80,13 +80,13 @@ router.put('/questions/:questionId/edit', async (req: Request<QuestionRouteParam
 router.put('/comments/:commentId/edit', async (req: Request<CommentRouteParams, any, CommentBodyParams>, res: Response) => {
     const { commentId } = req.params;
 
-    if (!req.body.commentText && !req.body.commentPNG) {
-        res.status(400).json('No changes made');
+    if (!commentId) {
+        res.status(400).json('Invalid commentId');
         return;
     }
 
-    if (!commentId) {
-        res.status(400).json('Invalid commentId');
+    if (!req.body.commentText && !req.body.commentPNG) {
+        res.status(400).json('No changes made');
         return;
     }
 
@@ -107,14 +107,13 @@ router.put('/comments/:commentId/edit', async (req: Request<CommentRouteParams, 
  *
  */
 
-//TODO needs to be tested
 // Deletes a comment
 router.patch('/comments/:commentId/delete', async (req: Request<CommentRouteParams>, res: Response) => {
     const { commentId } = req.params;
 
     const { rowCount } = await editComment(commentId, '', '');
     if (rowCount === 0) {
-        res.status(404).json('Question not found');
+        res.status(404).json('Comment not found');
         return;
     }
 
