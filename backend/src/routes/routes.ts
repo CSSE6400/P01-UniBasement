@@ -22,7 +22,7 @@ export const router = Router();
 
 /*
  * Routes
- * =
+ * ======
  */
 /*
  * Puts
@@ -101,7 +101,7 @@ router.put('/comments/:commentId/edit', async (req: Request<CommentRouteParams, 
 
 /*
  * Patches
- * ==
+ * =======
  *
  * Inputs and params are described within HANDSHAKE.md
  *
@@ -225,7 +225,7 @@ router.patch('/comments/:commentId/upvote', async (req: Request<CommentRoutePara
 
 /*
  * Post Requests below
- * ==============
+ * ===================
  *
  * Inputs and params are described within HANDSHAKE.md
  *
@@ -369,7 +369,7 @@ router.post('/courses', async (req: Request<any, any, CourseBodyParams>, res: Re
 
 /*
  * Get Requests below
- * =============
+ * ==================
  *
  * See outputs and params in HANDSHAKE.md
  *
