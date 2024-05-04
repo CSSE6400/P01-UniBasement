@@ -1,11 +1,10 @@
 import unittest
 import requests
-import random
 
 from .base import BaseCase
 
 
-class TestUser(BaseCase):
+class TestCourse(BaseCase):
 
     def test_course_post(self):
         """
@@ -22,7 +21,7 @@ class TestUser(BaseCase):
 
         self.assertEqual(201, response.status_code)
 
-        self.assertEqual('Course Added!', response.json())
+        self.assertEqual('Course Added', response.json())
 
     def test_course_post_null_coursecode(self):
         """
@@ -56,7 +55,7 @@ class TestUser(BaseCase):
         response = requests.post(self.host() + '/courses', json=course_data, headers={'Accept': 'application/json'})
         # Should post the course fine the first time
         self.assertEqual(201, response.status_code)
-        self.assertEqual('Course Added!', response.json())
+        self.assertEqual('Course Added', response.json())
 
         # Should error as duplicate when posting same course again.
         response = requests.post(self.host() + '/courses', json=course_data, headers={'Accept': 'application/json'})

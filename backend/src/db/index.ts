@@ -33,7 +33,9 @@ export const setupTables = () => {
         "examId" INTEGER REFERENCES exams("examId"),
         "questionText" TEXT,
         "questionPNG" BYTEA, 
-        "questionType" VARCHAR(20)
+        "questionType" VARCHAR(20),
+        "created_at" TIMESTAMP DEFAULT NOW(),
+        "updated_at" TIMESTAMP DEFAULT NOW()
     );
 
     CREATE TABLE IF NOT EXISTS comments (

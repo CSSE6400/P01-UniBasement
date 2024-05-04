@@ -38,7 +38,7 @@ router.put('/questions/:questionId/edit', async (req: Request<QuestionRouteParam
     const { questionText, questionType, questionPNG } = req.body;
 
     if (!questionText && !questionType && !questionPNG) {
-        res.status(400).json('No changes made!');
+        res.status(400).json('No changes made');
         return;
     }
 
@@ -64,34 +64,39 @@ router.put('/questions/:questionId/edit', async (req: Request<QuestionRouteParam
         count++;
     }
 
-    query += `WHERE "questionId" = $${count}::int`
+    query += `updated_at = NOW() WHERE "questionId" = $${count}::int`
     args.push(questionId);
 
     const { rowCount } = await db.query(query, args);
     if (rowCount === 0) {
-        res.status(404).json('Question not found!');
+        res.status(404).json('Question not found');
         return;
     }
 
-    res.status(200).json('Question Edited!');
+    res.status(200).json('Question edited');
 });
 
 // Edits a comment
 router.put('/comments/:commentId/edit', async (req: Request<CommentRouteParams, any, CommentBodyParams>, res: Response) => {
     const { commentId } = req.params;
 
+    if (!commentId) {
+        res.status(400).json('Invalid commentId');
+        return;
+    }
+
     if (!req.body.commentText && !req.body.commentPNG) {
-        res.status(400).json('No changes made!');
+        res.status(400).json('No changes made');
         return;
     }
 
     const { rowCount } = await editComment(commentId, req.body.commentText, req.body.commentPNG);
     if (rowCount === 0) {
-        res.status(404).json('Question not found!');
+        res.status(404).json('Comment not found');
         return;
     }
 
-    res.status(200).json('Comment Edited!');
+    res.status(200).json('Comment edited');
 });
 
 /*
@@ -108,11 +113,11 @@ router.patch('/comments/:commentId/delete', async (req: Request<CommentRoutePara
 
     const { rowCount } = await editComment(commentId, '', '');
     if (rowCount === 0) {
-        res.status(404).json('Question not found!');
+        res.status(404).json('Comment not found');
         return;
     }
 
-    res.status(200).json('Comment Deleted!');
+    res.status(200).json('Comment deleted');
 });
 
 // Sets a comment as correct
@@ -121,15 +126,32 @@ router.patch('/comments/:commentId/correct', async (req: Request<CommentRoutePar
 
     const { rowCount } = await db.query(`
     UPDATE comments
-    SET "isCorrect" = true, updated_at = NOW()
+    SET "isCorrect" = true
     WHERE "commentId" = $1
     `, [commentId]);
     if (rowCount === 0) {
-        res.status(404).json('Comment not found!');
+        res.status(404).json('Comment not found');
         return;
     }
 
-    res.status(200).json('Corrected!');
+    res.status(200).json('Comment marked as correct');
+});
+
+// Sets a comment as incorrect
+router.patch('/comments/:commentId/incorrect', async (req: Request<CommentRouteParams>, res: Response) => {
+    const { commentId } = req.params;
+
+    const { rowCount } = await db.query(`
+    UPDATE comments
+    SET "isCorrect" = false
+    WHERE "commentId" = $1
+    `, [commentId]);
+    if (rowCount === 0) {
+        res.status(404).json('Comment not found');
+        return;
+    }
+
+    res.status(200).json('Comment marked as incorrect');
 });
 
 // Endorses a comment
@@ -138,16 +160,34 @@ router.patch('/comments/:commentId/endorse', async (req: Request<CommentRoutePar
 
     const { rowCount } = await db.query(`
     UPDATE comments
-    SET "isEndorsed" = true, updated_at = NOW()
+    SET "isEndorsed" = true
     WHERE "commentId" = $1
     `, [commentId]);
     if (rowCount === 0) {
-        res.status(404).json('Comment not found!');
+        res.status(404).json('Comment not found');
         return;
     }
 
-    res.status(200).json('Endorsed!');
+    res.status(200).json('Comment endorsed');
 });
+
+// Removes endorsement from a comment
+router.patch('/comments/:commentId/unendorse', async (req: Request<CommentRouteParams>, res: Response) => {
+    const { commentId } = req.params;
+
+    const { rowCount } = await db.query(`
+    UPDATE comments
+    SET "isEndorsed" = false
+    WHERE "commentId" = $1
+    `, [commentId]);
+    if (rowCount === 0) {
+        res.status(404).json('Comment not found');
+        return;
+    }
+
+    res.status(200).json('Comment removed endorsement');
+});
+
 
 // Downvotes a comment
 router.patch('/comments/:commentId/downvote', async (req: Request<CommentRouteParams>, res: Response) => {
@@ -155,15 +195,15 @@ router.patch('/comments/:commentId/downvote', async (req: Request<CommentRoutePa
 
     const { rowCount } = await db.query(`
     UPDATE comments
-    SET "downvotes" = "downvotes" + 1, updated_at = NOW()
+    SET "downvotes" = "downvotes" + 1
     WHERE "commentId" = $1
     `, [commentId]);
     if (rowCount === 0) {
-        res.status(404).json('Comment not found!');
+        res.status(404).json('Comment not found');
         return;
     }
 
-    res.status(200).json('Downvoted!');
+    res.status(200).json('Comment downvoted');
 });
 
 // Upvotes a comment
@@ -172,15 +212,15 @@ router.patch('/comments/:commentId/upvote', async (req: Request<CommentRoutePara
 
     const { rowCount } = await db.query(`
     UPDATE comments
-    SET "upvotes" = "upvotes" + 1, updated_at = NOW()
+    SET "upvotes" = "upvotes" + 1
     WHERE "commentId" = $1
     `, [commentId]);
     if (rowCount === 0) {
-        res.status(404).json('Comment not found!');
+        res.status(404).json('Comment not found');
         return;
     }
 
-    res.status(200).json('Upvoted!');
+    res.status(200).json('Comment upvoted');
 });
 
 /*
@@ -202,13 +242,18 @@ router.post('/comments', async (req: Request<any, any, CommentBodyParams>, res: 
 
     // Check key
     if (!questionId) {
-        res.status(400).json('Missing questionId!');
+        res.status(400).json('Missing questionId');
+        return;
+    }
+
+    if (!commentText && !commentPNG) {
+        res.status(400).json('Missing commentText and commentPNG');
         return;
     }
 
     const { rowCount } = await db.query(`SELECT "questionId" FROM questions WHERE "questionId" = $1`, [questionId]);
     if (rowCount === 0) {
-        res.status(404).json('Question not found!');
+        res.status(404).json('Question not found');
         return;
     }
 
@@ -216,12 +261,12 @@ router.post('/comments', async (req: Request<any, any, CommentBodyParams>, res: 
     if (parentCommentId) {
         const { rowCount, rows } = await db.query<Partial<IComment>>(`SELECT "commentId", "questionId" FROM comments WHERE "commentId" = $1`, [parentCommentId]);
         if (rowCount === 0) {
-            res.status(404).json('Parent comment not found!');
+            res.status(404).json('Parent comment not found');
             return;
         }
         const parentComment = rows[0];
         if (parentComment.questionId !== questionId) {
-            res.status(400).json('Parent comment is not from the same question!');
+            res.status(400).json('Parent comment is not from the same question');
             return;
         }
     }
@@ -232,7 +277,11 @@ router.post('/comments', async (req: Request<any, any, CommentBodyParams>, res: 
     RETURNING "commentId"
     `, [questionId, parentCommentId, commentText, commentPNG]);
 
+<<<<<<< 
     res.status(201).json({ commentId: rows[0].commentId });
+=======
+    res.status(201).json('Comment added');
+>>>>>>> origin/main
 });
 
 // Adds a new question to the database
@@ -246,13 +295,13 @@ router.post('/questions', async (req: Request<any, any, QuestionBodyParams>, res
 
     // Check key
     if (!examId) {
-        res.status(400).json('Missing examId!');
+        res.status(400).json('Missing examId');
         return;
     }
 
     const { rowCount } = await db.query(`SELECT "examId" FROM exams WHERE "examId" = $1`, [examId]);
     if (rowCount === 0) {
-        res.status(404).json('Exam not found!');
+        res.status(404).json('ExamId not found');
         return;
     }
 
@@ -319,7 +368,7 @@ router.post('/courses', async (req: Request<any, any, CourseBodyParams>, res: Re
   VALUES ($1, $2, $3)
   `, [courseCode, courseName, courseDescription]);
 
-  res.status(201).json('Course Added!');
+  res.status(201).json('Course Added');
 });
 
 /*
@@ -332,33 +381,60 @@ router.post('/courses', async (req: Request<any, any, CourseBodyParams>, res: Re
 
 // Gets comment by comment id
 router.get('/comments/:commentId', async (req: Request<CommentRouteParams>, res: Response) => {
-    const { commentId } = req.params;
+  const { commentId } = req.params;
 
-    const { rows } = await db.query<IComment>(`
-    SELECT "commentId", "questionId", "parentCommentId", "commentText", "commentPNG", "isCorrect", "isEndorsed", "upvotes", "downvotes", "created_at", "updated_at"
-    FROM comments
-    WHERE comments."commentId" = $1
-    `, [commentId]);
+  const { rows, rowCount } = await db.query<IComment>(`
+  SELECT "commentId", "questionId", "parentCommentId", "commentText", "commentPNG", "isCorrect", "isEndorsed", "upvotes", "downvotes", "created_at", "updated_at"
+  FROM comments
+  WHERE comments."commentId" = $1
+  `, [commentId]);
 
-    res.status(200).json(rows[0]);
+  if (rowCount === 0) {
+      return res.status(404).json({ error: 'Comment not found' });
+  }
+
+  res.status(200).json(rows[0]);
 });
 
 // Gets all comments by question id
 router.get('/questions/:questionId/comments', async (req: Request<QuestionRouteParams>, res: Response) => {
     const { questionId } = req.params;
 
+    // Check if the questionId exists in the database
+    const { rows : questionRows } = await db.query(`
+        SELECT "questionId"
+        From questions
+        WHERE "questionId" = $1
+    `, [questionId]);
+
+    if (questionRows.length === 0) {
+        return res.status(404).json({ error: 'Question not found' });
+    }
+
     const { rows } = await db.query<IComment>(`
-    SELECT "commentId", "parentCommentId", "commentText", "commentPNG", "isCorrect", "isEndorsed", "upvotes", "downvotes", "created_at", "updated_at"
-    FROM comments
-    WHERE comments."questionId" = $1
+        SELECT "commentId", "parentCommentId", "commentText", "commentPNG", "isCorrect", "isEndorsed", "upvotes", "downvotes", "created_at", "updated_at"
+        FROM comments
+        WHERE comments."questionId" = $1
     `, [questionId]);
 
     res.status(200).json(nest(rows));
 });
 
+
 // Gets question information by question id
 router.get('/questions/:questionId', async (req: Request<QuestionRouteParams>, res: Response) => {
     const { questionId } = req.params;
+
+    // Check if the questionId exists in the database
+    const { rows : questionRows } = await db.query(`
+        SELECT "questionId"
+        From questions
+        WHERE "questionId" = $1
+    `, [questionId]);
+
+    if (questionRows.length === 0) {
+        return res.status(404).json({ error: 'Question not found' });
+    }
 
     const { rows } = await db.query<Question>(`
     SELECT "questionId", "questionText", "questionType", "questionPNG"
@@ -366,7 +442,7 @@ router.get('/questions/:questionId', async (req: Request<QuestionRouteParams>, r
     WHERE questions."questionId" = $1
     `, [questionId]);
 
-    res.status(200).json(rows[0]);
+  res.status(200).json(rows[0]);
 });
 
 // Exam questions by exam ID
@@ -471,7 +547,7 @@ router.get('/evan', async (req: Request, res: Response) => {
 router.get('/sketch', async (req: Request, res: Response) => {
     const b = await db.query1('SELECT "examId" FROM exams WHERE "examId" = 1');
     if (b.rows.length != 0) {
-        res.status(400).json('Data already exists!');
+        res.status(400).json('Data already exists');
         return
     }
 
@@ -510,7 +586,20 @@ router.get('/sketch', async (req: Request, res: Response) => {
         VALUES 
             (1, 'Who is the best tutor at UQ?', 'Multiple Choice'),
             (2, 'Who is not the best tutor at UQ?', 'Multiple Choice'),
-            (3, 'Who is the second best tutor at UQ?', 'Multiple Choice');
+            (3, 'Who is the second best tutor at UQ?', 'Multiple Choice'),
+            (4, 'A question with no comments', 'Multiple Choice'),
+            (5, 'Question which has a comment to be edited', 'Multiple Choice'), 
+            (6, 'Question which has a comment to be deleted', 'Multiple Choice'), 
+            (7, 'Question which has a comment to be marked as correct', 'Multiple Choice'),
+            (8, 'Question which has a comment to be marked as incorrect', 'Multiple Choice'),
+            (9, 'Question which has a comment to be endorsed', 'Multiple Choice'),
+            (10, 'Question which has a comment endorsed to be removed', 'Multiple Choice'), 
+            (11, 'Question which has a comment to be upvoted', 'Multiple Choice'),
+            (12, 'Question which has a comment to be downvoted', 'Multiple Choice'),
+            (13, 'Question which has no comments. And one will be added', 'Multiple Choice'),
+            (14, 'Question which has a comment. And one will be added', 'Multiple Choice'),
+            (15, 'Question which has a comment. And one will be added as nested', 'Multiple Choice'),
+            (16, 'Question which has a comment. And this is used for error checks on nesting comments with incorrect parent id.', 'Multiple Choice');
         
         INSERT INTO comments ("questionId", "parentCommentId", "commentText", "isCorrect", "isEndorsed", "upvotes", "downvotes")
         VALUES 
@@ -525,7 +614,18 @@ router.get('/sketch', async (req: Request, res: Response) => {
             (3, NULL, 'Not Evan Hughes cause he is the best', TRUE, TRUE, 100, 1),
             (3, 9, 'TRUEEE!!!', TRUE, TRUE, 999, 0),
             (3, 10, 'ong', FALSE, TRUE, 9, 1),
-            (3, 9, 'Fax what a goat', FALSE, FALSE, 80, 1);
+            (3, 9, 'Fax what a goat', FALSE, FALSE, 80, 1),
+            (5, NULL, 'This is a comment that will be edited', TRUE, TRUE, 100, 1), 
+            (6, NULL, 'This is a comment that will be deleted', TRUE, TRUE, 100, 1), 
+            (7, NULL, 'This is a comment that will be marked as correct', FALSE, FALSE, 100, 1),
+            (8, NULL, 'This is a comment that will be marked as incorrect', TRUE, TRUE, 100, 1),
+            (9, NULL, 'This is a comment that will be endorsed', TRUE, TRUE, 100, 1),
+            (10, NULL, 'This is a comment that will have its endorsement removed', TRUE, TRUE, 100, 1),
+            (11, NULL, 'This is a comment that will be upvoted', TRUE, TRUE, 100, 1),
+            (12, NULL, 'This is a comment that will be downvoted', TRUE, TRUE, 100, 1),
+            (14, NULL, 'This is a comment that will be added', TRUE, TRUE, 100, 1),
+            (15, NULL, 'This is a comment that a test will add a nested comment to', TRUE, TRUE, 100, 1),
+            (16, NULL, 'This is a comment.', TRUE, TRUE, 100, 1);
     `);
     res.status(200).json(`THIS SHIT SKETCH ASF AND WAS LIV'S IDEA!!!`);
 });
@@ -535,7 +635,7 @@ router.get('/sketch', async (req: Request, res: Response) => {
 // function to edit / delete a comment
 async function editComment(commentId: number, commentText?: string | null, commentPNG?: string | null) {
     const args = [];
-    let query = `UPDATE questions SET `
+    let query = `UPDATE comments SET `
     let count = 1;
 
     if (commentText) {
