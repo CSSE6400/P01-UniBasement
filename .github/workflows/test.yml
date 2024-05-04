@@ -8,7 +8,6 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     strategy:
@@ -32,3 +31,14 @@ jobs:
         npm run build --if-present
         npm test
       working-directory: backend
+
+  integration_tests:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Run integration tests
+      run: |
+        chmod +x ./integration_test/test.sh
+        ./integration_test/test.sh
