@@ -38,12 +38,17 @@ jobs:
     runs-on: ubuntu-latest
   
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
+  
+      - name: Set up Docker Compose
+        run: docker-compose -f ./integration_tests/docker-compose.yml up -d
   
       - name: Set up Debug Logging for Integration Tests
         run: echo "ACTIONS_STEP_DEBUG=true" >> $GITHUB_ENV
   
       - name: Run integration tests
+        working-directory: ./integration_tests
         run: |
-          chmod +x ./integration_tests/tests.sh
-          ./integration_tests/tests.sh
+          chmod +x ./tests.sh
+          ./tests.sh
