@@ -198,10 +198,6 @@ router.post('/comments', async (req: Request<any, any, CommentBodyParams>, res: 
         parentCommentId,
         commentText,
         commentPNG,
-        isCorrect,
-        isEndorsed,
-        upvotes,
-        downvotes,
     } = req.body;
 
     // Check key
@@ -229,13 +225,14 @@ router.post('/comments', async (req: Request<any, any, CommentBodyParams>, res: 
             return;
         }
     }
-
-    await db.query(`
-    INSERT INTO comments ("questionId", "parentCommentId", "commentText", "commentPNG", "isCorrect", "isEndorsed", "upvotes", "downvotes")
+    // Query the database and get the id of the new comment
+    const { rows } = await db.query(`
+    INSERT INTO comments ("questionId", "parentCommentId", "commentText", "commentPNG")
     VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-    `, [questionId, parentCommentId, commentText, commentPNG, isCorrect, isEndorsed, upvotes, downvotes]);
+    RETURNING "commentId"
+    `, [questionId, parentCommentId, commentText, commentPNG]);
 
-    res.status(201).json('Comment Added!');
+    res.status(201).json({ commentId: rows[0].commentId });
 });
 
 // Adds a new question to the database
@@ -259,12 +256,13 @@ router.post('/questions', async (req: Request<any, any, QuestionBodyParams>, res
         return;
     }
 
-    await db.query(`
+    const { rows } = await db.query(`
     INSERT INTO questions ("examId", "questionText", "questionType", "questionPNG")
     VALUES ($1, $2, $3, $4)
+    RETURNING "questionId"
     `, [examId, questionText, questionType, questionPNG]);
 
-    res.status(201).json('Question Added!');
+    res.status(201).json({ questionId: rows[0].questionId });
 });
 
 // Adds a new exam to the database
@@ -288,12 +286,13 @@ router.post('/exams', async (req: Request<any, any, ExamBodyParams>, res: Respon
         return;
     }
 
-    await db.query(`
+    const { rows } = await db.query(`
     INSERT INTO exams ("examYear", "examSemester", "examType", "courseCode")
     VALUES ($1, $2, $3, $4)
+    RETURNING "examId"
     `, [examYear, examSemester, examType, courseCode]);
 
-    res.status(201).json('Exam created');
+    res.status(201).json({ examId: rows[0].examId });
 });
 
 // Adds a new Course to the database
