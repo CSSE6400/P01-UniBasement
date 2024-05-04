@@ -273,7 +273,7 @@ router.post('/comments', async (req: Request<any, any, CommentBodyParams>, res: 
     // Query the database and get the id of the new comment
     const { rows } = await db.query(`
     INSERT INTO comments ("questionId", "parentCommentId", "commentText", "commentPNG")
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+    VALUES ($1, $2, $3, $4)
     RETURNING "commentId"
     `, [questionId, parentCommentId, commentText, commentPNG]);
 
