@@ -51,13 +51,13 @@ Like Deployment, a teardown of UniBasement is managed via the GitHub Actions.
 
 ### Basic Unit Testing
 
-The below unit testing covers basic functionality and is also run on commits. 
+The below unit testing covers basic functionality and these tests are also incorporated into the GitHub Actions and will run on commits. 
 1. To execute the backend tests, navigate to the `backend` directory 
 2. Execute ```npm test```.
 
 ### Integration Tests
 
-The below integration testing is a more extensive suite of tests that tests various routes and functions. 
+The below integration testing is a more extensive suite of tests that tests various routes and functions. These tests are also incorporated into the GitHub Actions and will run on commits. 
 The tests can be run by executing tests.sh inside integration_tests.
 
 1. Navigate to integration_tests
