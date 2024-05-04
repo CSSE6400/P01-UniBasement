@@ -251,6 +251,11 @@ router.post('/comments', async (req: Request<any, any, CommentBodyParams>, res: 
         return;
     }
 
+    if (!commentText && !commentPNG) {
+        res.status(400).json('Missing commentText and commentPNG');
+        return;
+    }
+
     const { rowCount } = await db.query(`SELECT "questionId" FROM questions WHERE "questionId" = $1`, [questionId]);
     if (rowCount === 0) {
         res.status(404).json('Question not found');
@@ -276,7 +281,7 @@ router.post('/comments', async (req: Request<any, any, CommentBodyParams>, res: 
     VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
     `, [questionId, parentCommentId, commentText, commentPNG, isCorrect, isEndorsed, upvotes, downvotes]);
 
-    res.status(201).json('Comment Added');
+    res.status(201).json('Comment added');
 });
 
 // Adds a new question to the database
@@ -585,7 +590,11 @@ router.get('/sketch', async (req: Request, res: Response) => {
             (9, 'Question which has a comment to be endorsed', 'Multiple Choice'),
             (10, 'Question which has a comment endorsed to be removed', 'Multiple Choice'), 
             (11, 'Question which has a comment to be upvoted', 'Multiple Choice'),
-            (12, 'Question which has a comment to be downvoted', 'Multiple Choice');
+            (12, 'Question which has a comment to be downvoted', 'Multiple Choice'),
+            (13, 'Question which has no comments. And one will be added', 'Multiple Choice'),
+            (14, 'Question which has a comment. And one will be added', 'Multiple Choice'),
+            (15, 'Question which has a comment. And one will be added as nested', 'Multiple Choice'),
+            (16, 'Question which has a comment. And this is used for error checks on nesting comments with incorrect parent id.', 'Multiple Choice');
         
         INSERT INTO comments ("questionId", "parentCommentId", "commentText", "isCorrect", "isEndorsed", "upvotes", "downvotes")
         VALUES 
@@ -608,7 +617,10 @@ router.get('/sketch', async (req: Request, res: Response) => {
             (9, NULL, 'This is a comment that will be endorsed', TRUE, TRUE, 100, 1),
             (10, NULL, 'This is a comment that will have its endorsement removed', TRUE, TRUE, 100, 1),
             (11, NULL, 'This is a comment that will be upvoted', TRUE, TRUE, 100, 1),
-            (12, NULL, 'This is a comment that will be downvoted', TRUE, TRUE, 100, 1);
+            (12, NULL, 'This is a comment that will be downvoted', TRUE, TRUE, 100, 1),
+            (14, NULL, 'This is a comment that will be added', TRUE, TRUE, 100, 1),
+            (15, NULL, 'This is a comment that a test will add a nested comment to', TRUE, TRUE, 100, 1),
+            (16, NULL, 'This is a comment.', TRUE, TRUE, 100, 1);
     `);
     res.status(200).json(`THIS SHIT SKETCH ASF AND WAS LIV'S IDEA!!!`);
 });
