@@ -380,13 +380,13 @@ router.post('/courses', async (req: Request<any, any, CourseBodyParams>, res: Re
 router.get('/comments/:commentId', async (req: Request<CommentRouteParams>, res: Response) => {
   const { commentId } = req.params;
 
-  const { rows } = await db.query<IComment>(`
+  const { rows, rowCount } = await db.query<IComment>(`
   SELECT "commentId", "questionId", "parentCommentId", "commentText", "commentPNG", "isCorrect", "isEndorsed", "upvotes", "downvotes", "created_at", "updated_at"
   FROM comments
   WHERE comments."commentId" = $1
   `, [commentId]);
 
-  if (rows.length === 0) {
+  if (rowCount === 0) {
       return res.status(404).json({ error: 'Comment not found' });
   }
 
