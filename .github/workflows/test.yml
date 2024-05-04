@@ -36,11 +36,14 @@ jobs:
   integration_tests:
     name: Integration Tests
     runs-on: ubuntu-latest
-
+  
     steps:
-    - uses: actions/checkout@v3
-
-    - name: Run integration tests
-      run: |
-        chmod +x ./integration_tests/tests.sh
-        ./integration_tests/tests.sh
+      - uses: actions/checkout@v3
+  
+      - name: Set up Debug Logging for Integration Tests
+        run: echo "ACTIONS_STEP_DEBUG=true" >> $GITHUB_ENV
+  
+      - name: Run integration tests
+        run: |
+          chmod +x ./integration_tests/tests.sh
+          ./integration_tests/tests.sh
