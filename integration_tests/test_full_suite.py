@@ -23,49 +23,46 @@ class TestFullSuite(BaseCase):
         Mark Comments as correct
         """
 
-        # course = {
-        #     "courseCode": "TOYOTA86",
-        #     "courseName": "The History of Toyota 86",
-        #     "courseDescription": "A course on the history of the Toyota 86 and its impact on the automotive industry."
-        # }
+        course = {
+            "courseCode": "TOYOTA86",
+            "courseName": "The History of Toyota 86",
+            "courseDescription": "A course on the history of the Toyota 86 and its impact on the automotive industry."
+        }
 
-        # # Create a course
-        # response = requests.post(self.host() + '/courses', json=course)
-        # self.assertEqual(201, response.status_code)
-        # # Testing courseId returned and is a valid int
-        # courseId = response.json()['courseId']
-        # self.assertTrue(isinstance(courseId, int))
+        # Create a course
+        response = requests.post(self.host() + '/courses', json=course)
+        self.assertEqual(201, response.status_code)
 
-        # # Check the course params set correctly
-        # # Get the course
-        # response = requests.get(self.host() + '/courses/' + course['courseCode'])
-        # self.assertEqual(200, response.status_code)
+        # Check the course params set correctly
+        # Get the course
+        response = requests.get(self.host() + '/courses/' + course['courseCode'])
+        self.assertEqual(200, response.status_code)
 
-        # # Verify received information about course is correct
-        # self.assertEqual(course, response.json())
+        # Verify received information about course is correct
+        self.assertEqual(course, response.json())
 
-        # # Check the course has no exams
-        # response = requests.get(self.host() + '/courses/' + course['courseCode'] + '/exams')
-        # self.assertEqual(200, response.status_code)
-        # self.assertEqual([], response.json())
+        # Check the course has no exams
+        response = requests.get(self.host() + '/courses/' + course['courseCode'] + '/exams')
+        self.assertEqual(200, response.status_code)
+        self.assertEqual([], response.json())
 
-        # # Create an exam for the course
-        # exam = {
-        #     "examYear": 2024,
-        #     "examSemester": "1",
-        #     "examType": "Final",
-        #     "courseCode": course['courseCode']
-        # }
+        # Create an exam for the course
+        exam = {
+            "examYear": 2024,
+            "examSemester": "1",
+            "examType": "Final",
+            "courseCode": course['courseCode']
+        }
 
-        # # Create the exam
-        # response = requests.post(self.host() + '/exams', json=exam)
-        # self.assertEqual(201, response.status_code)
-        # # Testing examId returned and is a valid int
-        # examId = response.json()['examId']
-        # self.assertTrue(isinstance(response.json()['examId'], int))
+        # Create the exam
+        response = requests.post(self.host() + '/exams', json=exam)
+        self.assertEqual(201, response.status_code)
+        # Testing examId returned and is a valid int
+        examId = response.json()['examId']
+        self.assertIsInstance(examId, int)
 
 
-        # # Check the course has exams
+        # Check the course has exams
 
 
 
