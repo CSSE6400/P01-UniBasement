@@ -1,6 +1,6 @@
 # UniBasement
 
-## [Architecture](model/ARCHITECTURE.md) | [Handshake](docs/HANDSHAKE.md) | [Database](docs/DATABASE.md) | [AI](AI.md) | [Report](report/REPORT.md) | [Tests](report/TESTS.MD) | [Proposal](https://csse6400.github.io/project-proposal-2024/s4702098/proposal.html)
+## [Architecture](model/ARCHITECTURE.md) | [Handshake](docs/HANDSHAKE.md) | [Database](docs/DATABASE.md) | [AI](AI.md) | [Report](report/REPORT.md) | [Tests](docs/TESTS.MD) | [Proposal](https://csse6400.github.io/project-proposal-2024/s4702098/proposal.html)
 
 ## Description
 
