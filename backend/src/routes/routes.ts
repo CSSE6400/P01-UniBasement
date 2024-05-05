@@ -527,7 +527,7 @@ router.get('/comments/:commentId', async (req: Request<CommentRouteParams>, res:
   const { commentId } = req.params;
 
   const { rows, rowCount } = await db.query<IComment>(`
-  SELECT "commentId", "questionId", "parentCommentId", "commentText", "commentPNG", "isCorrect", "isEndorsed", "upvotes", "downvotes", "created_at", "updated_at"
+  SELECT "commentId", "questionId", "parentCommentId", "userId", "commentText", "commentPNG", "isCorrect", "isEndorsed", "upvotes", "downvotes", "created_at", "updated_at"
   FROM comments
   WHERE comments."commentId" = $1
   `, [commentId]);
@@ -555,7 +555,7 @@ router.get('/questions/:questionId/comments', async (req: Request<QuestionRouteP
     }
 
     const { rows } = await db.query<IComment>(`
-        SELECT "commentId", "parentCommentId", "commentText", "commentPNG", "isCorrect", "isEndorsed", "upvotes", "downvotes", "created_at", "updated_at"
+        SELECT "commentId", "parentCommentId", "userId", "commentText", "commentPNG", "isCorrect", "isEndorsed", "upvotes", "downvotes", "created_at", "updated_at"
         FROM comments
         WHERE comments."questionId" = $1
     `, [questionId]);
