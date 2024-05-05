@@ -54,3 +54,6 @@ class TestUser(BaseCase):
 
         self.assertEqual(409, response.status_code)
         self.assertEqual("User already exists", response.json())
+
+if __name__ == '__main__':
+    unittest.main()
