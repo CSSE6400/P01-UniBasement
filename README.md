@@ -1,6 +1,6 @@
 # UniBasement
 
-## [Architecture](model/ARCHITECTURE.md) | [Handshake](docs/HANDSHAKE.md) | [Database](docs/DATABASE.md) | [AI](AI.md) | [Report](report/REPORT.md) | [Proposal](https://csse6400.github.io/project-proposal-2024/s4702098/proposal.html)
+## [Architecture](model/ARCHITECTURE.md) | [Handshake](docs/HANDSHAKE.md) | [Database](docs/DATABASE.md) | [AI](AI.md) | [Report](report/REPORT.md) | [Tests](docs/TESTS.MD) | [Proposal](https://csse6400.github.io/project-proposal-2024/s4702098/proposal.html)
 
 ## Description
 
@@ -66,3 +66,7 @@ The tests can be run by executing tests.sh inside integration_tests.
 3. View the output of the integration_tests container to view the test output.
 
 Please note if you run docker-compose up --build to run the tests you will need to clear the DB of existing data to get an accurate result. The easiest way is to run the script as it cleans up the environment appropriately. 
+
+### More detailed information about tests
+
+[Tests](docs/TESTS.MD)

@@ -2,6 +2,8 @@ import unittest
 import requests
 
 from .base import BaseCase
+from .base import update_timestamps
+
 
 
 class TestQuestions(BaseCase):
@@ -177,19 +179,6 @@ class TestQuestions(BaseCase):
         ]
 
         response = requests.get(self.host() + '/questions/' + str(questionId) + '/comments')
-
-        def update_timestamps(response_dict, created_at, updated_at):
-            if isinstance(response_dict, list):
-                for item in response_dict:
-                    update_timestamps(item, created_at, updated_at)
-            elif isinstance(response_dict, dict):
-                if 'created_at' in response_dict:
-                    response_dict['created_at'] = created_at
-                if 'updated_at' in response_dict:
-                    response_dict['updated_at'] = updated_at
-                for key, value in response_dict.items():
-                    if isinstance(value, (list, dict)):
-                        update_timestamps(value, created_at, updated_at)
 
         update_timestamps(expectedResponse, response.json()[0]['created_at'], response.json()[0]['updated_at'])
         
