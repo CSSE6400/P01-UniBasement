@@ -695,6 +695,12 @@ router.get('/sketch', async (req: Request, res: Response) => {
     }
 
     await db.query1(`
+        INSERT INTO users ("userId")
+        VALUES 
+            ('evan'),
+            ('liv'),
+            ('lakshan'),
+            ('jackson');
         INSERT INTO courses ("courseCode", "courseName", "courseDescription", "university")
         VALUES 
             ('ENGG1001', 'Programming for Engineers', 'An introductory course covering basic concepts of software engineering.', 'UQ'),
@@ -744,31 +750,31 @@ router.get('/sketch', async (req: Request, res: Response) => {
             (15, 'Question which has a comment. And one will be added as nested', 'Multiple Choice'),
             (16, 'Question which has a comment. And this is used for error checks on nesting comments with incorrect parent id.', 'Multiple Choice');
         
-        INSERT INTO comments ("questionId", "parentCommentId", "commentText", "isCorrect", "isEndorsed", "upvotes", "downvotes")
+        INSERT INTO comments ("questionId", "parentCommentId", "userId", "commentText", "isCorrect", "isEndorsed", "upvotes", "downvotes")
         VALUES 
-            (1, NULL, 'Evan Hughes', TRUE, TRUE, 100, 1),
-            (1, 1, 'Are you stupid it is clearly Liv Ronda', FALSE, FALSE, 0, 100),
-            (1, 2, 'Bro went to stupid school L', FALSE, TRUE, 999, 1),
-            (1, 1, 'Fax what a goat', FALSE, FALSE, 80, 1),
-            (2, NULL, 'Not Evan Hughes cause he is the best', TRUE, TRUE, 100, 1),
-            (2, 5, 'Facts it is clearly Liv Ronda because she is the worst', TRUE, TRUE, 999, 0),
-            (2, 6, 'ong', FALSE, TRUE, 9, 1),
-            (2, 5, 'Fax what a goat', FALSE, FALSE, 80, 1),
-            (3, NULL, 'Not Evan Hughes cause he is the best', TRUE, TRUE, 100, 1),
-            (3, 9, 'TRUEEE!!!', TRUE, TRUE, 999, 0),
-            (3, 10, 'ong', FALSE, TRUE, 9, 1),
-            (3, 9, 'Fax what a goat', FALSE, FALSE, 80, 1),
-            (5, NULL, 'This is a comment that will be edited', TRUE, TRUE, 100, 1), 
-            (6, NULL, 'This is a comment that will be deleted', TRUE, TRUE, 100, 1), 
-            (7, NULL, 'This is a comment that will be marked as correct', FALSE, FALSE, 100, 1),
-            (8, NULL, 'This is a comment that will be marked as incorrect', TRUE, TRUE, 100, 1),
-            (9, NULL, 'This is a comment that will be endorsed', TRUE, TRUE, 100, 1),
-            (10, NULL, 'This is a comment that will have its endorsement removed', TRUE, TRUE, 100, 1),
-            (11, NULL, 'This is a comment that will be upvoted', TRUE, TRUE, 100, 1),
-            (12, NULL, 'This is a comment that will be downvoted', TRUE, TRUE, 100, 1),
-            (14, NULL, 'This is a comment that will be added', TRUE, TRUE, 100, 1),
-            (15, NULL, 'This is a comment that a test will add a nested comment to', TRUE, TRUE, 100, 1),
-            (16, NULL, 'This is a comment.', TRUE, TRUE, 100, 1);
+            (1, NULL, 'evan', 'Evan Hughes', TRUE, TRUE, 100, 1),
+            (1, 1, 'liv', 'Are you stupid it is clearly Liv Ronda', FALSE, FALSE, 0, 100),
+            (1, 2, 'jackson', 'Bro went to stupid school L', FALSE, TRUE, 999, 1),
+            (1, 1, 'lakshan', 'Fax what a goat', FALSE, FALSE, 80, 1),
+            (2, NULL, 'evan', 'Not Evan Hughes cause he is the best', TRUE, TRUE, 100, 1),
+            (2, 5, 'liv', 'Facts it is clearly Liv Ronda because she is the worst', TRUE, TRUE, 999, 0),
+            (2, 6, 'jackson', 'ong', FALSE, TRUE, 9, 1),
+            (2, 5, 'lakshan', 'Fax what a goat', FALSE, FALSE, 80, 1),
+            (3, NULL, 'evan', 'Not Evan Hughes cause he is the best', TRUE, TRUE, 100, 1),
+            (3, 9, 'evan', 'TRUEEE!!!', TRUE, TRUE, 999, 0),
+            (3, 10, 'evan', 'ong', FALSE, TRUE, 9, 1),
+            (3, 9, 'evan', 'Fax what a goat', FALSE, FALSE, 80, 1),
+            (5, NULL, 'evan', 'This is a comment that will be edited', TRUE, TRUE, 100, 1), 
+            (6, NULL, 'liv', 'This is a comment that will be deleted', TRUE, TRUE, 100, 1), 
+            (7, NULL, 'jackson', 'This is a comment that will be marked as correct', FALSE, FALSE, 100, 1),
+            (8, NULL, 'lakshan', 'This is a comment that will be marked as incorrect', TRUE, TRUE, 100, 1),
+            (9, NULL, 'liv', 'This is a comment that will be endorsed', TRUE, TRUE, 100, 1),
+            (10, NULL, 'jackson', 'This is a comment that will have its endorsement removed', TRUE, TRUE, 100, 1),
+            (11, NULL, 'lakshan', 'This is a comment that will be upvoted', TRUE, TRUE, 100, 1),
+            (12, NULL, 'evan', 'This is a comment that will be downvoted', TRUE, TRUE, 100, 1),
+            (14, NULL, 'evan', 'This is a comment that will be added', TRUE, TRUE, 100, 1),
+            (15, NULL, 'liv', 'This is a comment that a test will add a nested comment to', TRUE, TRUE, 100, 1),
+            (16, NULL, 'evan', 'This is a comment.', TRUE, TRUE, 100, 1);
     `);
     res.status(200).json(`THIS SHIT SKETCH ASF AND WAS LIV'S IDEA!!!`);
 });
