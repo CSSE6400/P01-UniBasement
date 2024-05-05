@@ -2,7 +2,7 @@ import unittest
 import requests
 
 from .base import BaseCase
-from .base import update_timestamps
+from base import update_timestamps
 
 
 class TestFullSuite(BaseCase):

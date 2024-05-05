@@ -1,8 +1,7 @@
 import unittest
 import requests
-import random
 
-from .base import BaseCase
+from base import BaseCase
 
 
 class TestUser(BaseCase):
