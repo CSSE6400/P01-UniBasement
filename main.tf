@@ -373,7 +373,7 @@ resource "aws_ecr_repository" "unibasement" {
 
 resource "aws_lb_target_group" "unibasement" {
   name          = "unibasement"
-  port          = 8080
+  port          = 3000
   protocol      = "HTTP"
   vpc_id        = aws_security_group.unibasement.vpc_id
   target_type   = "ip"
