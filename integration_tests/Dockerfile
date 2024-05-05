@@ -6,11 +6,11 @@ RUN apt-get update && apt-get install -y docker.io
 # Set the working directory to /app
 WORKDIR /app
 
-# Copy the current directory contents into the container at /app
-COPY . tests
-
 # Install any needed packages specified in requirements.txt
 RUN pip install requests pytest pytest-reportlog rfc3339-validator pendulum python-lorem
+
+# Copy the current directory contents into the container at /app
+COPY . tests
 
 # Run the unit tests
 CMD bash -c "sleep 10 && python -m pytest -v --report-log report.log tests"
