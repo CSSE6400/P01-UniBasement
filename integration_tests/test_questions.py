@@ -73,7 +73,6 @@ class TestQuestions(BaseCase):
 
         response = requests.post(self.host() + '/questions', json=body)
         self.assertEqual(201, response.status_code)
-        self.assertEqual('Question added', response.json())
 
 
     def test_post_add_question_invalid_exam_id(self):

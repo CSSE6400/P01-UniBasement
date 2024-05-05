@@ -477,14 +477,13 @@ router.post('/exams', async (req: Request<any, any, ExamBodyParams>, res: Respon
         res.status(404).json('Course not found');
         return;
     }
-
     const { rows } = await db.query(`
     INSERT INTO exams ("examYear", "examSemester", "examType", "courseCode")
     VALUES ($1, $2, $3, $4)
     RETURNING "examId"
     `, [examYear, examSemester, examType, courseCode]);
 
-    res.status(201).json({ examId: rows[0].examId });
+res.status(201).json({ examId: rows[0].examId });
 });
 
 // Adds a new Course to the database
