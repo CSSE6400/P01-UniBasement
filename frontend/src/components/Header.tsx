@@ -11,7 +11,8 @@ import {
 } from '@/components/MobileNavigation'
 import { useMobileNavigationStore } from '@/components/MobileNavigation'
 import { MobileSearch, Search } from '@/components/Search'
-import { ThemeToggle } from '@/components/ThemeToggle'
+import { useUser } from '@auth0/nextjs-auth0/client'
+import ProfileCard from './ProfileDropdown'
 
 function TopLevelNavItem({
   href,
@@ -42,6 +43,7 @@ export const Header = forwardRef<
   let { scrollY } = useScroll()
   let bgOpacityLight = useTransform(scrollY, [0, 72], [0.5, 0.9])
   let bgOpacityDark = useTransform(scrollY, [0, 72], [0.2, 0.8])
+  const { user, error, isLoading } = useUser()
 
   return (
     <motion.div
@@ -92,11 +94,13 @@ export const Header = forwardRef<
         <div className="hidden md:block md:h-5 md:w-px md:bg-zinc-900/10 md:dark:bg-white/15" />
         <div className="flex gap-4">
           <MobileSearch />
-          <ThemeToggle />
+          {user ? (
+            <ProfileCard></ProfileCard>
+          ) : (
+            <Button href="/api/auth/login">Sign in</Button>
+          )}
         </div>
-        <div className="hidden min-[416px]:contents">
-          <Button href="#">Sign in</Button>
-        </div>
+        <div className="hidden min-[416px]:contents"></div>
       </div>
     </motion.div>
   )

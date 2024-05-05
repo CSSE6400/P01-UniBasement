@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useTheme } from 'next-themes'
+import { IconSun, IconMoon } from '@tabler/icons-react'
 
 function SunIcon(props: React.ComponentPropsWithoutRef<'svg'>) {
   return (
@@ -37,8 +38,8 @@ export function ThemeToggle() {
       aria-label={mounted ? `Switch to ${otherTheme} theme` : 'Toggle theme'}
       onClick={() => setTheme(otherTheme)}
     >
-      <SunIcon className="h-5 w-5 stroke-zinc-900 dark:hidden" />
-      <MoonIcon className="hidden h-5 w-5 stroke-white dark:block" />
+      <IconSun className="h-5 w-5 stroke-zinc-900 dark:hidden" />
+      <IconMoon className="hidden h-5 w-5 stroke-white dark:block" />
     </button>
   )
 }
