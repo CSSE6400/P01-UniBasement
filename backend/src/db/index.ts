@@ -73,7 +73,7 @@ export function query1<Result extends QueryResultRow>(text: any) {
 }
 
 export function query<Result extends QueryResultRow>(text: any, params: any) {
-    return pool.query<Result>(text, params);
+    return pool.query<Result>(text, params);`
 }
 
 export function query3<Result extends QueryResultRow>(text: any, params: any, callback: any) {
