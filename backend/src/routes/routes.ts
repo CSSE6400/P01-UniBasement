@@ -695,7 +695,6 @@ router.get('/sketch', async (req: Request, res: Response) => {
     }
 
     await db.query1(`
-<<<<<<< HEAD
         INSERT INTO users ("userId")
         VALUES 
             ('evan'),
@@ -704,10 +703,6 @@ router.get('/sketch', async (req: Request, res: Response) => {
             ('jackson');
         INSERT INTO courses ("courseCode", "courseName", "courseDescription", "university")
         VALUES 
-=======
-        INSERT INTO courses ("courseCode", "courseName", "courseDescription", "university")
-        VALUES 
->>>>>>> a599b48 (adds starring to courses)
             ('ENGG1001', 'Programming for Engineers', 'An introductory course covering basic concepts of software engineering.', 'UQ'),
             ('MATH1051', 'Calculus & Linear Algebra', 'A foundational course in calculus covering limits, derivatives, and integrals.', 'UQ'),
             ('ENGG1100', 'Professional Engineering', 'An introductory course covering fundamental concepts in engineering principles.', 'UQ');
