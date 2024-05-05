@@ -2,6 +2,7 @@ import unittest
 import requests
 
 from .base import BaseCase
+from .base import update_timestamps
 
 
 class TestFullSuite(BaseCase):
@@ -113,6 +114,7 @@ class TestFullSuite(BaseCase):
             "questionPNG": question['questionPNG'],
             "questionType": question['questionType']
         }
+        update_timestamps(expectedResponse, response.json()['created_at'], response.json()['updated_at'])
         self.assertEqual([expectedResponse], response.json())
         
         
@@ -147,6 +149,7 @@ class TestFullSuite(BaseCase):
           "upvotes": comment['upvotes'],
           "downvotes": comment['downvotes']
         }
+        update_timestamps(expectedResponse, response.json()['created_at'], response.json()['updated_at'])
         self.assertEqual([expectedResponse], response.json())
         
         
@@ -194,6 +197,9 @@ class TestFullSuite(BaseCase):
             "downvotes": nestedComment['downvotes']
           }
         ]
+        
+        
+        update_timestamps(expectedResponse, response.json()[0]['created_at'], response.json()[0]['updated_at'])
         
         self.assertEqual(expectedResponse, response.json())
         
