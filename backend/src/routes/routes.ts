@@ -117,6 +117,12 @@ router.patch('/courses/:courseCode/star', async (req: Request<CourseRouteParams>
         return;
     }
 
+    // Checks to see star rating is between 1 and 5
+    if (starRating < 1 || starRating > 5) {
+        res.status(400).json('Star rating must be between 1 and 5');
+        return;
+    }
+
     const { rows } = await db.query(`
         SELECT "userId"
         FROM users
