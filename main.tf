@@ -141,7 +141,7 @@ resource "aws_ecs_task_definition" "unibasement_frontend" {
         "environment": [
         {
           "name": "NEXT_PUBLIC_API_URL",
-          "value": "http://${data.aws_network_interface.unibasement_backend_ip.association[0].public_ip}:8080/"
+          "value": "http://${data.aws_network_interface.unibasement_backend_ip.association[0].public_ip}:8080"
         }
       ],
       "logConfiguration": {
@@ -236,9 +236,9 @@ data "aws_network_interface" "unibasement_backend_ip" {
   id = data.aws_network_interfaces.unibasement_backend_ip.ids[0]
 }
 
-# output "thebackendip" {
-#   value = data.aws_network_interface.unibasement_backend_ip.association[0].public_ip
-# }
+output "thebackendip" {
+  value = data.aws_network_interface.unibasement_backend_ip.association[0].public_ip
+}
 
 
 resource "aws_ecs_task_definition" "unibasement_backend" {
