@@ -88,8 +88,8 @@ resource "aws_security_group" "unibasement" {
     description = "unibasement Security Group"
   
     ingress {
-      from_port = 8080
-      to_port = 8080
+      from_port = 3000
+      to_port = 3000
       protocol = "tcp"
       cidr_blocks = ["0.0.0.0/0"]
     }
@@ -112,13 +112,127 @@ resource "aws_security_group" "unibasement" {
 
 
 //////////////////////////////// Frontend //////////////////////////////////////
+resource "docker_image" "unibasement_frontend" {
+  name         = "${aws_ecr_repository.unibasement.repository_url}:latest"
+  build {
+    context = "frontend"
+    dockerfile = "Dockerfile"
+  }
+}
+
+resource "docker_registry_image" "unibasement_frontend" {
+  name = docker_image.unibasement_frontend.name
+}
+
+resource "aws_ecs_service" "unibasement_frontend" {
+    name            = "unibasement_frontend"
+    cluster         = aws_ecs_cluster.unibasement.id
+    task_definition = aws_ecs_task_definition.unibasement_frontend.arn
+    desired_count   = 1
+    launch_type     = "FARGATE"
+  
+    network_configuration {
+      subnets             = data.aws_subnets.private.ids
+      security_groups     = [aws_security_group.unibasement_frontend.id]
+      assign_public_ip    = true
+    }
+    load_balancer {
+      target_group_arn = aws_lb_target_group.unibasement.arn
+      container_name   = "unibasement_frontend"
+      container_port   = 3000
+  }
+}
+
+resource "aws_ecs_task_definition" "unibasement_frontend" {
+    family                   = "unibasement_frontend"
+    network_mode             = "awsvpc"
+    requires_compatibilities = ["FARGATE"]
+    cpu                      = 4096
+    memory                   = 8192
+    execution_role_arn       = data.aws_iam_role.lab.arn
+  
+    container_definitions = <<DEFINITION
+  [
+    {
+      "image": "${docker_registry_image.unibasement_frontend.name}",
+      "cpu": 4096,
+      "memory": 8192,
+      "name": "unibasement_frontend",
+      "networkMode": "awsvpc",
+      "portMappings": [
+        {
+          "containerPort": 3000,
+          "hostPort": 3000
+        }
+      ],
+        "environment": [
+        {
+          "name": "DB_USER",
+          "value": "${local.database_username}"
+        },
+        {
+          "name": "DB_HOST",
+          "value": "${aws_db_instance.unibasement_database.address}"
+        }, 
+        {
+          "name": "DB_DATABASE",
+          "value": "${aws_db_instance.unibasement_database.db_name}"
+        },
+        {
+          "name": "DB_PASSWORD",
+          "value": "${local.database_password}"
+        }, 
+        {
+          "name": "DB_PORT",
+          "value": "5432"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/unibasement/unibasement_frontend",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "ecs",
+          "awslogs-create-group": "true"
+        }
+      }
+    }
+  ]
+  DEFINITION
+}
 
 
+
+resource "aws_security_group" "unibasement_frontend" {
+    name = "unibasement_frontend"
+    description = "unibasement Security Group"
+  
+    ingress {
+      from_port = 3000
+      to_port = 3000
+      protocol = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+    }
+  
+    ingress {
+      from_port = 22
+      to_port = 22
+      protocol = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+    }
+  
+    egress {
+      from_port = 0
+      to_port = 0
+      protocol = "-1"
+      cidr_blocks = ["0.0.0.0/0"]
+    }
+}
 
 
 //////////////////////////////// Backend ///////////////////////////////////////
 resource "docker_image" "unibasement_backend" {
-  name         = "${aws_ecr_repository.unibasement_backend.repository_url}:latest"
+  name         = "${aws_ecr_repository.unibasement.repository_url}:latest"
   build {
     context = "backend"
     dockerfile = "Dockerfile"
@@ -164,7 +278,7 @@ resource "aws_ecs_task_definition" "unibasement_backend" {
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
-          "awslogs-group": "/uniBasement/unibasement_backend",
+          "awslogs-group": "/unibasement/unibasement_backend",
           "awslogs-region": "us-east-1",
           "awslogs-stream-prefix": "ecs",
           "awslogs-create-group": "true"
@@ -196,12 +310,6 @@ resource "aws_ecs_task_definition" "unibasement_backend" {
   ]
   DEFINITION
 }
-
-
-resource "aws_ecr_repository" "unibasement_backend" {
-  name = "unibasement_backend"
-}
-
 
 resource "aws_security_group" "unibasement_backend" {
     name = "unibasement_backend"
@@ -257,4 +365,78 @@ data "aws_subnets" "private" {
         values = [data.aws_vpc.default.id]
     }
 }
+
+resource "aws_ecr_repository" "unibasement" {
+  name = "unibasement"
+}
+
+
+resource "aws_lb_target_group" "unibasement" {
+  name          = "unibasement"
+  port          = 8080
+  protocol      = "HTTP"
+  vpc_id        = aws_security_group.unibasement.vpc_id
+  target_type   = "ip"
+
+  health_check {
+    path                = "/"
+    protocol            = "HTTP"
+    port                = "3000"
+    interval            = 30
+    timeout             = 5
+    healthy_threshold   = 2
+    unhealthy_threshold = 2
+  }
+}
+
+
+resource "aws_lb" "unibasement" {
+  name               = "unibasement"
+  internal           = false
+  load_balancer_type = "application"
+  subnets            = data.aws_subnets.private.ids
+  security_groups    = [aws_security_group.unibasement.id]
+}
+
+
+resource "aws_lb_listener" "unibasement" {
+  load_balancer_arn   = aws_lb.unibasement.arn
+  port                = "3000"
+  protocol            = "HTTP"
+
+  default_action {
+    type              = "forward"
+    target_group_arn  = aws_lb_target_group.unibasement.arn
+  }
+}
+
+resource "local_file" "url" {
+    content = "http://${aws_lb.unibasement.dns_name}:3000/" # TODO figure out
+    filename = "./unibasement.txt"
+}
+
+
+#TODO some sort of auth0 setup at somepoint in the future lmao need to get from the workflow env variables.
+# variable "AUTH0_SECRET" {
+#   type = string
+# }
+
+# variable "AUTH0_BASE_URL" {
+#   type = string
+# }
+
+# variable "AUTH0_ISSUER_BASE_URL" {
+#   type = string
+# }
+
+# variable "AUTH0_CLIENT_ID" {
+#   type = string
+# }
+
+# variable "AUTH0_CLIENT_SECRET" {
+#   type = string
+# }
+
+
+
 ////////////////////////////// Miscellaneous ///////////////////////////////////

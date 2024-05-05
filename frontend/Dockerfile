@@ -14,7 +14,6 @@ COPY ./tsconfig.json .
 COPY ./typography.ts .
 COPY ./src ./src
 COPY ./public ./public
-COPY ./.env.local .
 
 ENV NEXT_PUBLIC_API_URL=http://localhost:8080
 
