@@ -123,6 +123,7 @@ class TestQuestions(BaseCase):
             {
                 "commentId": 1,
                 "parentCommentId": None,
+                "userId": "evan",
                 "commentText": "Evan Hughes",
                 "commentPNG": None,
                 "isCorrect": True,
@@ -135,6 +136,7 @@ class TestQuestions(BaseCase):
                     {
                         "commentId": 2,
                         "parentCommentId": 1,
+                        "userId": "liv",
                         "commentText": "Are you stupid it is clearly Liv Ronda",
                         "commentPNG": None,
                         "isCorrect": False,
@@ -147,6 +149,7 @@ class TestQuestions(BaseCase):
                             {
                                 "commentId": 3,
                                 "parentCommentId": 2,
+                                "userId": "jackson",
                                 "commentText": "Bro went to stupid school L",
                                 "commentPNG": None,
                                 "isCorrect": False,
@@ -161,6 +164,7 @@ class TestQuestions(BaseCase):
                     {
                         "commentId": 4,
                         "parentCommentId": 1,
+                        "userId": "lakshan",
                         "commentText": "Fax what a goat",
                         "commentPNG": None,
                         "isCorrect": False,

@@ -14,7 +14,8 @@ class TestComments(BaseCase):
         commentId = 12
         body = {
             "commentText": "This is a edited comment",
-            "commentPNG": None
+            "commentPNG": None,
+            "userId": "evan",
         }
 
         response = requests.put(self.host() + '/comments/' + str(commentId) + '/edit', json=body)
@@ -30,7 +31,8 @@ class TestComments(BaseCase):
         commentId = 86868686
         body = {
             "commentText": "The questionId does not exist so this should not work",
-            "commentPNG": None
+            "commentPNG": None,
+            "userId": "evan",
         }
 
         response = requests.put(self.host() + '/comments/' + str(commentId) + '/edit', json=body)
@@ -179,8 +181,11 @@ class TestComments(BaseCase):
         Checks for the correct response message
         """
         commentId = 18
+        body = {
+            "userId": "evan"
+        }
 
-        response = requests.patch(self.host() + '/comments/' + str(commentId) + '/downvote')
+        response = requests.patch(self.host() + '/comments/' + str(commentId) + '/downvote', json=body)
         self.assertEqual(200, response.status_code)
         self.assertEqual('Comment downvoted', response.json())
 
@@ -191,8 +196,11 @@ class TestComments(BaseCase):
         Checks for the correct response message
         """
         commentId = 86868686
+        body = {
+            "userId": "evan"
+        }
 
-        response = requests.patch(self.host() + '/comments/' + str(commentId) + '/downvote')
+        response = requests.patch(self.host() + '/comments/' + str(commentId) + '/downvote', json=body)
         self.assertEqual(404, response.status_code)
         self.assertEqual('Comment not found', response.json())
 
@@ -203,8 +211,11 @@ class TestComments(BaseCase):
         Checks for the correct response message
         """
         commentId = 19
+        body = {
+            "userId": "evan"
+        }
 
-        response = requests.patch(self.host() + '/comments/' + str(commentId) + '/upvote')
+        response = requests.patch(self.host() + '/comments/' + str(commentId) + '/upvote', json=body)
         self.assertEqual(200, response.status_code)
         self.assertEqual('Comment upvoted', response.json())
 
@@ -215,8 +226,11 @@ class TestComments(BaseCase):
         Checks for the correct response message
         """
         commentId = 86868686
+        body = {
+            "userId": "evan"
+        }
 
-        response = requests.patch(self.host() + '/comments/' + str(commentId) + '/upvote')
+        response = requests.patch(self.host() + '/comments/' + str(commentId) + '/upvote', json=body)
         self.assertEqual(404, response.status_code)
         self.assertEqual('Comment not found', response.json())
 
@@ -228,6 +242,7 @@ class TestComments(BaseCase):
         body = {
             "questionId": 13,
             "parentCommentId": 0,
+            "userId": "evan",
             "commentText": "This is a comment",
             "commentPNG": None,
             "isCorrect": False,
@@ -247,6 +262,7 @@ class TestComments(BaseCase):
         body = {
             "questionId": 868686,
             "parentCommentId": 0,
+            "userId": "evan",
             "commentText": "This is a comment",
             "commentPNG": None,
             "isCorrect": False,
@@ -268,6 +284,7 @@ class TestComments(BaseCase):
         body = {
             "questionId": None,
             "parentCommentId": 0,
+            "userId": "evan",
             "commentText": "This is a comment",
             "commentPNG": None,
             "isCorrect": False,
@@ -278,7 +295,7 @@ class TestComments(BaseCase):
 
         response = requests.post(self.host() + '/comments', json=body)
         self.assertEqual(400, response.status_code)
-        self.assertEqual('Missing questionId', response.json())
+        self.assertEqual('Missing questionId or userId', response.json())
 
 
     def test_post_comment_no_comment_text_or_png(self):
@@ -289,6 +306,7 @@ class TestComments(BaseCase):
         body = {
             "questionId": 13,
             "parentCommentId": 0,
+            "userId": "evan",
             "commentText": None,
             "commentPNG": None,
             "isCorrect": False,
@@ -299,7 +317,7 @@ class TestComments(BaseCase):
 
         response = requests.post(self.host() + '/comments', json=body)
         self.assertEqual(400, response.status_code)
-        self.assertEqual('Missing commentText and commentPNG', response.json())
+        self.assertEqual('Missing commentText or commentPNG', response.json())
 
 
     def test_post_comment_nested_comment(self):
@@ -310,6 +328,7 @@ class TestComments(BaseCase):
         body = {
             "questionId": 14,
             "parentCommentId": 21,
+            "userId": "evan",
             "commentText": "This is a nested comment",
             "commentPNG": None,
             "isCorrect": False,
@@ -330,6 +349,7 @@ class TestComments(BaseCase):
         body = {
             "questionId": 14,
             "parentCommentId": 868686,
+            "userId": "evan",
             "commentText": "This is a nested comment",
             "commentPNG": None,
             "isCorrect": False,
@@ -351,6 +371,7 @@ class TestComments(BaseCase):
         body = {
             "questionId": 15,
             "parentCommentId": 1,
+            "userId": "evan",
             "commentText": "This is a nested comment",
             "commentPNG": None,
             "isCorrect": False,
@@ -372,6 +393,7 @@ class TestComments(BaseCase):
         expectedResponse = {
                 "commentId": commentId,
                 "parentCommentId": None,
+                "userId": 'evan',
                 "commentText": "This is a comment.",
                 "commentPNG": None,
                 "isCorrect": True,

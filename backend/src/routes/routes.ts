@@ -79,18 +79,31 @@ router.put('/questions/:questionId/edit', async (req: Request<QuestionRouteParam
 // Edits a comment
 router.put('/comments/:commentId/edit', async (req: Request<CommentRouteParams, any, CommentBodyParams>, res: Response) => {
     const { commentId } = req.params;
+    const { commentText, commentPNG, userId } = req.body;
 
     if (!commentId) {
         res.status(400).json('Invalid commentId');
         return;
     }
 
-    if (!req.body.commentText && !req.body.commentPNG) {
+    if (!commentText && !commentPNG) {
         res.status(400).json('No changes made');
         return;
     }
 
-    const { rowCount } = await editComment(commentId, req.body.commentText, req.body.commentPNG);
+    // Check if the user exists
+    const { rows } = await db.query(`
+    SELECT "userId"
+    FROM users
+    WHERE "userId" = $1
+    `, [userId]);
+
+    if (rows.length === 0) {
+        res.status(404).json('User not found');
+        return;
+    }
+
+    const { rowCount } = await editComment(commentId, commentText, commentPNG);
     if (rowCount === 0) {
         res.status(404).json('Comment not found');
         return;
@@ -106,6 +119,66 @@ router.put('/comments/:commentId/edit', async (req: Request<CommentRouteParams, 
  * Inputs and params are described within HANDSHAKE.md
  *
  */
+
+// Star rating for a course
+router.patch('/courses/:courseCode/star', async (req: Request<CourseRouteParams>, res: Response) => {
+    const { courseCode } = req.params;
+    const { starRating, userId } = req.body;
+
+    if (!starRating || !userId) {
+        res.status(400).json('Missing starRating or userId');
+        return;
+    }
+
+    // Checks to see star rating is between 1 and 5
+    if (starRating < 1 || starRating > 5) {
+        res.status(400).json('Star rating must be between 1 and 5');
+        return;
+    }
+
+    const { rows } = await db.query(`
+        SELECT "userId"
+        FROM users
+        WHERE "userId" = $1
+    `, [userId]);
+
+    if (rows.length === 0) {
+        res.status(404).json('User not found');
+        return;
+    }
+
+    // See if it is already rated
+    // then rate it
+    const { rowCount } = await db.query(`
+    UPDATE courses
+    SET stars = stars + $3 - COALESCE((
+        SELECT CAST(rated ->> $2 AS INTEGER)
+        FROM users
+        WHERE "userId" = $1 AND "rated" ? $2
+    ), 0),
+    votes = votes + CASE WHEN EXISTS (
+            SELECT 1
+            FROM users
+            WHERE "userId" = $1 AND "rated" ? $2
+        ) THEN 0
+        ELSE 1 
+    END
+    WHERE "courseCode" = $2;
+    `, [userId, courseCode, starRating]);
+
+    if (rowCount === 0) {
+        res.status(404).json('Course not found');
+        return;
+    }
+
+    await db.query(`
+        UPDATE users
+        SET rated = jsonb_set(rated, array_append('{}'::text[], $2), $3::jsonb)
+        WHERE "userId" = $1
+    `, [userId, courseCode, starRating]);
+
+    res.status(200).json('Course starred');
+});
 
 // Deletes a comment
 router.patch('/comments/:commentId/delete', async (req: Request<CommentRouteParams>, res: Response) => {
@@ -192,6 +265,25 @@ router.patch('/comments/:commentId/unendorse', async (req: Request<CommentRouteP
 // Downvotes a comment
 router.patch('/comments/:commentId/downvote', async (req: Request<CommentRouteParams>, res: Response) => {
     const { commentId } = req.params;
+    const { userId } = req.body;
+
+    // real user?
+    const { rows } = await db.query<{downvoted: any[]}>(`
+    SELECT "downvoted"
+    FROM users
+    WHERE "userId" = $1
+    `, [userId])
+
+    if (rows.length === 0) {
+        res.status(400).json('User does not exist');
+        return;
+    }
+
+    // check to see if has been downvoted
+    if (rows[0].downvoted.includes(commentId)) {
+        res.status(400).json('Already downvoted');
+        return;
+    }
 
     const { rowCount } = await db.query(`
     UPDATE comments
@@ -203,12 +295,38 @@ router.patch('/comments/:commentId/downvote', async (req: Request<CommentRoutePa
         return;
     }
 
+    await db.query(`
+    UPDATE users
+    SET "downvoted" = array_append("downvoted", $1)
+    WHERE "userId" = $2
+    `, [commentId, userId]);
+    
     res.status(200).json('Comment downvoted');
 });
 
 // Upvotes a comment
 router.patch('/comments/:commentId/upvote', async (req: Request<CommentRouteParams>, res: Response) => {
     const { commentId } = req.params;
+    const { userId } = req.body;
+
+    // real user?
+    const { rows } = await db.query<{upvoted: any[]}>(`
+    SELECT "upvoted"
+    FROM users
+    WHERE "userId" = $1
+    `, [userId])
+
+    if (rows.length === 0) {
+        res.status(400).json('User does not exist');
+        return;
+    }
+
+    // check to see if has been downvoted
+    if (rows[0].upvoted.includes(commentId)) {
+        res.status(400).json('Already upvoted');
+        return;
+    }
+
 
     const { rowCount } = await db.query(`
     UPDATE comments
@@ -219,6 +337,12 @@ router.patch('/comments/:commentId/upvote', async (req: Request<CommentRoutePara
         res.status(404).json('Comment not found');
         return;
     }
+
+    await db.query(`
+    UPDATE users
+    SET "upvoted" = array_append("upvoted", $1)
+    WHERE "userId" = $2
+    `, [commentId, userId]);
 
     res.status(200).json('Comment upvoted');
 });
@@ -231,9 +355,32 @@ router.patch('/comments/:commentId/upvote', async (req: Request<CommentRoutePara
  *
  */
 
+// Adds a new user to the database
+router.post('/users', async (req: Request<any, any, any, any>, res: Response) => {
+    const { userId } = req.body;
+
+    if (!userId) {
+        res.status(400).json('Missing userId');
+        return;
+    }
+
+    const { rowCount } = await db.query(`
+    INSERT INTO users ("userId")
+    VALUES ($1)
+    `, [userId]);
+
+    if (rowCount === 0) {
+        res.status(409).json('User already exists');
+        return;
+    }
+
+    res.status(201).json('User Added');
+});
+
 // Adds a new comment to the database
 router.post('/comments', async (req: Request<any, any, CommentBodyParams>, res: Response) => {
     const {
+        userId,
         questionId,
         parentCommentId,
         commentText,
@@ -241,13 +388,13 @@ router.post('/comments', async (req: Request<any, any, CommentBodyParams>, res: 
     } = req.body;
 
     // Check key
-    if (!questionId) {
-        res.status(400).json('Missing questionId');
+    if (!questionId || !userId) {
+        res.status(400).json('Missing questionId or userId');
         return;
     }
 
     if (!commentText && !commentPNG) {
-        res.status(400).json('Missing commentText and commentPNG');
+        res.status(400).json('Missing commentText or commentPNG');
         return;
     }
 
@@ -272,10 +419,10 @@ router.post('/comments', async (req: Request<any, any, CommentBodyParams>, res: 
     }
     // Query the database and get the id of the new comment
     const { rows } = await db.query(`
-    INSERT INTO comments ("questionId", "parentCommentId", "commentText", "commentPNG")
-    VALUES ($1, $2, $3, $4)
+    INSERT INTO comments ("questionId", "parentCommentId", "commentText", "commentPNG", "userId")
+    VALUES ($1, $2, $3, $4, $5)
     RETURNING "commentId"
-    `, [questionId, parentCommentId, commentText, commentPNG]);
+    `, [questionId, parentCommentId, commentText, commentPNG, userId]);
 
     res.status(201).json({ commentId: rows[0].commentId });
 });
@@ -345,10 +492,11 @@ router.post('/courses', async (req: Request<any, any, CourseBodyParams>, res: Re
       courseCode,
       courseName,
       courseDescription,
+      university,
   } = req.body;
 
-  if (!courseCode) {
-      res.status(400).json('Course Code is required');
+  if (!courseCode || !courseName || !courseDescription || !university) {
+      res.status(400).json('Missing courseCode, courseName, courseDescription, or university');
       return;
   }
 
@@ -359,9 +507,9 @@ router.post('/courses', async (req: Request<any, any, CourseBodyParams>, res: Re
   }
 
   await db.query(`
-  INSERT INTO courses ("courseCode", "courseName", "courseDescription")
-  VALUES ($1, $2, $3)
-  `, [courseCode, courseName, courseDescription]);
+  INSERT INTO courses ("courseCode", "courseName", "courseDescription", "university")
+  VALUES ($1, $2, $3, $4)
+  `, [courseCode, courseName, courseDescription, university]);
 
   res.status(201).json('Course Added');
 });
@@ -379,7 +527,7 @@ router.get('/comments/:commentId', async (req: Request<CommentRouteParams>, res:
   const { commentId } = req.params;
 
   const { rows, rowCount } = await db.query<IComment>(`
-  SELECT "commentId", "questionId", "parentCommentId", "commentText", "commentPNG", "isCorrect", "isEndorsed", "upvotes", "downvotes", "created_at", "updated_at"
+  SELECT "commentId", "questionId", "parentCommentId", "userId", "commentText", "commentPNG", "isCorrect", "isEndorsed", "upvotes", "downvotes", "created_at", "updated_at"
   FROM comments
   WHERE comments."commentId" = $1
   `, [commentId]);
@@ -407,7 +555,7 @@ router.get('/questions/:questionId/comments', async (req: Request<QuestionRouteP
     }
 
     const { rows } = await db.query<IComment>(`
-        SELECT "commentId", "parentCommentId", "commentText", "commentPNG", "isCorrect", "isEndorsed", "upvotes", "downvotes", "created_at", "updated_at"
+        SELECT "commentId", "parentCommentId", "userId", "commentText", "commentPNG", "isCorrect", "isEndorsed", "upvotes", "downvotes", "created_at", "updated_at"
         FROM comments
         WHERE comments."questionId" = $1
     `, [questionId]);
@@ -495,7 +643,7 @@ router.get('/courses/:courseCode', async (req: Request<CourseRouteParams>, res: 
   const { courseCode } = req.params;
 
   const { rows } = await db.query<Course>(`
-  SELECT "courseCode", "courseName", "courseDescription"
+  SELECT "courseCode", "courseName", "courseDescription", "university" 
   FROM courses
   WHERE courses."courseCode" = $1
   `, [courseCode]);
@@ -514,7 +662,7 @@ router.get('/courses', async (req: Request<any, any, any, CourseQueryParams>, re
     const limit = req.query.limit ?? 100;
 
     const { rows } = await db.query<Course>(`
-    SELECT "courseCode", "courseName", "courseDescription" 
+    SELECT "courseCode", "courseName", "courseDescription", "university" 
     FROM courses 
     LIMIT $1 
     OFFSET $2
@@ -547,11 +695,17 @@ router.get('/sketch', async (req: Request, res: Response) => {
     }
 
     await db.query1(`
-        INSERT INTO courses ("courseCode", "courseName", "courseDescription") 
+        INSERT INTO users ("userId")
         VALUES 
-            ('ENGG1001', 'Programming for Engineers', 'An introductory course covering basic concepts of software engineering.'),
-            ('MATH1051', 'Calculus & Linear Algebra', 'A foundational course in calculus covering limits, derivatives, and integrals.'),
-            ('ENGG1100', 'Professional Engineering', 'An introductory course covering fundamental concepts in engineering principles.');
+            ('evan'),
+            ('liv'),
+            ('lakshan'),
+            ('jackson');
+        INSERT INTO courses ("courseCode", "courseName", "courseDescription", "university")
+        VALUES 
+            ('ENGG1001', 'Programming for Engineers', 'An introductory course covering basic concepts of software engineering.', 'UQ'),
+            ('MATH1051', 'Calculus & Linear Algebra', 'A foundational course in calculus covering limits, derivatives, and integrals.', 'UQ'),
+            ('ENGG1100', 'Professional Engineering', 'An introductory course covering fundamental concepts in engineering principles.', 'UQ');
         
         INSERT INTO exams ("courseCode", "examYear", "examSemester", "examType")
         VALUES 
@@ -596,31 +750,31 @@ router.get('/sketch', async (req: Request, res: Response) => {
             (15, 'Question which has a comment. And one will be added as nested', 'Multiple Choice'),
             (16, 'Question which has a comment. And this is used for error checks on nesting comments with incorrect parent id.', 'Multiple Choice');
         
-        INSERT INTO comments ("questionId", "parentCommentId", "commentText", "isCorrect", "isEndorsed", "upvotes", "downvotes")
+        INSERT INTO comments ("questionId", "parentCommentId", "userId", "commentText", "isCorrect", "isEndorsed", "upvotes", "downvotes")
         VALUES 
-            (1, NULL, 'Evan Hughes', TRUE, TRUE, 100, 1),
-            (1, 1, 'Are you stupid it is clearly Liv Ronda', FALSE, FALSE, 0, 100),
-            (1, 2, 'Bro went to stupid school L', FALSE, TRUE, 999, 1),
-            (1, 1, 'Fax what a goat', FALSE, FALSE, 80, 1),
-            (2, NULL, 'Not Evan Hughes cause he is the best', TRUE, TRUE, 100, 1),
-            (2, 5, 'Facts it is clearly Liv Ronda because she is the worst', TRUE, TRUE, 999, 0),
-            (2, 6, 'ong', FALSE, TRUE, 9, 1),
-            (2, 5, 'Fax what a goat', FALSE, FALSE, 80, 1),
-            (3, NULL, 'Not Evan Hughes cause he is the best', TRUE, TRUE, 100, 1),
-            (3, 9, 'TRUEEE!!!', TRUE, TRUE, 999, 0),
-            (3, 10, 'ong', FALSE, TRUE, 9, 1),
-            (3, 9, 'Fax what a goat', FALSE, FALSE, 80, 1),
-            (5, NULL, 'This is a comment that will be edited', TRUE, TRUE, 100, 1), 
-            (6, NULL, 'This is a comment that will be deleted', TRUE, TRUE, 100, 1), 
-            (7, NULL, 'This is a comment that will be marked as correct', FALSE, FALSE, 100, 1),
-            (8, NULL, 'This is a comment that will be marked as incorrect', TRUE, TRUE, 100, 1),
-            (9, NULL, 'This is a comment that will be endorsed', TRUE, TRUE, 100, 1),
-            (10, NULL, 'This is a comment that will have its endorsement removed', TRUE, TRUE, 100, 1),
-            (11, NULL, 'This is a comment that will be upvoted', TRUE, TRUE, 100, 1),
-            (12, NULL, 'This is a comment that will be downvoted', TRUE, TRUE, 100, 1),
-            (14, NULL, 'This is a comment that will be added', TRUE, TRUE, 100, 1),
-            (15, NULL, 'This is a comment that a test will add a nested comment to', TRUE, TRUE, 100, 1),
-            (16, NULL, 'This is a comment.', TRUE, TRUE, 100, 1);
+            (1, NULL, 'evan', 'Evan Hughes', TRUE, TRUE, 100, 1),
+            (1, 1, 'liv', 'Are you stupid it is clearly Liv Ronda', FALSE, FALSE, 0, 100),
+            (1, 2, 'jackson', 'Bro went to stupid school L', FALSE, TRUE, 999, 1),
+            (1, 1, 'lakshan', 'Fax what a goat', FALSE, FALSE, 80, 1),
+            (2, NULL, 'evan', 'Not Evan Hughes cause he is the best', TRUE, TRUE, 100, 1),
+            (2, 5, 'liv', 'Facts it is clearly Liv Ronda because she is the worst', TRUE, TRUE, 999, 0),
+            (2, 6, 'jackson', 'ong', FALSE, TRUE, 9, 1),
+            (2, 5, 'lakshan', 'Fax what a goat', FALSE, FALSE, 80, 1),
+            (3, NULL, 'evan', 'Not Evan Hughes cause he is the best', TRUE, TRUE, 100, 1),
+            (3, 9, 'evan', 'TRUEEE!!!', TRUE, TRUE, 999, 0),
+            (3, 10, 'evan', 'ong', FALSE, TRUE, 9, 1),
+            (3, 9, 'evan', 'Fax what a goat', FALSE, FALSE, 80, 1),
+            (5, NULL, 'evan', 'This is a comment that will be edited', TRUE, TRUE, 100, 1), 
+            (6, NULL, 'liv', 'This is a comment that will be deleted', TRUE, TRUE, 100, 1), 
+            (7, NULL, 'jackson', 'This is a comment that will be marked as correct', FALSE, FALSE, 100, 1),
+            (8, NULL, 'lakshan', 'This is a comment that will be marked as incorrect', TRUE, TRUE, 100, 1),
+            (9, NULL, 'liv', 'This is a comment that will be endorsed', TRUE, TRUE, 100, 1),
+            (10, NULL, 'jackson', 'This is a comment that will have its endorsement removed', TRUE, TRUE, 100, 1),
+            (11, NULL, 'lakshan', 'This is a comment that will be upvoted', TRUE, TRUE, 100, 1),
+            (12, NULL, 'evan', 'This is a comment that will be downvoted', TRUE, TRUE, 100, 1),
+            (14, NULL, 'evan', 'This is a comment that will be added', TRUE, TRUE, 100, 1),
+            (15, NULL, 'liv', 'This is a comment that a test will add a nested comment to', TRUE, TRUE, 100, 1),
+            (16, NULL, 'evan', 'This is a comment.', TRUE, TRUE, 100, 1);
     `);
     res.status(200).json(`THIS SHIT SKETCH ASF AND WAS LIV'S IDEA!!!`);
 });

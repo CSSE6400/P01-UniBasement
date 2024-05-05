@@ -42,7 +42,8 @@ class TestFullSuite(BaseCase):
         course = {
             "courseCode": "TOYOTA86",
             "courseName": "The History of Toyota 86",
-            "courseDescription": "A course on the history of the Toyota 86 and its impact on the automotive industry."
+            "courseDescription": "A course on the history of the Toyota 86 and its impact on the automotive industry.",
+            "university": "The University of Queensland",
         }
 
         # Create a course
@@ -122,6 +123,7 @@ class TestFullSuite(BaseCase):
         comment = {
           "questionId": question['questionId'],
           "parentCommentId": None,
+          "userId": "evan",
           "commentText": "I think the Toyota 86 is a great car!",
           "commentPNG": None,
           "isCorrect": False,
@@ -143,6 +145,7 @@ class TestFullSuite(BaseCase):
         expectedResponse = {
           "commentId": comment['commentId'],
           "parentCommentId": comment['parentCommentId'],
+          "userId": comment['userId'],
           "commentText": comment['commentText'],
           "commentPNG": comment['commentPNG'],
           "isCorrect": comment['isCorrect'],
@@ -161,6 +164,7 @@ class TestFullSuite(BaseCase):
         nestedComment = {
           "questionId": question['questionId'],
           "parentCommentId": comment['commentId'],
+          "userId": "liv",
           "commentText": "I agree with you!",
           "commentPNG": None,
           "isCorrect": False,
@@ -184,6 +188,7 @@ class TestFullSuite(BaseCase):
           {
             "commentId": comment['commentId'],
             "parentCommentId": comment['parentCommentId'],
+            "userId": comment['userId'],
             "commentText": comment['commentText'],
             "commentPNG": comment['commentPNG'],
             "isCorrect": comment['isCorrect'],
@@ -196,6 +201,7 @@ class TestFullSuite(BaseCase):
               {
                 "commentId": nestedComment['commentId'],
                 "parentCommentId": nestedComment['parentCommentId'],
+                "userId": nestedComment['userId'],
                 "commentText": nestedComment['commentText'],
                 "commentPNG": nestedComment['commentPNG'],
                 "isCorrect": nestedComment['isCorrect'],
@@ -210,12 +216,19 @@ class TestFullSuite(BaseCase):
           ]
         
         self.assertEqual(expectedResponse, response.json())
-        
+
+        commentUpdateBody = {
+            "userId": "evan",
+        }
+
+        nestedCommentUpdateBody = {
+            "userId": "liv",
+        }
         
         # Upvotes Comments
-        response = requests.patch(self.host() + '/comments/' + str(comment['commentId']) + '/upvote')
+        response = requests.patch(self.host() + '/comments/' + str(comment['commentId']) + '/upvote', json=commentUpdateBody)
         self.assertEqual(200, response.status_code)
-        response = requests.patch(self.host() + '/comments/' + str(nestedComment['commentId']) + '/upvote')
+        response = requests.patch(self.host() + '/comments/' + str(nestedComment['commentId']) + '/upvote', json=nestedCommentUpdateBody)
         self.assertEqual(200, response.status_code)
         
         
@@ -229,9 +242,9 @@ class TestFullSuite(BaseCase):
         
         
         # Downvotes Comments
-        response = requests.patch(self.host() + '/comments/' + str(comment['commentId']) + '/downvote')
+        response = requests.patch(self.host() + '/comments/' + str(comment['commentId']) + '/downvote', json=commentUpdateBody)
         self.assertEqual(200, response.status_code)
-        response = requests.patch(self.host() + '/comments/' + str(nestedComment['commentId']) + '/downvote')
+        response = requests.patch(self.host() + '/comments/' + str(nestedComment['commentId']) + '/downvote', json=nestedCommentUpdateBody)
         self.assertEqual(200, response.status_code)
         
         
@@ -246,10 +259,10 @@ class TestFullSuite(BaseCase):
         
         
         # Endorses Comments
-        response = requests.patch(self.host() + '/comments/' + str(comment['commentId']) + '/endorse')
+        response = requests.patch(self.host() + '/comments/' + str(comment['commentId']) + '/endorse', json=commentUpdateBody)
         self.assertEqual(200, response.status_code)
-        
-        
+
+
         # Checks the comment is endorsed
         response = requests.get(self.host() + '/comments/' + str(comment['commentId']))
         self.assertEqual(200, response.status_code)
@@ -257,7 +270,7 @@ class TestFullSuite(BaseCase):
         
 
         # Unendorse Comments
-        response = requests.patch(self.host() + '/comments/' + str(comment['commentId']) + '/unendorse')
+        response = requests.patch(self.host() + '/comments/' + str(comment['commentId']) + '/unendorse', json=commentUpdateBody)
         self.assertEqual(200, response.status_code)
         
         
@@ -268,7 +281,7 @@ class TestFullSuite(BaseCase):
         
         
         # Mark Comments as correct
-        response = requests.patch(self.host() + '/comments/' + str(comment['commentId']) + '/correct')
+        response = requests.patch(self.host() + '/comments/' + str(comment['commentId']) + '/correct', json=commentUpdateBody)
         self.assertEqual(200, response.status_code)
         
         
@@ -279,7 +292,7 @@ class TestFullSuite(BaseCase):
         
         
         # Unmark Comments as correct
-        response = requests.patch(self.host() + '/comments/' + str(comment['commentId']) + '/incorrect')
+        response = requests.patch(self.host() + '/comments/' + str(comment['commentId']) + '/incorrect', json=commentUpdateBody)
         self.assertEqual(200, response.status_code)
         
         
@@ -290,7 +303,7 @@ class TestFullSuite(BaseCase):
         
         
         # Delete the nested comment
-        response = requests.patch(self.host() + '/comments/' + str(nestedComment['commentId']) + '/delete')
+        response = requests.patch(self.host() + '/comments/' + str(nestedComment['commentId']) + '/delete', json=commentUpdateBody)
         self.assertEqual(200, response.status_code)
         
         
@@ -301,6 +314,7 @@ class TestFullSuite(BaseCase):
           {
             "commentId": comment['commentId'],
             "parentCommentId": comment['parentCommentId'],
+            "userId": comment['userId'],
             "commentText": comment['commentText'],
             "commentPNG": comment['commentPNG'],
             "isCorrect": comment['isCorrect'],
@@ -313,6 +327,7 @@ class TestFullSuite(BaseCase):
               {
                 "commentId": nestedComment['commentId'],
                 "parentCommentId": nestedComment['parentCommentId'],
+                "userId": nestedComment['userId'],
                 "commentText": None, # Deleted comments have no text or image
                 "commentPNG":None, # Deleted comments have no text or image
                 "isCorrect": nestedComment['isCorrect'],
@@ -329,7 +344,7 @@ class TestFullSuite(BaseCase):
         
 
         # Delete the comment
-        response = requests.patch(self.host() + '/comments/' + str(comment['commentId']) + '/delete')
+        response = requests.patch(self.host() + '/comments/' + str(comment['commentId']) + '/delete', json=commentUpdateBody)
         self.assertEqual(200, response.status_code)
         
         

@@ -14,7 +14,8 @@ class TestCourse(BaseCase):
         course_data = {
             "courseCode": "CSSE6400",
             "courseName": "Software Architecture",
-            "courseDescription": "Doing some software architecture stuff with Richard and Evan (my bestie)"
+            "courseDescription": "Doing some software architecture stuff with Richard and Evan (my bestie)",
+            "university": "The University of Queensland",
         }
 
         response = requests.post(self.host() + '/courses', json=course_data, headers={'Accept': 'application/json'})
@@ -30,14 +31,15 @@ class TestCourse(BaseCase):
         course_data = {
             "courseCode": "",
             "courseName": "Software Architecture",
-            "courseDescription": "Doing some software architecture stuff with Richard and Evan (my bestie)"
+            "courseDescription": "Doing some software architecture stuff with Richard and Evan (my bestie)",
+            "university": "The University of Queensland",
         }
 
         response = requests.post(self.host() + '/courses', json=course_data, headers={'Accept': 'application/json'})
 
         self.assertEqual(400, response.status_code)
 
-        self.assertEqual('Course Code is required', response.json())
+        self.assertEqual('Missing courseCode, courseName, courseDescription, or university', response.json())
 
 
     def test_course_post_duplicate_coursecode(self):
@@ -48,7 +50,8 @@ class TestCourse(BaseCase):
         course_data = {
             "courseCode": "DECO2500",
             "courseName": "Human Computer Interaction",
-            "courseDescription": "Models of action, perception, cognition and interaction in human-machine systems. Methods of interaction analysis and interaction representation. Human-machine system evaluation. Practical implementation. Introduction to user and use-centred design principles. Broader topics may include: societal considerations, groupware, multimedia, media perspectives."
+            "courseDescription": "Models of action, perception, cognition and interaction in human-machine systems. Methods of interaction analysis and interaction representation. Human-machine system evaluation. Practical implementation. Introduction to user and use-centred design principles. Broader topics may include: societal considerations, groupware, multimedia, media perspectives.",
+            "university": "The University of Queensland",
         }
 
         response = requests.post(self.host() + '/courses', json=course_data, headers={'Accept': 'application/json'})
@@ -91,7 +94,8 @@ class TestCourse(BaseCase):
         expectedCourse = {
             "courseCode": "ENGG1001",
             "courseName": "Programming for Engineers",
-            "courseDescription": "An introductory course covering basic concepts of software engineering."
+            "courseDescription": "An introductory course covering basic concepts of software engineering.",
+            "university": "UQ"
         }
 
         response = requests.get(self.host() + '/courses/' + courseCode)
@@ -116,9 +120,9 @@ class TestCourse(BaseCase):
         Checks for the correct response message
         """
         expectedCourses = [
-            {"courseCode": "ENGG1001", "courseName": "Programming for Engineers", "courseDescription": "An introductory course covering basic concepts of software engineering."},
-            {"courseCode": "ENGG1100", "courseName": "Professional Engineering", "courseDescription": "An introductory course covering fundamental concepts in engineering principles."},
-            {"courseCode": "MATH1051", "courseName": "Calculus & Linear Algebra", "courseDescription": "A foundational course in calculus covering limits, derivatives, and integrals."}
+            {"courseCode": "ENGG1001", "courseName": "Programming for Engineers", "courseDescription": "An introductory course covering basic concepts of software engineering.", "university": "UQ"},
+            {"courseCode": "ENGG1100", "courseName": "Professional Engineering", "courseDescription": "An introductory course covering fundamental concepts in engineering principles.", "university": "UQ"},
+            {"courseCode": "MATH1051", "courseName": "Calculus & Linear Algebra", "courseDescription": "A foundational course in calculus covering limits, derivatives, and integrals.", "university": "UQ"}
         ]
 
         response = requests.get(self.host() + '/courses')
