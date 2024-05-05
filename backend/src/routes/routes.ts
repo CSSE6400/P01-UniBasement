@@ -420,9 +420,9 @@ router.post('/comments', async (req: Request<any, any, CommentBodyParams>, res: 
     // Query the database and get the id of the new comment
     const { rows } = await db.query(`
     INSERT INTO comments ("questionId", "parentCommentId", "commentText", "commentPNG", "userId")
-    VALUES ($1, $2, $3, $4)
+    VALUES ($1, $2, $3, $4, $5)
     RETURNING "commentId"
-    `, [questionId, parentCommentId, commentText, commentPNG]);
+    `, [questionId, parentCommentId, commentText, commentPNG, userId]);
 
     res.status(201).json({ commentId: rows[0].commentId });
 });
@@ -643,7 +643,7 @@ router.get('/courses/:courseCode', async (req: Request<CourseRouteParams>, res: 
   const { courseCode } = req.params;
 
   const { rows } = await db.query<Course>(`
-  SELECT "courseCode", "courseName", "courseDescription"
+  SELECT "courseCode", "courseName", "courseDescription", "university" 
   FROM courses
   WHERE courses."courseCode" = $1
   `, [courseCode]);
@@ -662,7 +662,7 @@ router.get('/courses', async (req: Request<any, any, any, CourseQueryParams>, re
     const limit = req.query.limit ?? 100;
 
     const { rows } = await db.query<Course>(`
-    SELECT "courseCode", "courseName", "courseDescription" 
+    SELECT "courseCode", "courseName", "courseDescription", "university" 
     FROM courses 
     LIMIT $1 
     OFFSET $2
