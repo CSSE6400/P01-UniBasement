@@ -79,18 +79,31 @@ router.put('/questions/:questionId/edit', async (req: Request<QuestionRouteParam
 // Edits a comment
 router.put('/comments/:commentId/edit', async (req: Request<CommentRouteParams, any, CommentBodyParams>, res: Response) => {
     const { commentId } = req.params;
+    const { commentText, commentPNG, userId } = req.body;
 
     if (!commentId) {
         res.status(400).json('Invalid commentId');
         return;
     }
 
-    if (!req.body.commentText && !req.body.commentPNG) {
+    if (!commentText && !commentPNG) {
         res.status(400).json('No changes made');
         return;
     }
 
-    const { rowCount } = await editComment(commentId, req.body.commentText, req.body.commentPNG);
+    // Check if the user exists
+    const { rows } = await db.query(`
+    SELECT "userId"
+    FROM users
+    WHERE "userId" = $1
+    `, [userId]);
+
+    if (rows.length === 0) {
+        res.status(404).json('User not found');
+        return;
+    }
+
+    const { rowCount } = await editComment(commentId, commentText, commentPNG);
     if (rowCount === 0) {
         res.status(404).json('Comment not found');
         return;
@@ -252,6 +265,25 @@ router.patch('/comments/:commentId/unendorse', async (req: Request<CommentRouteP
 // Downvotes a comment
 router.patch('/comments/:commentId/downvote', async (req: Request<CommentRouteParams>, res: Response) => {
     const { commentId } = req.params;
+    const { userId } = req.body;
+
+    // real user?
+    const { rows } = await db.query<{downvoted: any[]}>(`
+    SELECT "downvoted"
+    FROM users
+    WHERE "userId" = $1
+    `, [userId])
+
+    if (rows.length === 0) {
+        res.status(400).json('User does not exist');
+        return;
+    }
+
+    // check to see if has been downvoted
+    if (rows[0].downvoted.includes(commentId)) {
+        res.status(400).json('Already downvoted');
+        return;
+    }
 
     const { rowCount } = await db.query(`
     UPDATE comments
@@ -263,12 +295,38 @@ router.patch('/comments/:commentId/downvote', async (req: Request<CommentRoutePa
         return;
     }
 
+    await db.query(`
+    UPDATE users
+    SET "downvoted" = array_append("downvoted", $1)
+    WHERE "userId" = $2
+    `, [commentId, userId]);
+    
     res.status(200).json('Comment downvoted');
 });
 
 // Upvotes a comment
 router.patch('/comments/:commentId/upvote', async (req: Request<CommentRouteParams>, res: Response) => {
     const { commentId } = req.params;
+    const { userId } = req.body;
+
+    // real user?
+    const { rows } = await db.query<{upvoted: any[]}>(`
+    SELECT "upvoted"
+    FROM users
+    WHERE "userId" = $1
+    `, [userId])
+
+    if (rows.length === 0) {
+        res.status(400).json('User does not exist');
+        return;
+    }
+
+    // check to see if has been downvoted
+    if (rows[0].upvoted.includes(commentId)) {
+        res.status(400).json('Already upvoted');
+        return;
+    }
+
 
     const { rowCount } = await db.query(`
     UPDATE comments
@@ -279,6 +337,12 @@ router.patch('/comments/:commentId/upvote', async (req: Request<CommentRoutePara
         res.status(404).json('Comment not found');
         return;
     }
+
+    await db.query(`
+    UPDATE users
+    SET "upvoted" = array_append("upvoted", $1)
+    WHERE "userId" = $2
+    `, [commentId, userId]);
 
     res.status(200).json('Comment upvoted');
 });
@@ -291,9 +355,32 @@ router.patch('/comments/:commentId/upvote', async (req: Request<CommentRoutePara
  *
  */
 
+// Adds a new user to the database
+router.post('/users', async (req: Request<any, any, any, any>, res: Response) => {
+    const { userId } = req.body;
+
+    if (!userId) {
+        res.status(400).json('Missing userId');
+        return;
+    }
+
+    const { rowCount } = await db.query(`
+    INSERT INTO users ("userId")
+    VALUES ($1)
+    `, [userId]);
+
+    if (rowCount === 0) {
+        res.status(409).json('User already exists');
+        return;
+    }
+
+    res.status(201).json('User Added');
+}
+
 // Adds a new comment to the database
 router.post('/comments', async (req: Request<any, any, CommentBodyParams>, res: Response) => {
     const {
+        userId,
         questionId,
         parentCommentId,
         commentText,
@@ -301,13 +388,13 @@ router.post('/comments', async (req: Request<any, any, CommentBodyParams>, res: 
     } = req.body;
 
     // Check key
-    if (!questionId) {
-        res.status(400).json('Missing questionId');
+    if (!questionId || !userId) {
+        res.status(400).json('Missing questionId or userId');
         return;
     }
 
     if (!commentText && !commentPNG) {
-        res.status(400).json('Missing commentText and commentPNG');
+        res.status(400).json('Missing commentText or commentPNG');
         return;
     }
 
@@ -332,7 +419,7 @@ router.post('/comments', async (req: Request<any, any, CommentBodyParams>, res: 
     }
     // Query the database and get the id of the new comment
     const { rows } = await db.query(`
-    INSERT INTO comments ("questionId", "parentCommentId", "commentText", "commentPNG")
+    INSERT INTO comments ("questionId", "parentCommentId", "commentText", "commentPNG", "userId")
     VALUES ($1, $2, $3, $4)
     RETURNING "commentId"
     `, [questionId, parentCommentId, commentText, commentPNG]);

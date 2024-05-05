@@ -15,12 +15,11 @@ const pool = new Pool({
 export const setupTables = () => {
      const query = `
      CREATE TABLE IF NOT EXISTS users (
-        "userId" SERIAL PRIMARY KEY,
-        "username" VARCHAR(100) NOT NULL,
-        "role" VARCHAR(20) DEFAULT 'user',
+        "userId" TEXT PRIMARY KEY,
+        "role" INTEGER DEFAULT 0,
         "rated" JSONB DEFAULT '{}',
-        "upvoted" INTEGER[] DEFAULT array[]::INTEGER[],
-        "downvoted" INTEGER[] DEFAULT array[]::INTEGER[]
+        "upvoted" INTEGER[] DEFAULT array[]::integer[],
+        "downvoted" INTEGER[] DEFAULT array[]::integer[]
      );
 
      CREATE TABLE IF NOT EXISTS courses (
@@ -55,7 +54,7 @@ export const setupTables = () => {
         "commentId" SERIAL PRIMARY KEY,
         "questionId" INTEGER REFERENCES questions("questionId"),
         "parentCommentId" INTEGER,
-
+        "userId" TEXT REFERENCES users("userId") NOT NULL,
         "commentText" TEXT,
         "commentPNG" BYTEA, 
         "isCorrect" BOOLEAN DEFAULT FALSE,
@@ -74,7 +73,7 @@ export function query1<Result extends QueryResultRow>(text: any) {
 }
 
 export function query<Result extends QueryResultRow>(text: any, params: any) {
-    return pool.query<Result>(text, params);
+    return pool.query<Result>(text, params);`
 }
 
 export function query3<Result extends QueryResultRow>(text: any, params: any, callback: any) {
