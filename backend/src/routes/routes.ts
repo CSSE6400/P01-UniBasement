@@ -375,7 +375,7 @@ router.post('/users', async (req: Request<any, any, any, any>, res: Response) =>
     }
 
     res.status(201).json('User Added');
-}
+});
 
 // Adds a new comment to the database
 router.post('/comments', async (req: Request<any, any, CommentBodyParams>, res: Response) => {
