@@ -1,7 +1,7 @@
 import unittest
 import requests
 
-from base import BaseCase
+from .base import BaseCase
 
 
 class TestUser(BaseCase):
