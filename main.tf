@@ -83,37 +83,8 @@ resource "aws_security_group" "unibasement_database" {
 
 
 //////////////////////////////// Frontend //////////////////////////////////////
-resource "aws_security_group" "unibasement" {
-    name = "unibasement"
-    description = "unibasement Security Group"
-  
-    ingress {
-      from_port = 3000
-      to_port = 3000
-      protocol = "tcp"
-      cidr_blocks = ["0.0.0.0/0"]
-    }
-  
-    ingress {
-      from_port = 22
-      to_port = 22
-      protocol = "tcp"
-      cidr_blocks = ["0.0.0.0/0"]
-    }
-  
-    egress {
-      from_port = 0
-      to_port = 0
-      protocol = "-1"
-      cidr_blocks = ["0.0.0.0/0"]
-    }
-}
-
-
-
-//////////////////////////////// Frontend //////////////////////////////////////
 resource "docker_image" "unibasement_frontend" {
-  name         = "${aws_ecr_repository.unibasement.repository_url}:latest"
+  name         = "${aws_ecr_repository.unibasement.repository_url}:frontend_latest"
   build {
     context = "frontend"
     dockerfile = "Dockerfile"
@@ -143,6 +114,8 @@ resource "aws_ecs_service" "unibasement_frontend" {
   }
 }
 
+
+
 resource "aws_ecs_task_definition" "unibasement_frontend" {
     family                   = "unibasement_frontend"
     network_mode             = "awsvpc"
@@ -167,24 +140,8 @@ resource "aws_ecs_task_definition" "unibasement_frontend" {
       ],
         "environment": [
         {
-          "name": "DB_USER",
-          "value": "${local.database_username}"
-        },
-        {
-          "name": "DB_HOST",
-          "value": "${aws_db_instance.unibasement_database.address}"
-        }, 
-        {
-          "name": "DB_DATABASE",
-          "value": "${aws_db_instance.unibasement_database.db_name}"
-        },
-        {
-          "name": "DB_PASSWORD",
-          "value": "${local.database_password}"
-        }, 
-        {
-          "name": "DB_PORT",
-          "value": "5432"
+          "name": "NEXT_PUBLIC_API_URL",
+          "value": "http://${data.aws_network_interface.unibasement_backend_ip.association[0].public_ip}:8080/"
         }
       ],
       "logConfiguration": {
@@ -201,7 +158,10 @@ resource "aws_ecs_task_definition" "unibasement_frontend" {
   DEFINITION
 }
 
+#TODO pass in auth0 variables into the above. 
 
+
+#TODO need scalability stuff for front, back db ?
 
 resource "aws_security_group" "unibasement_frontend" {
     name = "unibasement_frontend"
@@ -230,9 +190,14 @@ resource "aws_security_group" "unibasement_frontend" {
 }
 
 
+
+
+//////////////////////////////// Frontend //////////////////////////////////////
+
+
 //////////////////////////////// Backend ///////////////////////////////////////
 resource "docker_image" "unibasement_backend" {
-  name         = "${aws_ecr_repository.unibasement.repository_url}:latest"
+  name         = "${aws_ecr_repository.unibasement.repository_url}:backend_latest"
   build {
     context = "backend"
     dockerfile = "Dockerfile"
@@ -250,13 +215,30 @@ resource "aws_ecs_service" "unibasement_backend" {
   task_definition = aws_ecs_task_definition.unibasement_backend.arn
   desired_count   = 1
   launch_type     = "FARGATE"
+  enable_ecs_managed_tags = true
+  wait_for_steady_state = true
 
   network_configuration {
     subnets             = data.aws_subnets.private.ids
-    security_groups     = [aws_security_group.unibasement.id]
+    security_groups     = [aws_security_group.unibasement_backend.id]
     assign_public_ip    = true
   }
 }
+
+data "aws_network_interfaces" "unibasement_backend_ip" {
+  tags = {
+    "aws:ecs:serviceName" = aws_ecs_service.unibasement_backend.name
+  }
+}
+
+data "aws_network_interface" "unibasement_backend_ip" {
+  depends_on = [ aws_ecs_service.unibasement_backend ]
+  id = data.aws_network_interfaces.unibasement_backend_ip.ids[0]
+}
+
+# output "thebackendip" {
+#   value = data.aws_network_interface.unibasement_backend_ip.association[0].public_ip
+# }
 
 
 resource "aws_ecs_task_definition" "unibasement_backend" {
@@ -375,7 +357,7 @@ resource "aws_lb_target_group" "unibasement" {
   name          = "unibasement"
   port          = 3000
   protocol      = "HTTP"
-  vpc_id        = aws_security_group.unibasement.vpc_id
+  vpc_id        = aws_security_group.unibasement_frontend.vpc_id
   target_type   = "ip"
 
   health_check {
@@ -395,7 +377,7 @@ resource "aws_lb" "unibasement" {
   internal           = false
   load_balancer_type = "application"
   subnets            = data.aws_subnets.private.ids
-  security_groups    = [aws_security_group.unibasement.id]
+  security_groups    = [aws_security_group.unibasement_frontend.id]
 }
 
 
