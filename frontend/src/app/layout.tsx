@@ -7,6 +7,8 @@ import '@/styles/tailwind.css'
 import { type Metadata } from 'next'
 import { type Section } from '@/components/SectionProvider'
 
+import { UserProvider } from '@auth0/nextjs-auth0/client'
+
 export const metadata: Metadata = {
   title: {
     template: '%s - EVAN',
@@ -32,9 +34,11 @@ export default async function RootLayout({
     <html lang="en" className="h-full" suppressHydrationWarning>
       <body className="flex min-h-full bg-white antialiased dark:bg-zinc-900">
         <Providers>
-          <div className="w-full">
-            <Layout allSections={allSections}>{children}</Layout>
-          </div>
+          <UserProvider>
+            <div className="w-full">
+              <Layout allSections={allSections}>{children}</Layout>
+            </div>
+          </UserProvider>
         </Providers>
       </body>
     </html>
