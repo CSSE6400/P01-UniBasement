@@ -12,7 +12,7 @@ class TestUser(BaseCase):
         Checks for the correct response message
         """
         user_data = {
-            "userId": "EVAN",
+            "userId": "EVANs",
         }
 
         response = requests.post(self.host() + '/users', json=user_data, headers={'Accept': 'application/json'})
