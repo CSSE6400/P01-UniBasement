@@ -42,7 +42,8 @@ class TestFullSuite(BaseCase):
         course = {
             "courseCode": "TOYOTA86",
             "courseName": "The History of Toyota 86",
-            "courseDescription": "A course on the history of the Toyota 86 and its impact on the automotive industry."
+            "courseDescription": "A course on the history of the Toyota 86 and its impact on the automotive industry.",
+            "university": "The University of Queensland",
         }
 
         # Create a course
