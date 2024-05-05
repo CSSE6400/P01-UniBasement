@@ -14,26 +14,39 @@ const pool = new Pool({
 
 export const setupTables = () => {
      const query = `
+     CREATE TABLE IF NOT EXISTS users (
+        "userId" SERIAL PRIMARY KEY,
+        "username" VARCHAR(100) NOT NULL,
+        "role" VARCHAR(20) DEFAULT 'user',
+        "rated" JSONB DEFAULT '{}',
+        "upvoted" INTEGER[] DEFAULT array[]::INTEGER[],
+        "downvoted" INTEGER[] DEFAULT array[]::INTEGER[]
+     );
+
      CREATE TABLE IF NOT EXISTS courses (
         "courseCode" VARCHAR(8) PRIMARY KEY,
-        "courseName" VARCHAR(100),
-        "courseDescription" TEXT
+        "courseName" VARCHAR(100) NOT NULL,
+        "courseDescription" TEXT,
+        "university" VARCHAR(100) NOT NULL,
+        
+        "stars" INTEGER DEFAULT 0,
+        "votes" INTEGER DEFAULT 0
     );
 
      CREATE TABLE IF NOT EXISTS exams (
         "examId" SERIAL PRIMARY KEY,
-        "courseCode" VARCHAR(8) REFERENCES courses("courseCode"),
-        "examYear" INTEGER, 
-        "examSemester" Integer, 
-        "examType" VARCHAR(20)
+        "courseCode" VARCHAR(8) REFERENCES courses("courseCode") NOT NULL,
+        "examYear" INTEGER NOT NULL, 
+        "examSemester" Integer NOT NULL, 
+        "examType" VARCHAR(20) NOT NULL
     );
     
     CREATE TABLE IF NOT EXISTS questions (
         "questionId" SERIAL PRIMARY KEY,
-        "examId" INTEGER REFERENCES exams("examId"),
+        "examId" INTEGER REFERENCES exams("examId") NOT NULL,
         "questionText" TEXT,
         "questionPNG" BYTEA, 
-        "questionType" VARCHAR(20),
+        "questionType" VARCHAR(20) NOT NULL,
         "created_at" TIMESTAMP DEFAULT NOW(),
         "updated_at" TIMESTAMP DEFAULT NOW()
     );

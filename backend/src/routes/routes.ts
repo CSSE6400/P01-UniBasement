@@ -107,6 +107,60 @@ router.put('/comments/:commentId/edit', async (req: Request<CommentRouteParams, 
  *
  */
 
+// Star rating for a course
+router.patch('/courses/:courseCode/star', async (req: Request<CourseRouteParams>, res: Response) => {
+    const { courseCode } = req.params;
+    const { starRating, userId } = req.body;
+
+    if (!starRating || !userId) {
+        res.status(400).json('Missing starRating or userId');
+        return;
+    }
+
+    const { rows } = await db.query(`
+        SELECT "userId"
+        FROM users
+        WHERE "userId" = $1
+    `, [userId]);
+
+    if (rows.length === 0) {
+        res.status(404).json('User not found');
+        return;
+    }
+
+    // See if it is already rated
+    // then rate it
+    const { rowCount } = await db.query(`
+    UPDATE courses
+    SET stars = stars + $3 - COALESCE((
+        SELECT CAST(rated ->> $2 AS INTEGER)
+        FROM users
+        WHERE "userId" = $1 AND "rated" ? $2
+    ), 0),
+    votes = votes + CASE WHEN EXISTS (
+            SELECT 1
+            FROM users
+            WHERE "userId" = $1 AND "rated" ? $2
+        ) THEN 0
+        ELSE 1 
+    END
+    WHERE "courseCode" = $2;
+    `, [userId, courseCode, starRating]);
+
+    if (rowCount === 0) {
+        res.status(404).json('Course not found');
+        return;
+    }
+
+    await db.query(`
+        UPDATE users
+        SET rated = jsonb_set(rated, array_append('{}'::text[], $2), $3::jsonb)
+        WHERE "userId" = $1
+    `, [userId, courseCode, starRating]);
+
+    res.status(200).json('Course starred');
+});
+
 // Deletes a comment
 router.patch('/comments/:commentId/delete', async (req: Request<CommentRouteParams>, res: Response) => {
     const { commentId } = req.params;
@@ -346,10 +400,11 @@ router.post('/courses', async (req: Request<any, any, CourseBodyParams>, res: Re
       courseCode,
       courseName,
       courseDescription,
+      university,
   } = req.body;
 
-  if (!courseCode) {
-      res.status(400).json('Course Code is required');
+  if (!courseCode || !courseName || !courseDescription || !university) {
+      res.status(400).json('Missing courseCode, courseName, courseDescription, or university');
       return;
   }
 
@@ -360,9 +415,9 @@ router.post('/courses', async (req: Request<any, any, CourseBodyParams>, res: Re
   }
 
   await db.query(`
-  INSERT INTO courses ("courseCode", "courseName", "courseDescription")
-  VALUES ($1, $2, $3)
-  `, [courseCode, courseName, courseDescription]);
+  INSERT INTO courses ("courseCode", "courseName", "courseDescription", "university")
+  VALUES ($1, $2, $3, $4)
+  `, [courseCode, courseName, courseDescription, university]);
 
   res.status(201).json('Course Added');
 });
@@ -548,11 +603,11 @@ router.get('/sketch', async (req: Request, res: Response) => {
     }
 
     await db.query1(`
-        INSERT INTO courses ("courseCode", "courseName", "courseDescription") 
+        INSERT INTO courses ("courseCode", "courseName", "courseDescription", "university")
         VALUES 
-            ('ENGG1001', 'Programming for Engineers', 'An introductory course covering basic concepts of software engineering.'),
-            ('MATH1051', 'Calculus & Linear Algebra', 'A foundational course in calculus covering limits, derivatives, and integrals.'),
-            ('ENGG1100', 'Professional Engineering', 'An introductory course covering fundamental concepts in engineering principles.');
+            ('ENGG1001', 'Programming for Engineers', 'An introductory course covering basic concepts of software engineering.', 'UQ'),
+            ('MATH1051', 'Calculus & Linear Algebra', 'A foundational course in calculus covering limits, derivatives, and integrals.', 'UQ'),
+            ('ENGG1100', 'Professional Engineering', 'An introductory course covering fundamental concepts in engineering principles.', 'UQ');
         
         INSERT INTO exams ("courseCode", "examYear", "examSemester", "examType")
         VALUES 
