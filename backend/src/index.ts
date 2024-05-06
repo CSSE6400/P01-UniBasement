@@ -9,8 +9,7 @@ import { User } from './db/User';
 import { Course } from './db/Course';
 import { Exam } from './db/Exam';
 import { Question } from './db/Questions';
-import { Comment as com} from './db/Comments';
-import * as db from './db';
+import { Comment as Com} from './db/Comments';
 
 import { routes } from './routes';
 
@@ -31,6 +30,8 @@ app.use(express.urlencoded({ extended: false }));
 /**
  * Database Connection
  */
+const connection: Connection = null;
+
 export const connectDatabase = async () => {
   connection = await createConnection({
     type: process.env.DB_TYPE,

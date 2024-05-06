@@ -50,7 +50,7 @@ router.put('/questions/:questionId/edit', async (req: Request<QuestionRouteParam
     }
 
     const questionRepository = getConnection().getRepository(QuestionDb);
-    const question = await questionRepository.findOne({ questionId });
+    const question = await questionRepository.findOne({ where: { questionId } });
 
     if (!question) {
         res.status(404).json('Question not found');
@@ -91,7 +91,7 @@ router.put('/comments/:commentId/edit', async (req: Request<CommentRouteParams, 
     }
 
     const commentRepository = getConnection().getRepository(CommentDb);
-    const comment = await commentRepository.findOne({ commentId });
+    const comment = await commentRepository.findOne({ where: { commentId } });
 
     if (!comment) {
         res.status(404).json('Comment not found');
@@ -142,7 +142,7 @@ router.patch('/courses/:courseCode/star', async (req: Request<CourseRouteParams>
     }
 
     const userRows = getConnection().getRepository(UserDb);
-    const user = await userRows.findOne({ userId });
+    const user = await userRows.findOne({ where: { userId } });
 
     if (!user) {
         res.status(400).json('User does not exist');
@@ -150,7 +150,7 @@ router.patch('/courses/:courseCode/star', async (req: Request<CourseRouteParams>
     }
 
     const courseRepository = getConnection().getRepository(CourseDb);
-    const course = await courseRepository.findOne({ courseCode });
+    const course = await courseRepository.findOne({ where: { courseCode } });
 
     if (!course) {
         res.status(404).json('Course not found');
@@ -173,7 +173,7 @@ router.patch('/comments/:commentId/delete', async (req: Request<CommentRoutePara
     const { userId } = req.body;
 
     const commentRepository = getConnection().getRepository(CommentDb);
-    const comment = await commentRepository.findOne({ commentId });
+    const comment = await commentRepository.findOne({ where: { commentId } });
 
     if (!comment) {
         res.status(404).json('Comment not found');
@@ -201,7 +201,7 @@ router.patch('/comments/:commentId/correct', async (req: Request<CommentRoutePar
     const { commentId } = req.params;
 
     const commentRepository = getConnection().getRepository(CommentDb);
-    const comment = await commentRepository.findOne({ commentId });
+    const comment = await commentRepository.findOne({ where: { commentId } });
 
     if (!comment) {
         res.status(404).json('Comment not found');
@@ -219,7 +219,7 @@ router.patch('/comments/:commentId/incorrect', async (req: Request<CommentRouteP
     const { commentId } = req.params;
 
     const commentRepository = getConnection().getRepository(CommentDb);
-    const comment = await commentRepository.findOne({ commentId });
+    const comment = await commentRepository.findOne({ where: { commentId } });
 
     if (!comment) {
         res.status(404).json('Comment not found');
@@ -237,7 +237,7 @@ router.patch('/comments/:commentId/endorse', async (req: Request<CommentRoutePar
     const { commentId } = req.params;
 
     const commentRepository = getConnection().getRepository(CommentDb);
-    const comment = await commentRepository.findOne({ commentId });
+    const comment = await commentRepository.findOne({ where: { commentId } });
 
     if (!comment) {
         res.status(404).json('Comment not found');
@@ -255,7 +255,7 @@ router.patch('/comments/:commentId/unendorse', async (req: Request<CommentRouteP
     const { commentId } = req.params;
 
     const commentRepository = getConnection().getRepository(CommentDb);
-    const comment = await commentRepository.findOne({ commentId });
+    const comment = await commentRepository.findOne({ where: { commentId } });
 
     if (!comment) {
         res.status(404).json('Comment not found');
@@ -275,7 +275,7 @@ router.patch('/comments/:commentId/downvote', async (req: Request<CommentRoutePa
     const { userId } = req.body;
 
     const userRows = getConnection().getRepository(UserDb);
-    const user = await userRows.findOne({ userId });
+    const user = await userRows.findOne({ where: { userId } });
 
     if (!user) {
         res.status(400).json('User does not exist');
@@ -289,7 +289,7 @@ router.patch('/comments/:commentId/downvote', async (req: Request<CommentRoutePa
     }
 
     const commentRows = getConnection().getRepository(CommentDb);
-    const comment = await commentRows.findOne({ commentId });
+    const comment = await commentRows.findOne({ where: { commentId } });
 
     if (!comment) {
         res.status(404).json('Comment not found');
@@ -311,7 +311,7 @@ router.patch('/comments/:commentId/upvote', async (req: Request<CommentRoutePara
     const { userId } = req.body;
 
     const userRows = getConnection().getRepository(UserDb);
-    const user = await userRows.findOne({ userId });
+    const user = await userRows.findOne({ where: { userId } });
 
     if (!user) {
         res.status(400).json('User does not exist');
@@ -325,7 +325,7 @@ router.patch('/comments/:commentId/upvote', async (req: Request<CommentRoutePara
     }
 
     const commentRows = getConnection().getRepository(CommentDb);
-    const comment = await commentRows.findOne({ commentId});
+    const comment = await commentRows.findOne({ where: { commentId} });
 
     if (!comment) {
         res.status(404).json('Comment not found');
@@ -361,7 +361,7 @@ router.post('/users', async (req: Request<any, any, any, any>, res: Response) =>
     const userRepository = getConnection().getRepository(UserDb);
     
     // Check for user
-    const user = await userRepository.findOne({ userId });
+    const user = await userRepository.findOne({where: { userId } });
     if (user) {
         res.status(409).json('User already exists');
         return;
@@ -398,7 +398,7 @@ router.post('/comments', async (req: Request<any, any, CommentBodyParams>, res: 
 
     // Check question id
     const questionRepository = getConnection().getRepository(QuestionDb);
-    const question = await questionRepository.findOne({ questionId });
+    const question = await questionRepository.findOne({ where: { questionId } });
     if (!question) {
         res.status(404).json('Question not found');
         return;
@@ -408,7 +408,7 @@ router.post('/comments', async (req: Request<any, any, CommentBodyParams>, res: 
 
     // Check parent id
     if (parentCommentId) {
-        const parentComment = await commentRepository.findOne({ commentId: parentCommentId });
+        const parentComment = await commentRepository.findOne({ where: { commentId: parentCommentId } });
         if (!parentComment) {
             res.status(404).json('Parent comment not found');
             return;
@@ -461,7 +461,7 @@ router.post('/questions', async (req: Request<any, any, QuestionBodyParams>, res
 
     // Check exam id
     const examRepository = getConnection().getRepository(ExamDb);
-    const exam = await examRepository.findOne({ examId });
+    const exam = await examRepository.findOne({ where: { examId } });
     if (!exam) {
         res.status(404).json('Exam not found');
         return;
@@ -502,7 +502,7 @@ router.post('/exams', async (req: Request<any, any, ExamBodyParams>, res: Respon
 
     // Check course code
     const courseRepository = getConnection().getRepository(CourseDb);
-    const course = await courseRepository.findOne({ courseCode });
+    const course = await courseRepository.findOne({ where: { courseCode } });
     if (!course) {
         res.status(404).json('Course not found');
         return;
@@ -535,7 +535,7 @@ router.post('/courses', async (req: Request<any, any, CourseBodyParams>, res: Re
     }
 
     const courseRepository = getConnection().getRepository(CourseDb);
-    const course = await courseRepository.findOne({ courseCode });
+    const course = await courseRepository.findOne({ where: { courseCode } });
     if (course) {
         res.status(409).json('Course already exists');
         return;
@@ -565,7 +565,7 @@ router.get('/comments/:commentId', async (req: Request<CommentRouteParams>, res:
     const { commentId } = req.params;
 
     const commentRepository = getConnection().getRepository(CommentDb);
-    const comment = await commentRepository.findOne({ commentId });
+    const comment = await commentRepository.findOne({ where: { commentId } });
 
     if (!comment) {
         res.status(404).json('Comment not found');
@@ -581,7 +581,7 @@ router.get('/questions/:questionId/comments', async (req: Request<QuestionRouteP
 
     const commentRepository = getConnection().getRepository(CommentDb);
     //TODO
-    const comments = await commentRepository.find({ questionId });
+    const comments = await commentRepository.find({ where: { questionId } });
 
     res.status(200).json(nest(comments));
 });
@@ -592,7 +592,7 @@ router.get('/questions/:questionId', async (req: Request<QuestionRouteParams>, r
     const { questionId } = req.params;
 
     const questionRepository = getConnection().getRepository(QuestionDb);
-    const question = await questionRepository.findOne({ questionId });
+    const question = await questionRepository.findOne({ where: { questionId } });
 
     if (!question) {
         res.status(404).json('Question not found');
@@ -607,7 +607,7 @@ router.get('/exams/:examId/questions', async (req: Request<ExamRouteParams>, res
     const { examId } = req.params;
 
     const questionRepository = getConnection().getRepository(QuestionDb);
-    const questions = await questionRepository.find({ examId });
+    const questions = await questionRepository.find({ where: { examId } });
 
     if (!questions) {
         res.status(404).json('Questions not found');
@@ -623,7 +623,7 @@ router.get('/exams/:examId', async (req: Request<ExamRouteParams>, res: Response
     const { examId } = req.params;
 
     const examRepository = getConnection().getRepository(ExamDb);
-    const exam = await examRepository.findOne({ examId });
+    const exam = await examRepository.findOne({ where: { examId } });
 
     if (!exam) {
         res.status(404).json('Exam not found');
@@ -638,7 +638,7 @@ router.get('/courses/:courseCode/exams', async (req: Request<CourseRouteParams>,
     const { courseCode } = req.params;
 
     const examRepository = getConnection().getRepository(ExamDb);
-    const exams = await examRepository.find({ courseCode });
+    const exams = await examRepository.find({ where: { courseCode } });
 
     res.status(200).json(exams);
 });
@@ -648,7 +648,7 @@ router.get('/courses/:courseCode', async (req: Request<CourseRouteParams>, res: 
     const { courseCode } = req.params;
     
     const courseRepository = getConnection().getRepository(CourseDb);  
-    const course = await courseRepository.find({ courseCode });
+    const course = await courseRepository.find({ where: { courseCode } });
 
     if (!course) {
         res.status(404).json('Course not found');
