@@ -114,7 +114,25 @@ resource "aws_ecs_service" "unibasement_frontend" {
   }
 }
 
+variable "auth0_secret" {
+  description = "Auth0 Secret"
+}
 
+variable "auth0_base_url" {
+  description = "Auth0 Base URL"
+}
+
+variable "auth0_issuer_base_url" {
+  description = "Auth0 Issuer Base URL"
+}
+
+variable "auth0_client_id" {
+  description = "Auth0 Client ID"
+}
+
+variable "auth0_client_secret" {
+  description = "Auth0 Client Secret"
+}
 
 resource "aws_ecs_task_definition" "unibasement_frontend" {
     family                   = "unibasement_frontend"
@@ -142,6 +160,26 @@ resource "aws_ecs_task_definition" "unibasement_frontend" {
         {
           "name": "NEXT_PUBLIC_API_URL",
           "value": "http://${data.aws_network_interface.unibasement_backend_ip.association[0].public_ip}:8080"
+        },
+        {
+          "name": "AUTH0_SECRET,
+          "value": var.auth0_secret
+        },
+        {
+          "name": "AUTH0_BASE_URL",
+          "value": var.auth0_base_url
+        },
+        {
+          "name": "AUTH0_ISSUER_BASE_URL",
+          "value": var.auth0_issuer_base_url
+        },
+        {
+          "name": "AUTH0_CLIENT_ID",
+          "value": var.auth0_client_id
+        },
+        {
+          "name": "AUTH0_CLIENT_SECRET",
+          "value": var.auth0_client_secret
         }
       ],
       "logConfiguration": {
