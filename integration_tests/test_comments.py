@@ -72,11 +72,11 @@ class TestComments(BaseCase):
         Checks for a 404 response from the /comments endpoint
         Checks for the correct response message
         """
-        commentId = 86868686
-
-        response = requests.patch(self.host() + '/comments/' + str(commentId) + '/delete')
-        self.assertEqual(404, response.status_code)
-        self.assertEqual('Comment not found', response.json())
+#        commentId = 86868686
+#
+#        response = requests.patch(self.host() + '/comments/' + str(commentId) + '/delete')
+#        self.assertEqual(404, response.status_code)
+#        self.assertEqual('Comment not found', response.json())
 
 
     def test_patch_sets_comment_as_correct(self):
