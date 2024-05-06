@@ -332,10 +332,10 @@ class TestFullSuite(BaseCase):
                 "userId": nestedComment['userId'],
                 "commentText":"Deleted", # Deleted comments have no text or image
                 "commentPNG":"Deleted", # Deleted comments have no text or image
-                "isCorrect": nestedComment['isCorrect'],
-                "isEndorsed": nestedComment['isEndorsed'],
-                "upvotes": nestedComment['upvotes'],
-                "downvotes": nestedComment['downvotes'],
+                "isCorrect": False,
+                "isEndorsed": False,
+                "upvotes": 0,
+                "downvotes": 0,
                 "created_at": response.json()[0]["children"][0]['created_at'],
                 "updated_at": response.json()[0]["children"][0]['updated_at']
               }]
