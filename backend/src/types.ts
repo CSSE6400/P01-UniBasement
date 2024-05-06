@@ -24,7 +24,7 @@ export type Question = {
 export type Comment = {
     commentId: number
     parentCommentId: number | null
-    userId: number
+    userId: string
     commentText: string
     commentPNG: string | null
     isCorrect: boolean

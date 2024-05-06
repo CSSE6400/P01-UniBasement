@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
-import { Question } from './Question';
+import { Question } from './Questions';
 import { User } from './User';
 
 @Entity()
@@ -7,11 +7,11 @@ export class Comment {
     @PrimaryGeneratedColumn()
     commentId: number;
 
-    @ManyToOne(() => Question, question => question.questionId)
-    questionId: Question.questionId;
+    @ManyToOne(() => Question, (question: Question) => question.questionId)
+    questionId: Question['questionId'];
 
     @ManyToOne(() => User, user => user.userId)
-    userId: User.userId;
+    userId: User['userId'];
 
     @Column({ nullable: true })
     parentCommentId: number;
