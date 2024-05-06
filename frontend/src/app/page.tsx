@@ -7,6 +7,7 @@ import {
   IconPencilHeart,
 } from '@tabler/icons-react'
 import { Button } from '@/components/Button'
+import { useUser } from '@auth0/nextjs-auth0/client'
 
 function SearchIcon(props: React.ComponentPropsWithoutRef<'svg'>) {
   return (
@@ -43,6 +44,9 @@ function CourseSearch() {
 }
 
 export default function Home() {
+  const { user, error, isLoading } = useUser()
+
+  console.log(user, error, isLoading)
   return (
     <main>
       <div className="px-0">
@@ -60,7 +64,7 @@ export default function Home() {
           </div>
         </div>
       </div>
-      <div className="flex min-h-60 items-center justify-center bg-indigo-500">
+      <div className="flex min-h-60 items-center justify-center">
         <div className="w-full max-w-4xl space-y-10">
           <div className="mt-4 flex flex-col sm:flex-row">
             <div className="">
@@ -84,18 +88,18 @@ export default function Home() {
           </div>
         </div>
       </div>
-      <div className="flex min-h-40 items-center justify-center bg-indigo-600 py-6">
+      <div className="flex min-h-40 items-center justify-center py-6">
         <div className="mx-auto w-full max-w-4xl text-2xl font-bold">
           So jump straight in and start learning the EVAN way!
         </div>
       </div>
-      <div className="flex min-h-80 items-center justify-center bg-indigo-800 py-6">
+      <div className="flex min-h-80 items-center justify-center py-6">
         <div className="mx-auto w-full max-w-4xl text-2xl font-light">
           <div>
-            EVAN or Exam Viewing and Answers is a collaborative tool to empower
-            university students to work together to improve their exam grades.
-            EVAN allows you to find exam solutions, find great study materials,
-            and ensure that your study is less stressful!
+            EVAN is a collaborative tool to empower university students to work
+            together to improve their exam grades. EVAN allows you to find exam
+            solutions, find great study materials, and ensure that your study is
+            less stressful!
           </div>
           <div className="mt-5">
             EVAN is completely open source and crowd funded.{' '}
