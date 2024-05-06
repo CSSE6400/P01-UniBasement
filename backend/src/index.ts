@@ -5,6 +5,12 @@ import express from "express";
 import cors from 'cors';
 
 import { routes } from './routes';
+import { createConnection, Connection } from 'typeorm';
+import { User } from './db/User';
+import { Course } from './db/Course';
+import { Exam } from './db/Exam';
+import { Question } from './db/Question';
+import { Comment as com} from './db/Comment';
 import * as db from './db';
 
 const PORT: number = process.env.PORT ? parseInt(process.env.PORT) : 8080;
@@ -24,9 +30,23 @@ app.use(express.urlencoded({ extended: false }));
 /**
  * Database Connection
  */
+export const connectDatabase = async () => {
+  connection = await createConnection({
+    type: 'postgres',
+    host: process.env.DB_HOST,
+    port: parseInt(process.env.DB_PORT),
+    username: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_DATABASE,
+    synchronize: true,
+    logging: false,
+    entities: [User, Course, Exam, Question, Com],
+  }).then(connection => {
+    console.log('Connected to the database');
+  }).catch(error => console.log(error));
+};
 
-//TODO
-db.setupTables();
+export const getConnection = () => connection;
 
 /**
  * Server Activation / Confirmation

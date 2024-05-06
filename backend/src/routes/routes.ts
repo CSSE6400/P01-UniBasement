@@ -1,6 +1,5 @@
 // Imports
 import { Router, Request, Response } from 'express'; // Import Request and Response types
-import * as db from '../db';
 import {
     Comment as IComment,
     CommentBodyParams,
@@ -16,6 +15,14 @@ import {
     QuestionBodyParams,
     QuestionRouteParams,
 } from '../types';
+
+import { getConnection } from ../index;
+import { User as UserDb } from '../db/User';
+import { Course as CourseDb } from '../db/Course';
+import { Exam as ExamDb } from '../db/Exam';
+import { Question as QuestionDb } from '../db/Question';
+import { Comment as CommentDb } from '../db/Comment';
+
 
 // Export Routers
 export const router = Router();
@@ -42,36 +49,28 @@ router.put('/questions/:questionId/edit', async (req: Request<QuestionRouteParam
         return;
     }
 
-    const args = [];
-    let count = 1;
-    let query = `UPDATE questions SET `;
+    const questionRepository = getConnection().getRepository(QuestionDb);
+    const question = await questionRepository.findOne({ questionId });
 
-    if (questionText) {
-        query += `"questionText" = $${count}::text, `
-        args.push(questionText);
-        count++;
-    }
-
-    if (questionType) {
-        query += `"questionType" = $${count}::text, `
-        args.push(questionType);
-        count++;
-    }
-
-    if (questionPNG) {
-        query += `"questionPNG" = $${count}::text, `
-        args.push(questionPNG);
-        count++;
-    }
-
-    query += `updated_at = NOW() WHERE "questionId" = $${count}::int`
-    args.push(questionId);
-
-    const { rowCount } = await db.query(query, args);
-    if (rowCount === 0) {
+    if (!question) {
         res.status(404).json('Question not found');
         return;
     }
+
+    if (questionText) {
+        question.questionText = questionText;
+    }
+
+    if (questionType) {
+        question.questionType = questionType;
+    }
+
+    if (questionPNG) {
+        question.questionPNG = questionPNG;
+    }
+
+    question.updated_at = new Date();
+    await questionRepository.update(question.questionId, question);
 
     res.status(200).json('Question edited');
 });
@@ -91,30 +90,29 @@ router.put('/comments/:commentId/edit', async (req: Request<CommentRouteParams, 
         return;
     }
 
-    const args = [];
-    let query = `UPDATE comments SET `
-    let count = 1;
+    const commentRepository = getConnection().getRepository(CommentDb);
+    const comment = await commentRepository.findOne({ commentId });
 
-    if (commentText) {
-        query += `"commentText" = $${count}::text, `
-        args.push(commentText);
-        count++;
-    }
-    if (commentPNG) {
-        query += `"commentPNG" = $${count}::text, `
-        args.push(commentPNG);
-        count++;
-    }
-
-    query += `"updated_at" = NOW() WHERE "commentId" = $${count}::int AND "userId" = $${count + 1}::text`
-    args.push(commentId)
-    args.push(userId)
-    const { rowCount } = await db.query(query, args);
-
-    if (rowCount === 0) {
+    if (!comment) {
         res.status(404).json('Comment not found');
         return;
     }
+
+    if (comment.userId !== userId) {
+        res.status(401).json('Unauthorized');
+        return;
+    }
+
+    if (commentText) {
+        comment.commentText = commentText;
+    }
+
+    if (commentPNG) {
+        comment.commentPNG = commentPNG;
+    }
+
+    comment.updated_at = new Date();
+    await commentRepository.update(comment.commentId, comment);
 
     res.status(200).json('Comment edited');
 });
@@ -143,46 +141,28 @@ router.patch('/courses/:courseCode/star', async (req: Request<CourseRouteParams>
         return;
     }
 
-    const { rows } = await db.query(`
-        SELECT "userId"
-        FROM users
-        WHERE "userId" = $1
-    `, [userId]);
+    const userRows = getConnection().getRepository(UserDb);
+    const user = await userRows.findOne({ userId });
 
-    if (rows.length === 0) {
-        res.status(404).json('User not found');
+    if (!user) {
+        res.status(400).json('User does not exist');
         return;
     }
 
-    // See if it is already rated
-    // then rate it
-    const { rowCount } = await db.query(`
-    UPDATE courses
-    SET stars = stars + $3 - COALESCE((
-        SELECT CAST(rated ->> $2 AS INTEGER)
-        FROM users
-        WHERE "userId" = $1 AND "rated" ? $2
-    ), 0),
-    votes = votes + CASE WHEN EXISTS (
-            SELECT 1
-            FROM users
-            WHERE "userId" = $1 AND "rated" ? $2
-        ) THEN 0
-        ELSE 1 
-    END
-    WHERE "courseCode" = $2;
-    `, [userId, courseCode, starRating]);
+    const courseRepository = getConnection().getRepository(CourseDb);
+    const course = await courseRepository.findOne({ courseCode });
 
-    if (rowCount === 0) {
+    if (!course) {
         res.status(404).json('Course not found');
         return;
     }
 
-    await db.query(`
-        UPDATE users
-        SET rated = jsonb_set(rated, array_append('{}'::text[], $2), $3::jsonb)
-        WHERE "userId" = $1
-    `, [userId, courseCode, starRating]);
+    course.stars += starRating - (user.rated[courseCode] ?? 0);
+    course.votes += user.rated[courseCode] ? 0 : 1; //TODO
+    await courseRepository.update(course.courseCode, course);
+
+    user.rated[courseCode] = starRating;
+    await userRows.update(user.userId, user);
 
     res.status(200).json('Course starred');
 });
@@ -192,15 +172,26 @@ router.patch('/comments/:commentId/delete', async (req: Request<CommentRoutePara
     const { commentId } = req.params;
     const { userId } = req.body;
 
-    const { rowCount } = await db.query(`
-    UPDATE comments
-    SET "commentText" = 'Deleted', "commentPNG" = 'Deleted', "upvotes" = 0, "downvotes" = 0, "isCorrect" = False, "isEndorsed" = False, updated_at = NOW()
-    WHERE "commentId" = $1 AND "userId" = $2
-    `, [commentId, userId]);
-    if (rowCount === 0) {
+    const commentRepository = getConnection().getRepository(CommentDb);
+    const comment = await commentRepository.findOne({ commentId });
+
+    if (!comment) {
         res.status(404).json('Comment not found');
         return;
     }
+
+    if (comment.userId !== userId) {
+        res.status(401).json('Unauthorized');
+        return;
+    }
+
+    comment.commentText = "Deleted";
+    comment.commentPNG = "Deleted";
+    comment.isCorrect = false;
+    comment.isEndorsed = false;
+    comment.upvotes = 0;
+    comment.downvotes = 0;
+    commentRepository.update(comment.commentId, comment);
 
     res.status(200).json('Comment deleted');
 });
@@ -209,15 +200,16 @@ router.patch('/comments/:commentId/delete', async (req: Request<CommentRoutePara
 router.patch('/comments/:commentId/correct', async (req: Request<CommentRouteParams>, res: Response) => {
     const { commentId } = req.params;
 
-    const { rowCount } = await db.query(`
-    UPDATE comments
-    SET "isCorrect" = true
-    WHERE "commentId" = $1
-    `, [commentId]);
-    if (rowCount === 0) {
+    const commentRepository = getConnection().getRepository(CommentDb);
+    const comment = await commentRepository.findOne({ commentId });
+
+    if (!comment) {
         res.status(404).json('Comment not found');
         return;
     }
+
+    comment.isCorrect = true;
+    commentRepository.update(comment.commentId, comment);
 
     res.status(200).json('Comment marked as correct');
 });
@@ -226,15 +218,16 @@ router.patch('/comments/:commentId/correct', async (req: Request<CommentRoutePar
 router.patch('/comments/:commentId/incorrect', async (req: Request<CommentRouteParams>, res: Response) => {
     const { commentId } = req.params;
 
-    const { rowCount } = await db.query(`
-    UPDATE comments
-    SET "isCorrect" = false
-    WHERE "commentId" = $1
-    `, [commentId]);
-    if (rowCount === 0) {
+    const commentRepository = getConnection().getRepository(CommentDb);
+    const comment = await commentRepository.findOne({ commentId });
+
+    if (!comment) {
         res.status(404).json('Comment not found');
         return;
     }
+
+    comment.isCorrect = false;
+    commentRepository.update(comment.commentId, comment);
 
     res.status(200).json('Comment marked as incorrect');
 });
@@ -243,15 +236,16 @@ router.patch('/comments/:commentId/incorrect', async (req: Request<CommentRouteP
 router.patch('/comments/:commentId/endorse', async (req: Request<CommentRouteParams>, res: Response) => {
     const { commentId } = req.params;
 
-    const { rowCount } = await db.query(`
-    UPDATE comments
-    SET "isEndorsed" = true
-    WHERE "commentId" = $1
-    `, [commentId]);
-    if (rowCount === 0) {
+    const commentRepository = getConnection().getRepository(CommentDb);
+    const comment = await commentRepository.findOne({ commentId });
+
+    if (!comment) {
         res.status(404).json('Comment not found');
         return;
     }
+
+    comment.isEndorsed = true;
+    commentRepository.update(comment.commentId, comment);
 
     res.status(200).json('Comment endorsed');
 });
@@ -260,15 +254,16 @@ router.patch('/comments/:commentId/endorse', async (req: Request<CommentRoutePar
 router.patch('/comments/:commentId/unendorse', async (req: Request<CommentRouteParams>, res: Response) => {
     const { commentId } = req.params;
 
-    const { rowCount } = await db.query(`
-    UPDATE comments
-    SET "isEndorsed" = false
-    WHERE "commentId" = $1
-    `, [commentId]);
-    if (rowCount === 0) {
+    const commentRepository = getConnection().getRepository(CommentDb);
+    const comment = await commentRepository.findOne({ commentId });
+
+    if (!comment) {
         res.status(404).json('Comment not found');
         return;
     }
+
+    comment.isEndorsed = false;
+    commentRepository.update(comment.commentId, comment);
 
     res.status(200).json('Comment removed endorsement');
 });
@@ -279,40 +274,34 @@ router.patch('/comments/:commentId/downvote', async (req: Request<CommentRoutePa
     const { commentId } = req.params;
     const { userId } = req.body;
 
-    // real user?
-    const { rows } = await db.query<{downvoted: any[]}>(`
-    SELECT "downvoted"
-    FROM users
-    WHERE "userId" = $1
-    `, [userId])
+    const userRows = getConnection().getRepository(UserDb);
+    const user = await userRows.findOne({ userId });
 
-    if (rows.length === 0) {
+    if (!user) {
         res.status(400).json('User does not exist');
         return;
     }
 
-    // check to see if has been downvoted
-    if (rows[0].downvoted.includes(commentId)) {
+    // check to see if has been upvoted
+    if (user.downvoted.includes(commentId)) {
         res.status(400).json('Already downvoted');
         return;
     }
 
-    const { rowCount } = await db.query(`
-    UPDATE comments
-    SET "downvotes" = "downvotes" + 1
-    WHERE "commentId" = $1
-    `, [commentId]);
-    if (rowCount === 0) {
+    const commentRows = getConnection().getRepository(CommentDb);
+    const comment = await commentRows.findOne({ commentId });
+
+    if (!comment) {
         res.status(404).json('Comment not found');
         return;
     }
 
-    await db.query(`
-    UPDATE users
-    SET "downvoted" = array_append("downvoted", $1)
-    WHERE "userId" = $2
-    `, [commentId, userId]);
-    
+    comment.downvotes += 1;
+    commentRows.update(comment.commentId, comment);
+
+    user.downvoted.push(commentId);
+    userRows.update(user.userId, user);
+
     res.status(200).json('Comment downvoted');
 });
 
@@ -321,40 +310,33 @@ router.patch('/comments/:commentId/upvote', async (req: Request<CommentRoutePara
     const { commentId } = req.params;
     const { userId } = req.body;
 
-    // real user?
-    const { rows } = await db.query<{upvoted: any[]}>(`
-    SELECT "upvoted"
-    FROM users
-    WHERE "userId" = $1
-    `, [userId])
+    const userRows = getConnection().getRepository(UserDb);
+    const user = await userRows.findOne({ userId });
 
-    if (rows.length === 0) {
+    if (!user) {
         res.status(400).json('User does not exist');
         return;
     }
 
     // check to see if has been downvoted
-    if (rows[0].upvoted.includes(commentId)) {
+    if (user.upvoted.includes(commentId)) {
         res.status(400).json('Already upvoted');
         return;
     }
 
+    const commentRows = getConnection().getRepository(CommentDb);
+    const comment = await commentRows.findOne({ commentId});
 
-    const { rowCount } = await db.query(`
-    UPDATE comments
-    SET "upvotes" = "upvotes" + 1
-    WHERE "commentId" = $1
-    `, [commentId]);
-    if (rowCount === 0) {
+    if (!comment) {
         res.status(404).json('Comment not found');
         return;
     }
 
-    await db.query(`
-    UPDATE users
-    SET "upvoted" = array_append("upvoted", $1)
-    WHERE "userId" = $2
-    `, [commentId, userId]);
+    comment.upvotes += 1;
+    commentRows.update(comment.commentId, comment);
+
+    user.upvoted.push(commentId);
+    userRows.update(user.userId, user);
 
     res.status(200).json('Comment upvoted');
 });
@@ -375,17 +357,20 @@ router.post('/users', async (req: Request<any, any, any, any>, res: Response) =>
         res.status(400).json('Missing userId');
         return;
     }
-
-    const { rowCount } = await db.query(`
-    INSERT INTO users ("userId")
-    VALUES ($1)
-    ON CONFLICT DO NOTHING
-    `, [userId]);
-
-    if (rowCount === 0) {
+    
+    const userRepository = getConnection().getRepository(UserDb);
+    
+    // Check for user
+    const user = await userRepository.findOne({ userId });
+    if (user) {
         res.status(409).json('User already exists');
         return;
     }
+
+    // Add user
+    const newUser = new UserDb();
+    newUser.userId = userId;
+    await userRepository.save(newUser);
 
     res.status(201).json('User Added');
 });
@@ -411,33 +396,38 @@ router.post('/comments', async (req: Request<any, any, CommentBodyParams>, res: 
         return;
     }
 
-    const { rowCount } = await db.query(`SELECT "questionId" FROM questions WHERE "questionId" = $1`, [questionId]);
-    if (rowCount === 0) {
+    // Check question id
+    const questionRepository = getConnection().getRepository(QuestionDb);
+    const question = await questionRepository.findOne({ questionId });
+    if (!question) {
         res.status(404).json('Question not found');
         return;
     }
 
+    const commentRepository = getConnection().getRepository(CommentDb);
+
     // Check parent id
     if (parentCommentId) {
-        const { rowCount, rows } = await db.query<Partial<IComment>>(`SELECT "commentId", "questionId" FROM comments WHERE "commentId" = $1`, [parentCommentId]);
-        if (rowCount === 0) {
+        const parentComment = await commentRepository.findOne({ commentId: parentCommentId });
+        if (!parentComment) {
             res.status(404).json('Parent comment not found');
             return;
         }
-        const parentComment = rows[0];
         if (parentComment.questionId !== questionId) {
             res.status(400).json('Parent comment is not from the same question');
             return;
         }
     }
     // Query the database and get the id of the new comment
-    const { rows } = await db.query(`
-    INSERT INTO comments ("questionId", "parentCommentId", "commentText", "commentPNG", "userId")
-    VALUES ($1, $2, $3, $4, $5)
-    RETURNING "commentId"
-    `, [questionId, parentCommentId, commentText, commentPNG, userId]);
+    const newComment = new CommentDb();
+    newComment.userId = userId;
+    newComment.questionId = questionId;
+    newComment.parentCommentId = parentCommentId;
+    newComment.commentText = commentText;
+    newComment.commentPNG = commentPNG;
+    const savedComment = await commentRepository.save(newComment);
 
-    res.status(201).json({ commentId: rows[0].commentId });
+    res.status(201).json({ commentId: savedComment.commentId });
 });
 
 // Adds a new question to the database
@@ -455,19 +445,24 @@ router.post('/questions', async (req: Request<any, any, QuestionBodyParams>, res
         return;
     }
 
-    const { rowCount } = await db.query(`SELECT "examId" FROM exams WHERE "examId" = $1`, [examId]);
-    if (rowCount === 0) {
-        res.status(404).json('ExamId not found');
+    // Check exam id
+    const examRepository = getConnection().getRepository(ExamDb);
+    const exam = await examRepository.findOne({ examId });
+    if (!exam) {
+        res.status(404).json('Exam not found');
         return;
     }
 
-    const { rows } = await db.query(`
-    INSERT INTO questions ("examId", "questionText", "questionType", "questionPNG")
-    VALUES ($1, $2, $3, $4)
-    RETURNING "questionId"
-    `, [examId, questionText, questionType, questionPNG]);
+    const questionRepository = getConnection().getRepository(QuestionDb);
 
-    res.status(201).json({ questionId: rows[0].questionId });
+    const newQuestion = new QuestionDb();
+    newQuestion.examId = examId;
+    newQuestion.questionText = questionText;
+    newQuestion.questionType = questionType;
+    newQuestion.questionPNG = questionPNG;
+    const savedQuestion = await questionRepository.save(newQuestion);
+
+    res.status(201).json({ questionId: savedQuestion.questionId});
 });
 
 // Adds a new exam to the database
@@ -485,46 +480,56 @@ router.post('/exams', async (req: Request<any, any, ExamBodyParams>, res: Respon
         return;
     }
 
-    const { rowCount } = await db.query(`SELECT "courseCode" FROM courses WHERE "courseCode" = $1`, [courseCode]);
-    if (rowCount === 0) {
+    // Check course code
+    const courseRepository = getConnection().getRepository(CourseDb);
+    const course = await courseRepository.findOne({ courseCode });
+    if (!course) {
         res.status(404).json('Course not found');
         return;
     }
-    const { rows } = await db.query(`
-    INSERT INTO exams ("examYear", "examSemester", "examType", "courseCode")
-    VALUES ($1, $2, $3, $4)
-    RETURNING "examId"
-    `, [examYear, examSemester, examType, courseCode]);
 
-res.status(201).json({ examId: rows[0].examId });
+    const examRepository = getConnection().getRepository(ExamDb);
+    
+    const newExam = new ExamDb();
+    newExam.examYear = examYear;
+    newExam.examSemester = examSemester;
+    newExam.examType = examType;
+    newExam.courseCode = courseCode;
+    const savedExam = await examRepository.save(newExam);
+
+    res.status(201).json({ examId: savedExam.examId });
 });
 
 // Adds a new Course to the database
 router.post('/courses', async (req: Request<any, any, CourseBodyParams>, res: Response) => {
-  const {
-      courseCode,
-      courseName,
-      courseDescription,
-      university,
-  } = req.body;
+    const {
+        courseCode,
+        courseName,
+        courseDescription,
+        university,
+    } = req.body;
 
-  if (!courseCode || !courseName || !courseDescription || !university) {
-      res.status(400).json('Missing courseCode, courseName, courseDescription, or university');
-      return;
-  }
+    if (!courseCode || !courseName || !courseDescription || !university) {
+        res.status(400).json('Missing courseCode, courseName, courseDescription, or university');
+        return;
+    }
 
-  const { rowCount } = await db.query(`SELECT "courseCode" FROM courses WHERE "courseCode" = $1`, [courseCode]);
-  if (rowCount !== 0) {
-      res.status(409).json('Course Code already exists');
-      return;
-  }
+    const courseRepository = getConnection().getRepository(CourseDb);
+    const course = await courseRepository.findOne({ courseCode });
+    if (course) {
+        res.status(409).json('Course already exists');
+        return;
+    }
 
-  await db.query(`
-  INSERT INTO courses ("courseCode", "courseName", "courseDescription", "university")
-  VALUES ($1, $2, $3, $4)
-  `, [courseCode, courseName, courseDescription, university]);
+    const newCourse = new CourseDb();
+    newCourse.courseCode = courseCode;
+    newCourse.courseName = courseName;
+    newCourse.courseDescription = courseDescription;
+    newCourse.university = university;
+    await courseRepository.save(newCourse);
 
-  res.status(201).json('Course Added');
+
+    res.status(201).json('Course Added');
 });
 
 /*
@@ -537,43 +542,28 @@ router.post('/courses', async (req: Request<any, any, CourseBodyParams>, res: Re
 
 // Gets comment by comment id
 router.get('/comments/:commentId', async (req: Request<CommentRouteParams>, res: Response) => {
-  const { commentId } = req.params;
+    const { commentId } = req.params;
 
-  const { rows, rowCount } = await db.query<IComment>(`
-  SELECT "commentId", "questionId", "parentCommentId", "userId", "commentText", "commentPNG", "isCorrect", "isEndorsed", "upvotes", "downvotes", "created_at", "updated_at"
-  FROM comments
-  WHERE comments."commentId" = $1
-  `, [commentId]);
+    const commentRepository = getConnection().getRepository(CommentDb);
+    const comment = await commentRepository.findOne({ commentId });
 
-  if (rowCount === 0) {
-      return res.status(404).json({ error: 'Comment not found' });
-  }
+    if (!comment) {
+        res.status(404).json('Comment not found');
+        return;
+    }
 
-  res.status(200).json(rows[0]);
+    res.status(200).json(comment);
 });
 
 // Gets all comments by question id
 router.get('/questions/:questionId/comments', async (req: Request<QuestionRouteParams>, res: Response) => {
     const { questionId } = req.params;
 
-    // Check if the questionId exists in the database
-    const { rows : questionRows } = await db.query(`
-        SELECT "questionId"
-        From questions
-        WHERE "questionId" = $1
-    `, [questionId]);
+    const commentRepository = getConnection().getRepository(CommentDb);
+    //TODO
+    const comments = await commentRepository.find({ questionId });
 
-    if (questionRows.length === 0) {
-        return res.status(404).json({ error: 'Question not found' });
-    }
-
-    const { rows } = await db.query<IComment>(`
-        SELECT "commentId", "parentCommentId", "userId", "commentText", "commentPNG", "isCorrect", "isEndorsed", "upvotes", "downvotes", "created_at", "updated_at"
-        FROM comments
-        WHERE comments."questionId" = $1
-    `, [questionId]);
-
-    res.status(200).json(nest(rows));
+    res.status(200).json(nest(comments));
 });
 
 
@@ -581,92 +571,71 @@ router.get('/questions/:questionId/comments', async (req: Request<QuestionRouteP
 router.get('/questions/:questionId', async (req: Request<QuestionRouteParams>, res: Response) => {
     const { questionId } = req.params;
 
-    // Check if the questionId exists in the database
-    const { rows : questionRows } = await db.query(`
-        SELECT "questionId"
-        From questions
-        WHERE "questionId" = $1
-    `, [questionId]);
+    const questionRepository = getConnection().getRepository(QuestionDb);
+    const question = await questionRepository.findOne({ questionId });
 
-    if (questionRows.length === 0) {
-        return res.status(404).json({ error: 'Question not found' });
+    if (!question) {
+        res.status(404).json('Question not found');
+        return;
     }
 
-    const { rows } = await db.query<Question>(`
-    SELECT "questionId", "questionText", "questionType", "questionPNG"
-    FROM questions
-    WHERE questions."questionId" = $1
-    `, [questionId]);
-
-  res.status(200).json(rows[0]);
+    res.status(200).json(question);
 });
 
 // Exam questions by exam ID
 router.get('/exams/:examId/questions', async (req: Request<ExamRouteParams>, res: Response) => {
-  const { examId } = req.params;
+    const { examId } = req.params;
 
-  const { rows } = await db.query<Question>(`
-  SELECT "questionId", "questionText", "questionType", "questionPNG"
-  FROM questions
-  WHERE questions."examId" = $1
-  `, [examId]);
+    const questionRepository = getConnection().getRepository(QuestionDb);
+    const questions = await questionRepository.find({ examId });
 
-  if (rows.length === 0) {
-      res.status(404).json('No questions found for this exam');
-      return;
-  }
+    if (!questions) {
+        res.status(404).json('Questions not found');
+        return;
+    }
 
-  res.status(200).json(rows);
+    res.status(200).json(questions);
 });
 
 
 // Exam by ID
 router.get('/exams/:examId', async (req: Request<ExamRouteParams>, res: Response) => {
-  const { examId } = req.params;
+    const { examId } = req.params;
 
-  const { rows } = await db.query<Exam>(`
-  SELECT "examId", "examYear", "examSemester", "examType"
-  FROM exams
-  WHERE exams."examId" = $1
-  `, [examId]);
+    const examRepository = getConnection().getRepository(ExamDb);
+    const exam = await examRepository.findOne({ examId });
 
-  if (rows.length === 0) {
-      res.status(404).json('Exam not found');
-      return;
-  }
+    if (!exam) {
+        res.status(404).json('Exam not found');
+        return;
+    }
 
-  res.status(200).json(rows[0]);
+    res.status(200).json(exam);
 });
 
 // A course's exams by code
 router.get('/courses/:courseCode/exams', async (req: Request<CourseRouteParams>, res: Response) => {
     const { courseCode } = req.params;
 
-    const { rows } = await db.query<Exam>(`
-    SELECT "examId", "examYear", "examSemester", "examType"
-    FROM exams
-    WHERE exams."courseCode" = $1
-    `, [courseCode]);
+    const examRepository = getConnection().getRepository(ExamDb);
+    const exams = await examRepository.find({ courseCode });
 
-    res.status(200).json(rows);
+    res.status(200).json(exams);
 });
 
 // A Courses information by code
 router.get('/courses/:courseCode', async (req: Request<CourseRouteParams>, res: Response) => {
-  const { courseCode } = req.params;
+    const { courseCode } = req.params;
+    
+    const courseRepository = getConnection().getRepository(CourseDb);  
+    const course = await courseRepository.find({ courseCode });
 
-  const { rows } = await db.query<Course>(`
-  SELECT "courseCode", "courseName", "courseDescription", "university", "stars", "votes" 
-  FROM courses
-  WHERE courses."courseCode" = $1
-  `, [courseCode]);
+    if (!course) {
+        res.status(404).json('Course not found');
+        return;
+    }
 
-  if (rows.length === 0) {
-      res.status(404).json('Course not found');
-      return;
-  }
-
-  res.status(200).json(rows[0]);
+    res.status(200).json(course);
 });
 
 // All courses
@@ -674,14 +643,10 @@ router.get('/courses', async (req: Request<any, any, any, CourseQueryParams>, re
     const offset = req.query.offset ?? 0;
     const limit = req.query.limit ?? 100;
 
-    const { rows } = await db.query<Course>(`
-    SELECT "courseCode", "courseName", "courseDescription", "university", "stars", "votes" 
-    FROM courses 
-    LIMIT $1 
-    OFFSET $2
-    `, [limit, offset]);
+    const courseRepository = getConnection().getRepository(CourseDb);
+    const courses = await courseRepository.find({ skip: offset, take: limit });
 
-    res.status(200).json(rows);
+    res.status(200).json(courses);
 });
 
 // Health Check
