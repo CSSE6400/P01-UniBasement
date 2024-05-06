@@ -162,7 +162,7 @@ resource "aws_ecs_task_definition" "unibasement_frontend" {
           "value": "http://${data.aws_network_interface.unibasement_backend_ip.association[0].public_ip}:8080"
         },
         {
-          "name": "AUTH0_SECRET,
+          "name": "AUTH0_SECRET",
           "value": var.auth0_secret
         },
         {
