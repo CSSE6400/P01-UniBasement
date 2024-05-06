@@ -163,23 +163,23 @@ resource "aws_ecs_task_definition" "unibasement_frontend" {
         },
         {
           "name": "AUTH0_SECRET",
-          "value": ${var.auth0_secret}
+          "value": "${var.auth0_secret}"
         },
         {
           "name": "AUTH0_BASE_URL",
-          "value": ${var.auth0_base_url}
+          "value": "${var.auth0_base_url}"
         },
         {
           "name": "AUTH0_ISSUER_BASE_URL",
-          "value": ${var.auth0_issuer_base_url}
+          "value": "${var.auth0_issuer_base_url}"
         },
         {
           "name": "AUTH0_CLIENT_ID",
-          "value": ${var.auth0_client_id}
+          "value": "${var.auth0_client_id}"
         },
         {
           "name": "AUTH0_CLIENT_SECRET",
-          "value": ${var.auth0_client_secret}
+          "value": "${var.auth0_client_secret}"
         }
       ],
       "logConfiguration": {
