@@ -305,7 +305,7 @@ class TestFullSuite(BaseCase):
         
         
         # Delete the nested comment
-        response = requests.patch(self.host() + '/comments/' + str(nestedComment['commentId']) + '/delete', json=commentUpdateBody)
+        response = requests.patch(self.host() + '/comments/' + str(nestedComment['commentId']) + '/delete', json=nestedCommentUpdateBody)
         self.assertEqual(200, response.status_code)
         
         
