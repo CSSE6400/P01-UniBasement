@@ -4,14 +4,15 @@
 import express from "express";
 import cors from 'cors';
 
-import { routes } from './routes';
 import { createConnection, Connection } from 'typeorm';
 import { User } from './db/User';
 import { Course } from './db/Course';
 import { Exam } from './db/Exam';
-import { Question } from './db/Question';
-import { Comment as com} from './db/Comment';
+import { Question } from './db/Questions';
+import { Comment as com} from './db/Comments';
 import * as db from './db';
+
+import { routes } from './routes';
 
 const PORT: number = process.env.PORT ? parseInt(process.env.PORT) : 8080;
 
@@ -32,7 +33,7 @@ app.use(express.urlencoded({ extended: false }));
  */
 export const connectDatabase = async () => {
   connection = await createConnection({
-    type: 'postgres',
+    type: process.env.DB_TYPE,
     host: process.env.DB_HOST,
     port: parseInt(process.env.DB_PORT),
     username: process.env.DB_USER,

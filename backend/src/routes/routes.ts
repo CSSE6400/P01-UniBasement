@@ -16,12 +16,12 @@ import {
     QuestionRouteParams,
 } from '../types';
 
-import { getConnection } from ../index;
+import { getConnection } from '../index';
 import { User as UserDb } from '../db/User';
 import { Course as CourseDb } from '../db/Course';
 import { Exam as ExamDb } from '../db/Exam';
-import { Question as QuestionDb } from '../db/Question';
-import { Comment as CommentDb } from '../db/Comment';
+import { Question as QuestionDb } from '../db/Questions';
+import { Comment as CommentDb } from '../db/Comments';
 
 
 // Export Routers
@@ -422,9 +422,18 @@ router.post('/comments', async (req: Request<any, any, CommentBodyParams>, res: 
     const newComment = new CommentDb();
     newComment.userId = userId;
     newComment.questionId = questionId;
-    newComment.parentCommentId = parentCommentId;
-    newComment.commentText = commentText;
-    newComment.commentPNG = commentPNG;
+    
+    if (parentCommentId) {
+        newComment.parentCommentId = parentCommentId;
+    }
+    
+    if (commentText) {
+        newComment.commentText = commentText;
+    }
+    
+    if (commentPNG) {
+        newComment.commentPNG = commentPNG;
+    }
     const savedComment = await commentRepository.save(newComment);
 
     res.status(201).json({ commentId: savedComment.commentId });
@@ -445,6 +454,11 @@ router.post('/questions', async (req: Request<any, any, QuestionBodyParams>, res
         return;
     }
 
+    if (!questionType) {
+        res.status(400).json('Missing questionType');
+        return;
+    }
+
     // Check exam id
     const examRepository = getConnection().getRepository(ExamDb);
     const exam = await examRepository.findOne({ examId });
@@ -457,9 +471,15 @@ router.post('/questions', async (req: Request<any, any, QuestionBodyParams>, res
 
     const newQuestion = new QuestionDb();
     newQuestion.examId = examId;
-    newQuestion.questionText = questionText;
+    
+    if (questionText) {
+        newQuestion.questionText = questionText;
+    }
+
+    if (questionPNG) {
+        newQuestion.questionPNG = questionPNG;
+    }
     newQuestion.questionType = questionType;
-    newQuestion.questionPNG = questionPNG;
     const savedQuestion = await questionRepository.save(newQuestion);
 
     res.status(201).json({ questionId: savedQuestion.questionId});
@@ -475,8 +495,8 @@ router.post('/exams', async (req: Request<any, any, ExamBodyParams>, res: Respon
     } = req.body;
 
     // Check key
-    if (!courseCode) {
-        res.status(400).json('Missing courseCode');
+    if (!courseCode || !examYear || !examSemester || !examType) {
+        res.status(400).json('Missing courseCode, examYear, examSemester, or examType');
         return;
     }
 
@@ -652,7 +672,7 @@ router.get('/courses', async (req: Request<any, any, any, CourseQueryParams>, re
 // Health Check
 router.get('/health', async (req: Request, res: Response) => {
     try {
-        await db.query1('SELECT NOW()');
+        await getConnection().query('SELECT 1');
         res.status(200).json('EVERYTHING IS A-OKAY');
     } catch (err) {
         res.status(503).json('ERROR: ' + err);
@@ -666,96 +686,317 @@ router.get('/evan', async (req: Request, res: Response) => {
 
 // The sketch route
 router.get('/sketch', async (req: Request, res: Response) => {
-    const b = await db.query1('SELECT "examId" FROM exams WHERE "examId" = 1');
-    if (b.rows.length != 0) {
+    const db = getConnection();
+
+    const user = db.getRepository(UserDb);
+
+    const checkData = await user.find();
+
+    if (checkData.length > 0) {
         res.status(400).json('Data already exists');
-        return
+        return;
     }
 
-    await db.query1(`
-        INSERT INTO users ("userId")
-        VALUES 
-            ('evan'),
-            ('liv'),
-            ('lakshan'),
-            ('jackson');
+    const course = db.getRepository(CourseDb);
+    const exam = db.getRepository(ExamDb);
+    const question = db.getRepository(QuestionDb);
+    const comment = db.getRepository(CommentDb);
 
-        INSERT INTO courses ("courseCode", "courseName", "courseDescription", "university")
-        VALUES 
-            ('ENGG1001', 'Programming for Engineers', 'An introductory course covering basic concepts of software engineering.', 'UQ'),
-            ('MATH1051', 'Calculus & Linear Algebra', 'A foundational course in calculus covering limits, derivatives, and integrals.', 'UQ'),
-            ('ENGG1100', 'Professional Engineering', 'An introductory course covering fundamental concepts in engineering principles.', 'UQ');
-        
-        INSERT INTO exams ("courseCode", "examYear", "examSemester", "examType")
-        VALUES 
-            ('ENGG1001', 2021, 1, 'Final'),
-            ('ENGG1001', 2022, 1, 'Final'),
-            ('ENGG1001', 2023, 1, 'Final'),
-            ('MATH1051', 2021, 1, 'Midterm'),
-            ('MATH1051', 2021, 1, 'Final'),
-            ('MATH1051', 2021, 2, 'Midterm'),
-            ('MATH1051', 2021, 2, 'Final'),
-            ('MATH1051', 2021, 3, 'Midterm'),
-            ('MATH1051', 2021, 3, 'Final'),
-            ('MATH1051', 2022, 1, 'Midterm'),
-            ('MATH1051', 2022, 1, 'Final'),
-            ('MATH1051', 2022, 2, 'Midterm'),
-            ('MATH1051', 2022, 2, 'Final'),
-            ('MATH1051', 2022, 3, 'Midterm'),
-            ('MATH1051', 2022, 3, 'Final'),
-            ('MATH1051', 2023, 1, 'Midterm'),
-            ('MATH1051', 2023, 1, 'Final'),
-            ('MATH1051', 2023, 2, 'Midterm'),
-            ('MATH1051', 2023, 2, 'Final'),
-            ('MATH1051', 2023, 3, 'Midterm'),
-            ('MATH1051', 2023, 3, 'Final');
+    // Makes a bunch of users
+    const users = ['Evan', 'Liv', 'Lakshan', 'Jackson', 'Tristan', 'Pramith', 'Ibrahim'];
 
-        INSERT INTO questions ("examId", "questionText", "questionType")
-        VALUES 
-            (1, 'Who is the best tutor at UQ?', 'Multiple Choice'),
-            (2, 'Who is not the best tutor at UQ?', 'Multiple Choice'),
-            (3, 'Who is the second best tutor at UQ?', 'Multiple Choice'),
-            (4, 'A question with no comments', 'Multiple Choice'),
-            (5, 'Question which has a comment to be edited', 'Multiple Choice'), 
-            (6, 'Question which has a comment to be deleted', 'Multiple Choice'), 
-            (7, 'Question which has a comment to be marked as correct', 'Multiple Choice'),
-            (8, 'Question which has a comment to be marked as incorrect', 'Multiple Choice'),
-            (9, 'Question which has a comment to be endorsed', 'Multiple Choice'),
-            (10, 'Question which has a comment endorsed to be removed', 'Multiple Choice'), 
-            (11, 'Question which has a comment to be upvoted', 'Multiple Choice'),
-            (12, 'Question which has a comment to be downvoted', 'Multiple Choice'),
-            (13, 'Question which has no comments. And one will be added', 'Multiple Choice'),
-            (14, 'Question which has a comment. And one will be added', 'Multiple Choice'),
-            (15, 'Question which has a comment. And one will be added as nested', 'Multiple Choice'),
-            (16, 'Question which has a comment. And this is used for error checks on nesting comments with incorrect parent id.', 'Multiple Choice');
-        
-        INSERT INTO comments ("questionId", "parentCommentId", "userId", "commentText", "isCorrect", "isEndorsed", "upvotes", "downvotes")
-        VALUES 
-            (1, NULL, 'evan', 'Evan Hughes', TRUE, TRUE, 100, 1),
-            (1, 1, 'liv', 'Are you stupid it is clearly Liv Ronda', FALSE, FALSE, 0, 100),
-            (1, 2, 'jackson', 'Bro went to stupid school L', FALSE, TRUE, 999, 1),
-            (1, 1, 'lakshan', 'Fax what a goat', FALSE, FALSE, 80, 1),
-            (2, NULL, 'evan', 'Not Evan Hughes cause he is the best', TRUE, TRUE, 100, 1),
-            (2, 5, 'liv', 'Facts it is clearly Liv Ronda because she is the worst', TRUE, TRUE, 999, 0),
-            (2, 6, 'jackson', 'ong', FALSE, TRUE, 9, 1),
-            (2, 5, 'lakshan', 'Fax what a goat', FALSE, FALSE, 80, 1),
-            (3, NULL, 'evan', 'Not Evan Hughes cause he is the best', TRUE, TRUE, 100, 1),
-            (3, 9, 'evan', 'TRUEEE!!!', TRUE, TRUE, 999, 0),
-            (3, 10, 'evan', 'ong', FALSE, TRUE, 9, 1),
-            (3, 9, 'evan', 'Fax what a goat', FALSE, FALSE, 80, 1),
-            (5, NULL, 'evan', 'This is a comment that will be edited', TRUE, TRUE, 100, 1), 
-            (6, NULL, 'liv', 'This is a comment that will be deleted', TRUE, TRUE, 100, 1), 
-            (7, NULL, 'jackson', 'This is a comment that will be marked as correct', FALSE, FALSE, 100, 1),
-            (8, NULL, 'lakshan', 'This is a comment that will be marked as incorrect', TRUE, TRUE, 100, 1),
-            (9, NULL, 'liv', 'This is a comment that will be endorsed', TRUE, TRUE, 100, 1),
-            (10, NULL, 'jackson', 'This is a comment that will have its endorsement removed', TRUE, TRUE, 100, 1),
-            (11, NULL, 'lakshan', 'This is a comment that will be upvoted', TRUE, TRUE, 100, 1),
-            (12, NULL, 'evan', 'This is a comment that will be downvoted', TRUE, TRUE, 100, 1),
-            (14, NULL, 'evan', 'This is a comment that will be added', TRUE, TRUE, 100, 1),
-            (15, NULL, 'liv', 'This is a comment that a test will add a nested comment to', TRUE, TRUE, 100, 1),
-            (16, NULL, 'evan', 'This is a comment.', TRUE, TRUE, 100, 1);
-    `);
-    res.status(200).json(`THIS SHIT SKETCH ASF AND WAS LIV'S IDEA!!!`);
+    for (const u of users) {
+        const newUser = new UserDb();
+        newUser.userId = u;
+        await user.save(newUser);
+    }
+
+
+    // Makes a bunch of courses
+    const courses = [
+        {
+            courseCode: 'ENGG1001',
+            courseName: 'Programming for Engineers',
+            courseDescription: 'An introductory course covering basic concepts of software engineering.',
+            university: 'UQ',
+        },
+        {
+            courseCode: 'MATH1051',
+            courseName: 'Calculus & Linear Algebra',
+            courseDescription: 'A foundational course in calculus covering limits, derivatives, and integrals.',
+            university: 'UQ',
+        },
+        {
+            courseCode: 'ENGG1100',
+            courseName: 'Professional Engineering',
+            courseDescription: 'An introductory course covering fundamental concepts in engineering principles.',
+            university: 'UQ',
+        },
+    ];
+    
+    for (const c of courses) {
+        const newCourse = new CourseDb();
+        newCourse.courseCode = c.courseCode;
+        newCourse.courseName = c.courseName;
+        newCourse.courseDescription = c.courseDescription;
+        newCourse.university = c.university;
+        await course.save(newCourse);
+    }
+
+    // Makes a bunch of exams
+    const exams = [
+        {
+            courseCode: 'ENGG1001',
+            examYear: 2021,
+            examSemester: 1,
+            examType: 'Final',
+        },
+        {
+            courseCode: 'ENGG1001',
+            examYear: 2022,
+            examSemester: 1,
+            examType: 'Final',
+        },
+        {
+            courseCode: 'ENGG1001',
+            examYear: 2023,
+            examSemester: 1,
+            examType: 'Final',
+        },
+        {
+            courseCode: 'MATH1051',
+            examYear: 2021,
+            examSemester: 1,
+            examType: 'Midterm',
+        },
+        {
+            courseCode: 'MATH1051',
+            examYear: 2021,
+            examSemester: 1,
+            examType: 'Final',
+        },
+        {
+            courseCode: 'MATH1051',
+            examYear: 2021,
+            examSemester: 2,
+            examType: 'Midterm',
+        },
+        {
+            courseCode: 'MATH1051',
+            examYear: 2021,
+            examSemester: 2,
+            examType: 'Final',
+        },
+        {
+            courseCode: 'MATH1051',
+            examYear: 2021,
+            examSemester: 3,
+            examType: 'Midterm',
+        },
+        {
+            courseCode: 'MATH1051',
+            examYear: 2021,
+            examSemester: 3,
+            examType: 'Final',
+        },
+        {
+            courseCode: 'MATH1051',
+            examYear: 2022,
+            examSemester: 1,
+            examType: 'Midterm',
+        },
+        {
+            courseCode: 'MATH1051',
+            examYear: 2022,
+            examSemester: 1,
+            examType: 'Final',
+        },
+        {
+            courseCode: 'MATH1051',
+            examYear: 2022,
+            examSemester: 2,
+            examType: 'Midterm',
+        },
+        {
+            courseCode: 'MATH1051',
+            examYear: 2022,
+            examSemester: 2,
+            examType: 'Final',
+        },
+        {
+            courseCode: 'MATH1051',
+            examYear: 2022,
+            examSemester: 3,
+            examType: 'Midterm',
+        },
+        {
+            courseCode: 'MATH1051',
+            examYear: 2022,
+            examSemester: 3,
+            examType: 'Final',
+        },
+        {
+            courseCode: 'MATH1051',
+            examYear: 2023,
+            examSemester: 1,
+            examType: 'Midterm',
+        },
+        {
+            courseCode: 'MATH1051',
+            examYear: 2023,
+            examSemester: 1,
+            examType: 'Final',
+        },
+        {
+            courseCode: 'MATH1051',
+            examYear: 2023,
+            examSemester: 2,
+            examType: 'Midterm',
+        },
+        {
+            courseCode: 'MATH1051',
+            examYear: 2023,
+            examSemester: 2,
+            examType: 'Final',
+        },
+        {
+            courseCode: 'MATH1051',
+            examYear: 2023,
+            examSemester: 3,
+            examType: 'Midterm',
+        },
+        {
+            courseCode: 'MATH1051',
+            examYear: 2023,
+            examSemester: 3,
+            examType: 'Final',
+        },
+    ];
+
+    for (const e of exams) {
+        const newExam = new ExamDb();
+        newExam.courseCode = e.courseCode;
+        newExam.examYear = e.examYear;
+        newExam.examSemester = e.examSemester;
+        newExam.examType = e.examType;
+        await exam.save(newExam);
+    }
+
+    // Makes a bunch of questions
+    const questions = [
+        {
+            examId: 1,
+            questionText: 'Who is the best tutor at UQ?',
+            questionType: 'Multiple Choice',
+        },
+        {
+            examId: 2,
+            questionText: 'Who is not the best tutor at UQ?',
+            questionType: 'Multiple Choice',
+        },
+        {
+            examId: 3,
+            questionText: 'Who is the second best tutor at UQ?',
+            questionType: 'Multiple Choice',
+        },
+    ];
+
+    for (const q of questions) {
+        const newQuestion = new QuestionDb();
+        newQuestion.examId = q.examId;
+        newQuestion.questionText = q.questionText;
+        newQuestion.questionType = q.questionType;
+        await question.save(newQuestion);
+    }
+
+    // Makes a bunch of comments
+    const comments = [
+        {
+            questionId: 1,
+            parentCommentId: null,
+            userId: 'evan',
+            commentText: 'Evan Hughes',
+        },
+        {
+            questionId: 1,
+            parentCommentId: 1,
+            userId: 'liv',
+            commentText: 'Are you stupid it is clearly Liv Ronda',
+        },
+        {
+            questionId: 1,
+            parentCommentId: 2,
+            userId: 'jackson',
+            commentText: 'Bro went to stupid school L',
+        },
+        {
+            questionId: 1,
+            parentCommentId: 1,
+            userId: 'lakshan',
+            commentText: 'Fax what a goat',
+        },
+        {
+            questionId: 2,
+            parentCommentId: null,
+            userId: 'evan',
+            commentText: 'Not Evan Hughes cause he is the best',
+        },
+        {
+            questionId: 2,
+            parentCommentId: 5,
+            userId: 'liv',
+            commentText: 'Facts it is clearly Liv Ronda because she is the worst',
+        },
+        {
+            questionId: 2,
+            parentCommentId: 6,
+            userId: 'jackson',
+            commentText: 'ong',
+        },
+        {
+            questionId: 2,
+            parentCommentId: 5,
+            userId: 'lakshan',
+            commentText: 'Fax what a goat',
+        },
+        {
+            questionId: 3,
+            parentCommentId: null,
+            userId: 'evan',
+            commentText: 'Not Evan Hughes cause he is the best',
+        },
+        {
+            questionId: 3,
+            parentCommentId: 9,
+            userId: 'evan',
+            commentText: 'TRUEEE!!!',
+        },
+        {
+            questionId: 3,
+            parentCommentId: 10,
+            userId: 'evan',
+            commentText: 'ong',
+        },
+        {
+            questionId: 3,
+            parentCommentId: 9,
+            userId: 'evan',
+            commentText: 'Fax what a goat',
+        },
+    ];
+
+    for (const c of comments) {
+        const newComment = new CommentDb();
+        newComment.questionId = c.questionId;
+        if (c.parentCommentId) {
+            newComment.parentCommentId = c.parentCommentId;
+        }
+        newComment.userId = c.userId;
+        newComment.commentText = c.commentText;
+        await comment.save(newComment);
+    }
+    
+    res.status(200).json(`THIS SHIT SKETCH ASF AND WAS LIV'S IDEA!!!\n`);
 });
 
 // Helper functions

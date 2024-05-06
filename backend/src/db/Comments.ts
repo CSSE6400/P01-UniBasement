@@ -8,10 +8,10 @@ export class Comment {
     commentId: number;
 
     @ManyToOne(() => Question, question => question.questionId)
-    question: Question;
+    questionId: Question.questionId;
 
     @ManyToOne(() => User, user => user.userId)
-    user: User;
+    userId: User.userId;
 
     @Column({ nullable: true })
     parentCommentId: number;

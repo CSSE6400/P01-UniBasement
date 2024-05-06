@@ -7,7 +7,7 @@ export class Exam {
     examId: number;
 
     @ManyToOne(() => Course, course => course.courseCode)
-    course: Course;
+    courseCode: Course.courseCode;
 
     @Column()
     examYear: number;
