@@ -6,39 +6,39 @@ on:
       awsCredentials:
         description: 'AWS Credentials'
         required: true
-      auth0Credentials:
-        description: 'Auth0 Credentials'
+      auth0Secret:
+        description: 'Auth0 Secret'
+        required: true
+      auth0BaseUrl:
+        description: 'Auth0 Base URL'
+        required: true
+      auth0IssuerBaseUrl:
+        description: 'Auth0 Issuer Base URL'
+        required: true
+      auth0ClientId:
+        description: 'Auth0 Client ID'
+        required: true
+      auth0ClientSecret:
+        description: 'Auth0 Client Secret'
         required: true
 
 jobs:
   deploy:
-
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v3
-
     - name: Use Node.js 20.x
       uses: actions/setup-node@v3
       with:
         node-version: 20.x
-
     - uses: levibostian/action-hide-sensitive-inputs@v1
-
     - name: Deploy to AWS
       run: |
         eval "${{ github.event.inputs.awsCredentials }}"
-        AUTH0_SECRET=$(echo "${{ github.event.inputs.auth0Credentials }}" | jq -r '.AUTH0_SECRET')
-        AUTH0_BASE_URL=$(echo "${{ github.event.inputs.auth0Credentials }}" | jq -r '.AUTH0_BASE_URL')
-        AUTH0_ISSUER_BASE_URL=$(echo "${{ github.event.inputs.auth0Credentials }}" | jq -r '.AUTH0_ISSUER_BASE_URL')
-        AUTH0_CLIENT_ID=$(echo "${{ github.event.inputs.auth0Credentials }}" | jq -r '.AUTH0_CLIENT_ID')
-        AUTH0_CLIENT_SECRET=$(echo "${{ github.event.inputs.auth0Credentials }}" | jq -r '.AUTH0_CLIENT_SECRET')
-        
-        
         terraform init
         terraform apply -auto-approve \
-          -var "auth0_secret=$AUTH0_SECRET" \
-          -var "auth0_base_url=$AUTH0_BASE_URL" \
-          -var "auth0_issuer_base_url=$AUTH0_ISSUER_BASE_URL" \
-          -var "auth0_client_id=$AUTH0_CLIENT_ID" \
-          -var "auth0_client_secret=$AUTH0_CLIENT_SECRET"
+          -var "auth0_secret=${{ github.event.inputs.auth0Secret }}" \
+          -var "auth0_base_url=${{ github.event.inputs.auth0BaseUrl }}" \
+          -var "auth0_issuer_base_url=${{ github.event.inputs.auth0IssuerBaseUrl }}" \
+          -var "auth0_client_id=${{ github.event.inputs.auth0ClientId }}" \
+          -var "auth0_client_secret=${{ github.event.inputs.auth0ClientSecret }}"
