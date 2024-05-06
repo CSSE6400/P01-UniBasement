@@ -6,6 +6,9 @@ on:
       awsCredentials:
         description: 'AWS Credentials'
         required: true
+      auth0Credentials:
+        description: 'Auth0 Credentials'
+        required: true
 
 jobs:
   deploy:
@@ -19,9 +22,25 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: 20.x
+
     - uses: levibostian/action-hide-sensitive-inputs@v1
+
     - name: Deploy to AWS
       run: |
         eval "${{ github.event.inputs.awsCredentials }}"
+        eval "${{ github.event.inputs.auth0credentials }}"
+        
+        AUTH0_SECRET=$(echo "${{ github.event.inputs.auth0Credentials }}" | jq -r '.AUTH0_SECRET')
+        AUTH0_BASE_URL=$(echo "${{ github.event.inputs.auth0Credentials }}" | jq -r '.AUTH0_BASE_URL')
+        AUTH0_ISSUER_BASE_URL=$(echo "${{ github.event.inputs.auth0Credentials }}" | jq -r '.AUTH0_ISSUER_BASE_URL')
+        AUTH0_CLIENT_ID=$(echo "${{ github.event.inputs.auth0Credentials }}" | jq -r '.AUTH0_CLIENT_ID')
+        AUTH0_CLIENT_SECRET=$(echo "${{ github.event.inputs.auth0Credentials }}" | jq -r '.AUTH0_CLIENT_SECRET')
+        
+        
         terraform init
-        terraform apply -auto-approve
+        terraform apply -auto-approve \
+          -var "auth0_secret=$AUTH0_SECRET" \
+          -var "auth0_base_url=$AUTH0_BASE_URL" \
+          -var "auth0_issuer_base_url=$AUTH0_ISSUER_BASE_URL" \
+          -var "auth0_client_id=$AUTH0_CLIENT_ID" \
+          -var "auth0_client_secret=$AUTH0_CLIENT_SECRET"
