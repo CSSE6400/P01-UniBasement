@@ -118,10 +118,6 @@ variable "auth0_secret" {
   description = "Auth0 Secret"
 }
 
-variable "auth0_base_url" {
-  description = "Auth0 Base URL"
-}
-
 variable "auth0_issuer_base_url" {
   description = "Auth0 Issuer Base URL"
 }
