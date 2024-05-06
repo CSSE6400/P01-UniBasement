@@ -103,7 +103,26 @@ router.put('/comments/:commentId/edit', async (req: Request<CommentRouteParams, 
         return;
     }
 
-    const { rowCount } = await editComment(commentId, commentText, commentPNG);
+    const args = [];
+    let query = `UPDATE comments SET `
+    let count = 1;
+
+    if (commentText) {
+        query += `"commentText" = $${count}::text, `
+        args.push(commentText);
+        count++;
+    }
+
+    if (commentPNG) {
+        query += `"commentPNG" = $${count}::text, `
+        args.push(commentPNG);
+        count++;
+    }
+
+    query += `"updated_at" = NOW() WHERE "commentId" = $${count}::int`
+    args.push(commentId)
+    const { rowCount } = await db.query(query, args);
+
     if (rowCount === 0) {
         res.status(404).json('Comment not found');
         return;
@@ -184,7 +203,11 @@ router.patch('/courses/:courseCode/star', async (req: Request<CourseRouteParams>
 router.patch('/comments/:commentId/delete', async (req: Request<CommentRouteParams>, res: Response) => {
     const { commentId } = req.params;
 
-    const { rowCount } = await editComment(commentId, '', '');
+    const { rowCount } = await db.query(`
+    UPDATE comments
+    SET "commentText" = 'Deleted', "commentPNG" = 'Deleted', updated_at = NOW()
+    WHERE "commentId" = $1
+    `, [commentId]);
     if (rowCount === 0) {
         res.status(404).json('Comment not found');
         return;
@@ -781,30 +804,6 @@ router.get('/sketch', async (req: Request, res: Response) => {
 });
 
 // Helper functions
-
-// function to edit / delete a comment
-async function editComment(commentId: number, commentText?: string | null, commentPNG?: string | null) {
-    const args = [];
-    let query = `UPDATE comments SET `
-    let count = 1;
-
-    if (commentText) {
-        query += `"commentText" = $${count}::text, `
-        args.push(commentText);
-        count++;
-    }
-
-    if (commentPNG) {
-        query += `"commentPNG" = $${count}::text, `
-        args.push(commentPNG);
-        count++;
-    }
-
-    query += `"updated_at" = NOW() WHERE "commentId" = $${count}::int`
-    args.push(commentId)
-
-    return await db.query(query, args);
-}
 
 // function to nest comments into their parent comments
 export function nest(commentRows: IComment[]) {
