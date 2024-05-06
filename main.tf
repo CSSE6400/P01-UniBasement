@@ -302,6 +302,10 @@ resource "aws_ecs_task_definition" "unibasement_backend" {
       },
       "environment": [
         {
+          "name": "DB_TYPE",
+          "value": "postgres"
+        },
+        {
           "name": "DB_USER",
           "value": "${local.database_username}"
         },

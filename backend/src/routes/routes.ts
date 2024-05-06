@@ -691,7 +691,7 @@ router.get('/health', async (req: Request, res: Response) => {
 });
 
 // Evan's Routes
-router.get('/evan', async (req: Request, res: Response) => {
+router.get('/Evan', async (req: Request, res: Response) => {
     res.status(200).json('Evan is the best');
 });
 
@@ -925,73 +925,73 @@ router.get('/sketch', async (req: Request, res: Response) => {
         {
             questionId: 1,
             parentCommentId: null,
-            userId: 'evan',
+            userId: 'Evan',
             commentText: 'Evan Hughes',
         },
         {
             questionId: 1,
             parentCommentId: 1,
-            userId: 'liv',
+            userId: 'Liv',
             commentText: 'Are you stupid it is clearly Liv Ronda',
         },
         {
             questionId: 1,
             parentCommentId: 2,
-            userId: 'jackson',
+            userId: 'Jackson',
             commentText: 'Bro went to stupid school L',
         },
         {
             questionId: 1,
             parentCommentId: 1,
-            userId: 'lakshan',
+            userId: 'Lakshan',
             commentText: 'Fax what a goat',
         },
         {
             questionId: 2,
             parentCommentId: null,
-            userId: 'evan',
+            userId: 'Evan',
             commentText: 'Not Evan Hughes cause he is the best',
         },
         {
             questionId: 2,
             parentCommentId: 5,
-            userId: 'liv',
+            userId: 'Liv',
             commentText: 'Facts it is clearly Liv Ronda because she is the worst',
         },
         {
             questionId: 2,
             parentCommentId: 6,
-            userId: 'jackson',
+            userId: 'Jackson',
             commentText: 'ong',
         },
         {
             questionId: 2,
             parentCommentId: 5,
-            userId: 'lakshan',
+            userId: 'Lakshan',
             commentText: 'Fax what a goat',
         },
         {
             questionId: 3,
             parentCommentId: null,
-            userId: 'evan',
+            userId: 'Evan',
             commentText: 'Not Evan Hughes cause he is the best',
         },
         {
             questionId: 3,
             parentCommentId: 9,
-            userId: 'evan',
+            userId: 'Evan',
             commentText: 'TRUEEE!!!',
         },
         {
             questionId: 3,
             parentCommentId: 10,
-            userId: 'evan',
+            userId: 'Evan',
             commentText: 'ong',
         },
         {
             questionId: 3,
             parentCommentId: 9,
-            userId: 'evan',
+            userId: 'Evan',
             commentText: 'Fax what a goat',
         },
     ];
