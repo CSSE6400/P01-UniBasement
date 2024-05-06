@@ -4,7 +4,7 @@
 import express from "express";
 import cors from 'cors';
 
-import { createConnection, Connection } from 'typeorm';
+import { createConnection, Connection, DataSource } from 'typeorm';
 import { User } from './db/User';
 import { Course } from './db/Course';
 import { Exam } from './db/Exam';
@@ -30,25 +30,27 @@ app.use(express.urlencoded({ extended: false }));
 /**
  * Database Connection
  */
-const connection: Connection = null;
+const BackendDataSource = new DataSource({
+  type: process.env.DB_TYPE as 'postgres',
+  host: process.env.DB_HOST!,
+  port: parseInt(process.env.DB_PORT!),
+  username: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_DATABASE,
+  synchronize: true,
+  logging: false,
+  entities: [User, Course, Exam, Question, Com],
+})
 
-export const connectDatabase = async () => {
-  connection = await createConnection({
-    type: process.env.DB_TYPE,
-    host: process.env.DB_HOST,
-    port: parseInt(process.env.DB_PORT),
-    username: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_DATABASE,
-    synchronize: true,
-    logging: false,
-    entities: [User, Course, Exam, Question, Com],
-  }).then(connection => {
-    console.log('Connected to the database');
-  }).catch(error => console.log(error));
-};
+BackendDataSource.initialize()
+    .then(() => {
+      console.log('Connected to the database');
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 
-export const getConnection = () => connection;
+export const getConnection = () => BackendDataSource;
 
 /**
  * Server Activation / Confirmation
