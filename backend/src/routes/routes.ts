@@ -17,13 +17,14 @@ import {
     RateObject,
 } from '../types';
 
-import { getConnection } from '../index';
+import { getConnection } from '../db/index';
 import { User as UserDb } from '../db/User';
 import { Course as CourseDb } from '../db/Course';
 import { Exam as ExamDb } from '../db/Exam';
 import { Question as QuestionDb } from '../db/Questions';
 import { Comment as CommentDb } from '../db/Comments';
 
+import { nest, single_nest } from './helpful_friends';
 
 // Export Routers
 export const router = Router();
@@ -1008,43 +1009,3 @@ router.get('/sketch', async (req: Request, res: Response) => {
     
     res.status(200).json(`THIS SHIT SKETCH ASF AND WAS LIV'S IDEA!!!\n`);
 });
-
-// Helper functions
-
-// function to nest comments into their parent comments
-export function nest(commentRows: IComment[]) {
-    const dataDict: { [id: number]: IComment } = {};
-    commentRows.forEach(item => dataDict[item.commentId] = item);
-
-    commentRows.forEach(item => {
-        if (item.parentCommentId !== null) {
-            const parent = dataDict[item.parentCommentId];
-            if (!parent.children) {
-                parent.children = [];
-            }
-            parent.children.push(item);
-        }
-    });
-
-    const resultJsonData = commentRows.filter(item => item.parentCommentId === null);
-    return resultJsonData;
-}
-
-// function to return one comment with its children
-export function single_nest(commentRows: IComment[], commentId: number) {
-    const dataDict: { [id: number]: IComment } = {};
-    commentRows.forEach(item => dataDict[item.commentId] = item);
-
-    commentRows.forEach(item => {
-        if (item.parentCommentId !== null) {
-            const parent = dataDict[item.parentCommentId];
-            if (!parent.children) {
-                parent.children = [];
-            }
-            parent.children.push(item);
-        }
-    });
-
-    const resultJsonData = commentRows.filter(item => item.commentId === commentId);
-    return resultJsonData;
-}

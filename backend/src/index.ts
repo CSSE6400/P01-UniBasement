@@ -4,14 +4,7 @@
 import express from "express";
 import cors from 'cors';
 
-import { createConnection, Connection, DataSource } from 'typeorm';
-import { User } from './db/User';
-import { Course } from './db/Course';
-import { Exam } from './db/Exam';
-import { Question } from './db/Questions';
-import { Comment as Com} from './db/Comments';
-
-import { routes } from './routes';
+import { router } from './routes/routes';
 
 const PORT: number = process.env.PORT ? parseInt(process.env.PORT) : 8080;
 
@@ -23,34 +16,9 @@ const app = express();
  */
 app.use(cors());
 app.use(express.json());
-app.use('/api', routes);
+app.use('/api', router);
 
 app.use(express.urlencoded({ extended: false }));
-
-/**
- * Database Connection
- */
-const BackendDataSource = new DataSource({
-  type: process.env.DB_TYPE as 'postgres',
-  host: process.env.DB_HOST!,
-  port: parseInt(process.env.DB_PORT!),
-  username: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_DATABASE,
-  synchronize: true,
-  logging: false,
-  entities: [User, Course, Exam, Question, Com],
-})
-
-BackendDataSource.initialize()
-    .then(() => {
-      console.log('Connected to the database');
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-
-export const getConnection = () => BackendDataSource;
 
 /**
  * Server Activation / Confirmation
