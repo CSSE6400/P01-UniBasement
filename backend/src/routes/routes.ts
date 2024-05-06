@@ -81,25 +81,13 @@ router.put('/comments/:commentId/edit', async (req: Request<CommentRouteParams, 
     const { commentId } = req.params;
     const { commentText, commentPNG, userId } = req.body;
 
-    if (!commentId) {
+    if (!commentId || !userId) {
         res.status(400).json('Invalid commentId');
         return;
     }
 
     if (!commentText && !commentPNG) {
         res.status(400).json('No changes made');
-        return;
-    }
-
-    // Check if the user exists
-    const { rows } = await db.query(`
-    SELECT "userId"
-    FROM users
-    WHERE "userId" = $1
-    `, [userId]);
-
-    if (rows.length === 0) {
-        res.status(404).json('User not found');
         return;
     }
 
@@ -119,8 +107,9 @@ router.put('/comments/:commentId/edit', async (req: Request<CommentRouteParams, 
         count++;
     }
 
-    query += `"updated_at" = NOW() WHERE "commentId" = $${count}::int`
+    query += `"updated_at" = NOW() WHERE "commentId" = $${count}::int AND "userId" = $${count + 1}::text`
     args.push(commentId)
+    args.push(userId)
     const { rowCount } = await db.query(query, args);
 
     if (rowCount === 0) {
@@ -202,12 +191,13 @@ router.patch('/courses/:courseCode/star', async (req: Request<CourseRouteParams>
 // Deletes a comment
 router.patch('/comments/:commentId/delete', async (req: Request<CommentRouteParams>, res: Response) => {
     const { commentId } = req.params;
+    const { userId } = req.body;
 
     const { rowCount } = await db.query(`
     UPDATE comments
     SET "commentText" = 'Deleted', "commentPNG" = 'Deleted', "upvotes" = 0, "downvotes" = 0, "isCorrect" = False, "isEndorsed" = False, updated_at = NOW()
-    WHERE "commentId" = $1
-    `, [commentId]);
+    WHERE "commentId" = $1 AND "userId" = $2
+    `, [commentId, userId]);
     if (rowCount === 0) {
         res.status(404).json('Comment not found');
         return;
@@ -725,6 +715,7 @@ router.get('/sketch', async (req: Request, res: Response) => {
             ('liv'),
             ('lakshan'),
             ('jackson');
+
         INSERT INTO courses ("courseCode", "courseName", "courseDescription", "university")
         VALUES 
             ('ENGG1001', 'Programming for Engineers', 'An introductory course covering basic concepts of software engineering.', 'UQ'),

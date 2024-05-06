@@ -48,7 +48,8 @@ class TestComments(BaseCase):
         commentId = 1
         body = {
             "commentText": None,
-            "commentPNG": None
+            "commentPNG": None,
+            "userId": "evan",
         }
 
         response = requests.put(self.host() + '/comments/' + str(commentId) + '/edit', json=body)
@@ -60,9 +61,12 @@ class TestComments(BaseCase):
         Checks for a 200 response from the /comments endpoint
         Checks for the correct response message
         """
-        commentId = 13
+        commentId = 12
+        body = {
+            "userId": "evan"
+        }
 
-        response = requests.patch(self.host() + '/comments/' + str(commentId) + '/delete')
+        response = requests.patch(self.host() + '/comments/' + str(commentId) + '/delete', json=body)
         self.assertEqual(200, response.status_code)
         self.assertEqual('Comment deleted', response.json())
 
@@ -73,8 +77,11 @@ class TestComments(BaseCase):
         Checks for the correct response message
         """
         commentId = 86868686
+        body = {
+            "userId": "evan"
+        }
 
-        response = requests.patch(self.host() + '/comments/' + str(commentId) + '/delete')
+        response = requests.patch(self.host() + '/comments/' + str(commentId) + '/delete', json=body)
         self.assertEqual(404, response.status_code)
         self.assertEqual('Comment not found', response.json())
 
