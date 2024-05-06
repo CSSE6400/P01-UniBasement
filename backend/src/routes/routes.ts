@@ -14,6 +14,7 @@ import {
     Question,
     QuestionBodyParams,
     QuestionRouteParams,
+    RateObject,
 } from '../types';
 
 import { getConnection } from '../index';
@@ -157,11 +158,20 @@ router.patch('/courses/:courseCode/star', async (req: Request<CourseRouteParams>
         return;
     }
 
-    course.stars += starRating - (user.rated[courseCode] ?? 0);
-    course.votes += user.rated[courseCode] ? 0 : 1; //TODO
-    await courseRepository.update(course.courseCode, course);
+    // Goes through the JSON array and sees if the course is there
+    const rating: RateObject | undefined = user.rated.find((course: RateObject) => course.courseCode === courseCode);
+    
+    course.stars += rating ? starRating - rating.stars : starRating;
+    course.votes += rating ? 0 : 1;
 
-    user.rated[courseCode] = starRating;
+    const i = user.rated.findIndex((course: RateObject) => course.courseCode === courseCode);
+    
+    if (i !== -1) {
+        user.rated[i].stars = starRating;
+    } else {
+        user.rated.push({ courseCode: courseCode, stars: starRating });
+    }
+
     await userRows.update(user.userId, user);
 
     res.status(200).json('Course starred');

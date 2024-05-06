@@ -1,15 +1,16 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { RateObject } from '../types';
 
 @Entity()
 export class User {
-    @PrimaryGeneratedColumn('uuid')
+    @PrimaryColumn()
     userId: string;
 
     @Column({ default: 0 })
     role: number;
 
-    @Column({ type: 'jsonb', default: {} })
-    rated: object;
+    @Column({ type: 'jsonb', default: [] })
+    rated: RateObject[];
 
     @Column({ type: 'simple-array', default: [] })
     upvoted: number[];

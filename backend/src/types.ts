@@ -72,3 +72,8 @@ export type CourseQueryParams = {
     offset?: number
     limit?: number
 }
+
+export type RateObject = {
+    courseCode: string
+    stars: number
+}
