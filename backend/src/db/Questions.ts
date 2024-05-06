@@ -7,7 +7,7 @@ export class Question {
     questionId: number;
 
     @ManyToOne(() => Exam, exam => exam.examId)
-    examId: Exam.examId;
+    examId: Exam['examId'];
 
     @Column('text', { nullable: true })
     questionText: string;
