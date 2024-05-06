@@ -44,6 +44,8 @@ class TestFullSuite(BaseCase):
             "courseName": "The History of Toyota 86",
             "courseDescription": "A course on the history of the Toyota 86 and its impact on the automotive industry.",
             "university": "The University of Queensland",
+            "stars": 0,
+            "votes": 0
         }
 
         # Create a course

@@ -125,14 +125,14 @@ router.patch('/courses/:courseCode/star', async (req: Request<CourseRouteParams>
     const { courseCode } = req.params;
     const { starRating, userId } = req.body;
 
-    if (!starRating || !userId) {
+    if (starRating === undefined || !userId) {
         res.status(400).json('Missing starRating or userId');
         return;
     }
 
     // Checks to see star rating is between 1 and 5
-    if (starRating < 1 || starRating > 5) {
-        res.status(400).json('Star rating must be between 1 and 5');
+    if (starRating < 0 || starRating > 5) {
+        res.status(400).json('Star rating must be between 0 and 5');
         return;
     }
 
@@ -367,6 +367,7 @@ router.post('/users', async (req: Request<any, any, any, any>, res: Response) =>
     const { rowCount } = await db.query(`
     INSERT INTO users ("userId")
     VALUES ($1)
+    ON CONFLICT DO NOTHING
     `, [userId]);
 
     if (rowCount === 0) {
@@ -643,7 +644,7 @@ router.get('/courses/:courseCode', async (req: Request<CourseRouteParams>, res: 
   const { courseCode } = req.params;
 
   const { rows } = await db.query<Course>(`
-  SELECT "courseCode", "courseName", "courseDescription", "university" 
+  SELECT "courseCode", "courseName", "courseDescription", "university", "stars", "votes" 
   FROM courses
   WHERE courses."courseCode" = $1
   `, [courseCode]);
@@ -662,7 +663,7 @@ router.get('/courses', async (req: Request<any, any, any, CourseQueryParams>, re
     const limit = req.query.limit ?? 100;
 
     const { rows } = await db.query<Course>(`
-    SELECT "courseCode", "courseName", "courseDescription", "university" 
+    SELECT "courseCode", "courseName", "courseDescription", "university", "stars", "votes" 
     FROM courses 
     LIMIT $1 
     OFFSET $2
