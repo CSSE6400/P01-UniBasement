@@ -44,7 +44,7 @@ export const setupTables = () => {
         "questionId" SERIAL PRIMARY KEY,
         "examId" INTEGER REFERENCES exams("examId") NOT NULL,
         "questionText" TEXT,
-        "questionPNG" BYTEA, 
+        "questionPNG" TEXT, 
         "questionType" VARCHAR(20) NOT NULL,
         "created_at" TIMESTAMP DEFAULT NOW(),
         "updated_at" TIMESTAMP DEFAULT NOW()
@@ -56,7 +56,7 @@ export const setupTables = () => {
         "parentCommentId" INTEGER,
         "userId" TEXT REFERENCES users("userId") NOT NULL,
         "commentText" TEXT,
-        "commentPNG" BYTEA, 
+        "commentPNG" TEXT, 
         "isCorrect" BOOLEAN DEFAULT FALSE,
         "isEndorsed" BOOLEAN DEFAULT FALSE,
         "upvotes" INTEGER DEFAULT 0,
