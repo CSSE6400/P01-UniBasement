@@ -167,7 +167,7 @@ resource "aws_ecs_task_definition" "unibasement_frontend" {
         },
         {
           "name": "AUTH0_BASE_URL",
-          "value": "${var.auth0_base_url}"
+          "value": "http://${aws_lb.unibasement.dns_name}:3000/"
         },
         {
           "name": "AUTH0_ISSUER_BASE_URL",

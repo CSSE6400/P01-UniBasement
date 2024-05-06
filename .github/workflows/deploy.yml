@@ -9,9 +9,6 @@ on:
       auth0Secret:
         description: 'Auth0 Secret'
         required: true
-      auth0BaseUrl:
-        description: 'Auth0 Base URL'
-        required: true
       auth0IssuerBaseUrl:
         description: 'Auth0 Issuer Base URL'
         required: true
@@ -38,7 +35,6 @@ jobs:
         terraform init
         terraform apply -auto-approve \
           -var "auth0_secret=${{ github.event.inputs.auth0Secret }}" \
-          -var "auth0_base_url=${{ github.event.inputs.auth0BaseUrl }}" \
           -var "auth0_issuer_base_url=${{ github.event.inputs.auth0IssuerBaseUrl }}" \
           -var "auth0_client_id=${{ github.event.inputs.auth0ClientId }}" \
           -var "auth0_client_secret=${{ github.event.inputs.auth0ClientSecret }}"
