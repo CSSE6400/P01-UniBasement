@@ -205,7 +205,7 @@ router.patch('/comments/:commentId/delete', async (req: Request<CommentRoutePara
 
     const { rowCount } = await db.query(`
     UPDATE comments
-    SET "commentText" = 'Deleted', "commentPNG" = 'Deleted', updated_at = NOW()
+    SET "commentText" = 'Deleted', "commentPNG" = 'Deleted', "upvotes" = 0, "downvotes" = 0, "isCorrect" = False, "isEndorsed" = False, updated_at = NOW()
     WHERE "commentId" = $1
     `, [commentId]);
     if (rowCount === 0) {
