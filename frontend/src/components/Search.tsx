@@ -76,6 +76,16 @@ function useAutocomplete({ close }: { close: () => void }) {
       },
       getSources({ query }) {
         return import('@/mdx/search.mjs').then(({ search }) => {
+          console.log({
+            sourceId: 'documentation',
+            getItems() {
+              return search(query, { limit: 5 })
+            },
+            getItemUrl({ item }) {
+              return item.url
+            },
+            onSelect: navigate,
+          })
           return [
             {
               sourceId: 'documentation',

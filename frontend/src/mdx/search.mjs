@@ -73,6 +73,7 @@ export default function Search(nextConfig = {}) {
 
               return { url, sections }
             })
+            console.log(data, files)
 
             // When this file is imported within the application
             // the following module is loaded:
