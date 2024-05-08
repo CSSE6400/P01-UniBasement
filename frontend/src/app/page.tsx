@@ -5,6 +5,8 @@ import {
   IconZoomCheck,
   IconNotebook,
   IconPencilHeart,
+  IconPin,
+  IconPinnFilled,
 } from '@tabler/icons-react'
 import { Button } from '@/components/Button'
 import { useUser } from '@auth0/nextjs-auth0/client'
@@ -46,7 +48,12 @@ function CourseSearch() {
 export default function Home() {
   const { user, error, isLoading } = useUser()
 
-  console.log(user, error, isLoading)
+  const courses = [
+    { code: 'CSSE1001', last_viewed: 2, pinned: true },
+    { code: 'ENGG1300', last_viewed: 3, pinned: true },
+  ]
+
+  console.log(courses)
   return (
     <main>
       <div className="px-0">
@@ -61,6 +68,22 @@ export default function Home() {
             <div className="container min-h-16 max-w-prose rounded-lg bg-slate-100">
               <CourseSearch />
             </div>
+          </div>
+        </div>
+      </div>
+      <div className="flex min-h-60 items-center justify-center">
+        <div className="w-full max-w-4xl space-y-10">
+          <div className="mt-4 flex flex-col sm:flex-row">
+            {courses.map((value) => {
+              return (
+                <div className="drop-shadow-xl" key={value.code}>
+                  <button onClick={() => (value.pinned = !value.pinned)}>
+                    {value.pinned ? <IconPinnFilled /> : <IconPin />}
+                  </button>
+                  <div className="">asdasdasdasdas</div>
+                </div>
+              )
+            })}
           </div>
         </div>
       </div>

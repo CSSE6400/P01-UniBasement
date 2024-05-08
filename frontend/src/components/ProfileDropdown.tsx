@@ -21,7 +21,7 @@ export default function ProfileCard() {
     }
   }
   return (
-    <div className="-mb-3 flex text-zinc-600 dark:text-zinc-400">
+    <div className="mt-1.5 flex text-zinc-600 dark:text-zinc-400">
       <div className="flex items-start justify-end">
         <div
           onClick={() => handleOpen(!open)}

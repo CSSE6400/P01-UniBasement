@@ -23,6 +23,7 @@ import clsx from 'clsx'
 
 import { navigation } from '@/components/Navigation'
 import { type Result } from '@/mdx/search.mjs'
+import useCourses from '@/api/useCourses'
 
 type EmptyObject = Record<string, never>
 
@@ -36,6 +37,7 @@ type Autocomplete = AutocompleteApi<
 function useAutocomplete({ close }: { close: () => void }) {
   let id = useId()
   let router = useRouter()
+  let courses = useCourses()
   let [autocompleteState, setAutocompleteState] = useState<
     AutocompleteState<Result> | EmptyObject
   >({})
@@ -75,30 +77,28 @@ function useAutocomplete({ close }: { close: () => void }) {
         navigate,
       },
       getSources({ query }) {
-        return import('@/mdx/search.mjs').then(({ search }) => {
-          console.log({
-            sourceId: 'documentation',
+        return Promise.resolve([
+          {
+            sourceId: 'courses',
             getItems() {
-              return search(query, { limit: 5 })
+              // Assuming courses is an array and has a search method
+              //(query, { limit: 5 })
+              console.log(courses)
+              const value = courses.courses
+                ? courses.courses.map((value) => ({
+                    courseCode: value.courseCode,
+                    url: `/course/${value.courseCode}`,
+                  }))
+                : []
+              console.log(value)
+              return value
             },
             getItemUrl({ item }) {
               return item.url
             },
             onSelect: navigate,
-          })
-          return [
-            {
-              sourceId: 'documentation',
-              getItems() {
-                return search(query, { limit: 5 })
-              },
-              getItemUrl({ item }) {
-                return item.url
-              },
-              onSelect: navigate,
-            },
-          ]
-        })
+          },
+        ])
       },
     }),
   )
