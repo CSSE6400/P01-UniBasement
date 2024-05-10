@@ -132,7 +132,7 @@ function ResourcePattern({
   )
 }
 
-function Resource({ resource }: { resource: Resource }) {
+export function Resource({ resource }: { resource: Resource }) {
   let mouseX = useMotionValue(0)
   let mouseY = useMotionValue(0)
 

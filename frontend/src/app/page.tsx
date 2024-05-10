@@ -6,10 +6,14 @@ import {
   IconNotebook,
   IconPencilHeart,
   IconPin,
-  IconPinnFilled,
+  IconPinFilled,
+  IconPhone,
 } from '@tabler/icons-react'
 import { Button } from '@/components/Button'
 import { useUser } from '@auth0/nextjs-auth0/client'
+import { Resource } from '@/components/Resources'
+import Link from 'next/link'
+import { useState } from 'react'
 
 function SearchIcon(props: React.ComponentPropsWithoutRef<'svg'>) {
   return (
@@ -45,15 +49,71 @@ function CourseSearch() {
   )
 }
 
+function Course({
+  course,
+}: {
+  course: {
+    href: string
+    pinned: boolean
+    name: string
+    code: string
+    last_viewed_name: string
+    last_viewed: number
+  }
+}) {
+  const [pinned, setPinned] = useState(course.pinned)
+  console.log(pinned)
+  return (
+    <div
+      key={course.href}
+      className="group relative flex rounded-2xl bg-zinc-50 transition-shadow hover:shadow-md hover:shadow-zinc-900/5 dark:bg-white/2.5 dark:hover:shadow-black/5"
+    >
+      <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-zinc-900/7.5 group-hover:ring-zinc-900/10 dark:ring-white/10 dark:group-hover:ring-white/20" />
+      <div className="relative rounded-2xl px-4 pb-4 pt-8">
+        <h3 className="text-sm font-semibold leading-7 text-zinc-900 dark:text-white">
+          <div className="flex justify-between">
+            <div>{course.code}</div>
+            <Button onClick={() => setPinned(!pinned)} variant="icon">
+              {pinned ? (
+                <IconPinFilled className="h-5 w-5 fill-zinc-700/10 stroke-zinc-700 transition-colors duration-300 group-hover:stroke-zinc-900 dark:fill-white/10 dark:stroke-zinc-400 dark:group-hover:fill-emerald-300/10 dark:group-hover:stroke-emerald-400" />
+              ) : (
+                <IconPin className="h-5 w-5 fill-zinc-700/10 stroke-zinc-700 transition-colors duration-300 group-hover:stroke-zinc-900 dark:fill-white/10 dark:stroke-zinc-400 dark:group-hover:fill-emerald-300/10 dark:group-hover:stroke-emerald-400" />
+              )}
+            </Button>
+          </div>
+
+          <div>{course.name}</div>
+        </h3>
+        <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+          <span className="absolute inset-0 rounded-2xl" />
+          {course.last_viewed_name}
+        </p>
+      </div>
+    </div>
+  )
+}
+
 export default function Home() {
   const { user, error, isLoading } = useUser()
 
   const courses = [
-    { code: 'CSSE1001', last_viewed: 2, pinned: true },
-    { code: 'ENGG1300', last_viewed: 3, pinned: true },
+    {
+      code: 'CSSE1001',
+      name: 'Introduction to Software Engineering',
+      last_viewed: 2,
+      last_viewed_name: '2023 Sem 1 Final',
+      pinned: true,
+      href: '/course/2',
+    },
+    {
+      code: 'ENGG1300',
+      name: 'shit course',
+      last_viewed: 3,
+      last_viewed_name: '2023 Sem 1 Final',
+      pinned: true,
+      href: '/course/2',
+    },
   ]
-
-  console.log(courses)
   return (
     <main>
       <div className="px-0">
@@ -73,17 +133,17 @@ export default function Home() {
       </div>
       <div className="flex min-h-60 items-center justify-center">
         <div className="w-full max-w-4xl space-y-10">
+          <div className="text-xl">Pinned Courses</div>
+
           <div className="mt-4 flex flex-col sm:flex-row">
-            {courses.map((value) => {
-              return (
-                <div className="drop-shadow-xl" key={value.code}>
-                  <button onClick={() => (value.pinned = !value.pinned)}>
-                    {value.pinned ? <IconPinnFilled /> : <IconPin />}
-                  </button>
-                  <div className="">asdasdasdasdas</div>
-                </div>
-              )
-            })}
+            <ul
+              role="list"
+              className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
+            >
+              {courses.map((value) => (
+                <Course key={value.code} course={value} />
+              ))}
+            </ul>
           </div>
         </div>
       </div>
@@ -111,31 +171,9 @@ export default function Home() {
           </div>
         </div>
       </div>
-      <div className="flex min-h-40 items-center justify-center py-6">
+      <div className="flex min-h-10 items-center justify-center py-6">
         <div className="mx-auto w-full max-w-4xl text-2xl font-bold">
           So jump straight in and start learning the EVAN way!
-        </div>
-      </div>
-      <div className="flex min-h-80 items-center justify-center py-6">
-        <div className="mx-auto w-full max-w-4xl text-2xl font-light">
-          <div>
-            EVAN is a collaborative tool to empower university students to work
-            together to improve their exam grades. EVAN allows you to find exam
-            solutions, find great study materials, and ensure that your study is
-            less stressful!
-          </div>
-          <div className="mt-5">
-            EVAN is completely open source and crowd funded.{' '}
-          </div>
-          <div className="mt-5">
-            By contributing to EVAN, you're not just supporting a platform;
-            you're investing in the future of education and collaboration among
-            students. Your support helps us maintain, improve, and expand our
-            services to reach more students in need.
-          </div>
-          <Button className="mt-5 rounded" variant="outline">
-            Contribute and Support
-          </Button>
         </div>
       </div>
     </main>

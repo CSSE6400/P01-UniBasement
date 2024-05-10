@@ -78,7 +78,6 @@ export const Header = forwardRef<
       <Search />
 
       <div className="flex items-center gap-5 lg:hidden">
-        <MobileNavigation />
         <Link href="/" aria-label="Home">
           <Logo className="h-6" />
         </Link>
@@ -91,7 +90,7 @@ export const Header = forwardRef<
           </ul>
         </nav>
         <div className="hidden md:block md:h-5 md:w-px md:bg-zinc-900/10 md:dark:bg-white/15" />
-        <div className="flex hidden gap-4 lg:hidden">
+        <div className="flex gap-4 lg:hidden">
           <MobileSearch />
         </div>
         <div className="flex gap-4">
