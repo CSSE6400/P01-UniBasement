@@ -23,6 +23,8 @@ import clsx from 'clsx'
 
 import { navigation } from '@/components/Navigation'
 import { type Result } from '@/mdx/search.mjs'
+import useCourses from '@/api/useCourses'
+import { IconSearch } from '@tabler/icons-react'
 
 type EmptyObject = Record<string, never>
 
@@ -36,9 +38,12 @@ type Autocomplete = AutocompleteApi<
 function useAutocomplete({ close }: { close: () => void }) {
   let id = useId()
   let router = useRouter()
+  let courses = useCourses()
   let [autocompleteState, setAutocompleteState] = useState<
     AutocompleteState<Result> | EmptyObject
   >({})
+
+  const courseCodes = ['CSSE1001', 'CSSE2002', 'CSSE2310']
 
   function navigate({ itemUrl }: { itemUrl?: string }) {
     if (!itemUrl) {
@@ -75,37 +80,33 @@ function useAutocomplete({ close }: { close: () => void }) {
         navigate,
       },
       getSources({ query }) {
-        return import('@/mdx/search.mjs').then(({ search }) => {
-          return [
-            {
-              sourceId: 'documentation',
-              getItems() {
-                return search(query, { limit: 5 })
-              },
-              getItemUrl({ item }) {
-                return item.url
-              },
-              onSelect: navigate,
+        return Promise.resolve([
+          {
+            sourceId: 'courses',
+            getItems() {
+              const filteredCourses = courseCodes.filter((code) =>
+                code.toLowerCase().includes(query.toLowerCase()),
+              )
+
+              const value = filteredCourses.map((courseCode) => ({
+                courseCode: courseCode,
+                url: `/course/${courseCode}`,
+                title: courseCode, // Add the missing 'title' property
+              }))
+
+              return value
             },
-          ]
-        })
+            getItemUrl({ item }) {
+              return item.url
+            },
+            onSelect: navigate,
+          },
+        ])
       },
     }),
   )
 
   return { autocomplete, autocompleteState }
-}
-
-function SearchIcon(props: React.ComponentPropsWithoutRef<'svg'>) {
-  return (
-    <svg viewBox="0 0 20 20" fill="none" aria-hidden="true" {...props}>
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M12.01 12a4.25 4.25 0 1 0-6.02-6 4.25 4.25 0 0 0 6.02 6Zm0 0 3.24 3.25"
-      />
-    </svg>
-  )
 }
 
 function NoResultsIcon(props: React.ComponentPropsWithoutRef<'svg'>) {
@@ -279,7 +280,7 @@ const SearchInput = forwardRef<
 
   return (
     <div className="group relative flex h-12">
-      <SearchIcon className="pointer-events-none absolute left-3 top-0 h-full w-5 stroke-zinc-500" />
+      <IconSearch className="pointer-events-none absolute left-3 top-0 h-full w-5 stroke-zinc-500" />
       <input
         ref={inputRef}
         className={clsx(
@@ -470,7 +471,7 @@ export function Search() {
         className="hidden h-8 w-full items-center gap-2 rounded-full bg-white pl-2 pr-3 text-sm text-zinc-500 ring-1 ring-zinc-900/10 transition hover:ring-zinc-900/20 ui-not-focus-visible:outline-none lg:flex dark:bg-white/5 dark:text-zinc-400 dark:ring-inset dark:ring-white/10 dark:hover:ring-white/20"
         {...buttonProps}
       >
-        <SearchIcon className="h-5 w-5 stroke-current" />
+        <IconSearch className="h-5 w-5 stroke-current" />
         Find something...
         <kbd className="ml-auto text-2xs text-zinc-400 dark:text-zinc-500">
           <kbd className="font-sans">{modifierKey}</kbd>
@@ -495,7 +496,7 @@ export function MobileSearch() {
         aria-label="Find something..."
         {...buttonProps}
       >
-        <SearchIcon className="h-5 w-5 stroke-zinc-900 dark:stroke-white" />
+        <IconSearch className="h-5 w-5 stroke-zinc-900 dark:stroke-white" />
       </button>
       <Suspense fallback={null}>
         <SearchDialog className="lg:hidden" {...dialogProps} />

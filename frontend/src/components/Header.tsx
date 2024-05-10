@@ -50,7 +50,7 @@ export const Header = forwardRef<
       ref={ref}
       className={clsx(
         className,
-        'fixed inset-x-0 top-0 z-50 flex h-14 items-center justify-between gap-12 px-4 transition sm:px-6',
+        'fixed inset-x-3 top-0 z-50 flex h-14 items-center justify-between gap-12 px-4 transition sm:px-6',
         !isInsideMobileNavigation && 'backdrop-blur-sm dark:backdrop-blur',
         isInsideMobileNavigation
           ? 'bg-white dark:bg-zinc-900'
@@ -78,7 +78,6 @@ export const Header = forwardRef<
       <Search />
 
       <div className="flex items-center gap-5 lg:hidden">
-        <MobileNavigation />
         <Link href="/" aria-label="Home">
           <Logo className="h-6" />
         </Link>
@@ -87,13 +86,14 @@ export const Header = forwardRef<
         <nav className="hidden md:block">
           <ul role="list" className="flex items-center gap-8">
             <TopLevelNavItem href="/courses">Courses</TopLevelNavItem>
-            <TopLevelNavItem href="#">Documentation</TopLevelNavItem>
-            <TopLevelNavItem href="#">Support</TopLevelNavItem>
+            <TopLevelNavItem href="#">Favourites</TopLevelNavItem>
           </ul>
         </nav>
         <div className="hidden md:block md:h-5 md:w-px md:bg-zinc-900/10 md:dark:bg-white/15" />
-        <div className="flex gap-4">
+        <div className="flex gap-4 lg:hidden">
           <MobileSearch />
+        </div>
+        <div className="flex gap-4">
           {user ? (
             <ProfileCard></ProfileCard>
           ) : (
