@@ -83,13 +83,127 @@ resource "aws_security_group" "unibasement_database" {
 
 
 //////////////////////////////// Frontend //////////////////////////////////////
-resource "aws_security_group" "unibasement" {
-    name = "unibasement"
+resource "docker_image" "unibasement_frontend" {
+  name         = "${aws_ecr_repository.unibasement.repository_url}:frontend_latest"
+  build {
+    context = "frontend"
+    dockerfile = "Dockerfile"
+  }
+}
+
+resource "docker_registry_image" "unibasement_frontend" {
+  name = docker_image.unibasement_frontend.name
+}
+
+resource "aws_ecs_service" "unibasement_frontend" {
+    name            = "unibasement_frontend"
+    cluster         = aws_ecs_cluster.unibasement.id
+    task_definition = aws_ecs_task_definition.unibasement_frontend.arn
+    desired_count   = 1
+    launch_type     = "FARGATE"
+  
+    network_configuration {
+      subnets             = data.aws_subnets.private.ids
+      security_groups     = [aws_security_group.unibasement_frontend.id]
+      assign_public_ip    = true
+    }
+    load_balancer {
+      target_group_arn = aws_lb_target_group.unibasement.arn
+      container_name   = "unibasement_frontend"
+      container_port   = 3000
+  }
+}
+
+variable "auth0_secret" {
+  description = "Auth0 Secret"
+}
+
+variable "auth0_issuer_base_url" {
+  description = "Auth0 Issuer Base URL"
+}
+
+variable "auth0_client_id" {
+  description = "Auth0 Client ID"
+}
+
+variable "auth0_client_secret" {
+  description = "Auth0 Client Secret"
+}
+
+resource "aws_ecs_task_definition" "unibasement_frontend" {
+    family                   = "unibasement_frontend"
+    network_mode             = "awsvpc"
+    requires_compatibilities = ["FARGATE"]
+    cpu                      = 4096
+    memory                   = 8192
+    execution_role_arn       = data.aws_iam_role.lab.arn
+  
+    container_definitions = <<DEFINITION
+  [
+    {
+      "image": "${docker_registry_image.unibasement_frontend.name}",
+      "cpu": 4096,
+      "memory": 8192,
+      "name": "unibasement_frontend",
+      "networkMode": "awsvpc",
+      "portMappings": [
+        {
+          "containerPort": 3000,
+          "hostPort": 3000
+        }
+      ],
+        "environment": [
+        {
+          "name": "NEXT_PUBLIC_API_URL",
+          "value": "http://${data.aws_network_interface.unibasement_backend_ip.association[0].public_ip}:8080"
+        },
+        {
+          "name": "AUTH0_SECRET",
+          "value": "${var.auth0_secret}"
+        },
+        {
+          "name": "AUTH0_BASE_URL",
+          "value": "http://${aws_lb.unibasement.dns_name}:3000/"
+        },
+        {
+          "name": "AUTH0_ISSUER_BASE_URL",
+          "value": "${var.auth0_issuer_base_url}"
+        },
+        {
+          "name": "AUTH0_CLIENT_ID",
+          "value": "${var.auth0_client_id}"
+        },
+        {
+          "name": "AUTH0_CLIENT_SECRET",
+          "value": "${var.auth0_client_secret}"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/unibasement/unibasement_frontend",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "ecs",
+          "awslogs-create-group": "true"
+        }
+      }
+    }
+  ]
+  DEFINITION
+}
+
+#TODO pass in auth0 variables into the above. 
+
+
+#TODO need scalability stuff for front, back db ?
+
+resource "aws_security_group" "unibasement_frontend" {
+    name = "unibasement_frontend"
     description = "unibasement Security Group"
   
     ingress {
-      from_port = 8080
-      to_port = 8080
+      from_port = 3000
+      to_port = 3000
       protocol = "tcp"
       cidr_blocks = ["0.0.0.0/0"]
     }
@@ -111,14 +225,13 @@ resource "aws_security_group" "unibasement" {
 
 
 
+
 //////////////////////////////// Frontend //////////////////////////////////////
-
-
 
 
 //////////////////////////////// Backend ///////////////////////////////////////
 resource "docker_image" "unibasement_backend" {
-  name         = "${aws_ecr_repository.unibasement_backend.repository_url}:latest"
+  name         = "${aws_ecr_repository.unibasement.repository_url}:backend_latest"
   build {
     context = "backend"
     dockerfile = "Dockerfile"
@@ -136,12 +249,29 @@ resource "aws_ecs_service" "unibasement_backend" {
   task_definition = aws_ecs_task_definition.unibasement_backend.arn
   desired_count   = 1
   launch_type     = "FARGATE"
+  enable_ecs_managed_tags = true
+  wait_for_steady_state = true
 
   network_configuration {
     subnets             = data.aws_subnets.private.ids
-    security_groups     = [aws_security_group.unibasement.id]
+    security_groups     = [aws_security_group.unibasement_backend.id]
     assign_public_ip    = true
   }
+}
+
+data "aws_network_interfaces" "unibasement_backend_ip" {
+  tags = {
+    "aws:ecs:serviceName" = aws_ecs_service.unibasement_backend.name
+  }
+}
+
+data "aws_network_interface" "unibasement_backend_ip" {
+  depends_on = [ aws_ecs_service.unibasement_backend ]
+  id = data.aws_network_interfaces.unibasement_backend_ip.ids[0]
+}
+
+output "thebackendip" {
+  value = data.aws_network_interface.unibasement_backend_ip.association[0].public_ip
 }
 
 
@@ -164,7 +294,7 @@ resource "aws_ecs_task_definition" "unibasement_backend" {
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
-          "awslogs-group": "/uniBasement/unibasement_backend",
+          "awslogs-group": "/unibasement/unibasement_backend",
           "awslogs-region": "us-east-1",
           "awslogs-stream-prefix": "ecs",
           "awslogs-create-group": "true"
@@ -196,12 +326,6 @@ resource "aws_ecs_task_definition" "unibasement_backend" {
   ]
   DEFINITION
 }
-
-
-resource "aws_ecr_repository" "unibasement_backend" {
-  name = "unibasement_backend"
-}
-
 
 resource "aws_security_group" "unibasement_backend" {
     name = "unibasement_backend"
@@ -257,4 +381,78 @@ data "aws_subnets" "private" {
         values = [data.aws_vpc.default.id]
     }
 }
+
+resource "aws_ecr_repository" "unibasement" {
+  name = "unibasement"
+}
+
+
+resource "aws_lb_target_group" "unibasement" {
+  name          = "unibasement"
+  port          = 3000
+  protocol      = "HTTP"
+  vpc_id        = aws_security_group.unibasement_frontend.vpc_id
+  target_type   = "ip"
+
+  health_check {
+    path                = "/"
+    protocol            = "HTTP"
+    port                = "3000"
+    interval            = 30
+    timeout             = 5
+    healthy_threshold   = 2
+    unhealthy_threshold = 2
+  }
+}
+
+
+resource "aws_lb" "unibasement" {
+  name               = "unibasement"
+  internal           = false
+  load_balancer_type = "application"
+  subnets            = data.aws_subnets.private.ids
+  security_groups    = [aws_security_group.unibasement_frontend.id]
+}
+
+
+resource "aws_lb_listener" "unibasement" {
+  load_balancer_arn   = aws_lb.unibasement.arn
+  port                = "3000"
+  protocol            = "HTTP"
+
+  default_action {
+    type              = "forward"
+    target_group_arn  = aws_lb_target_group.unibasement.arn
+  }
+}
+
+resource "local_file" "url" {
+    content = "http://${aws_lb.unibasement.dns_name}:3000/" # TODO figure out
+    filename = "./unibasement.txt"
+}
+
+
+#TODO some sort of auth0 setup at somepoint in the future lmao need to get from the workflow env variables.
+# variable "AUTH0_SECRET" {
+#   type = string
+# }
+
+# variable "AUTH0_BASE_URL" {
+#   type = string
+# }
+
+# variable "AUTH0_ISSUER_BASE_URL" {
+#   type = string
+# }
+
+# variable "AUTH0_CLIENT_ID" {
+#   type = string
+# }
+
+# variable "AUTH0_CLIENT_SECRET" {
+#   type = string
+# }
+
+
+
 ////////////////////////////// Miscellaneous ///////////////////////////////////

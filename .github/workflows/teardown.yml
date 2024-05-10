@@ -6,15 +6,24 @@ on:
       awsCredentials:
         description: 'AWS Credentials'
         required: true
+      auth0Secret:
+        description: 'Auth0 Secret'
+        required: true
+      auth0IssuerBaseUrl:
+        description: 'Auth0 Issuer Base URL'
+        required: true
+      auth0ClientId:
+        description: 'Auth0 Client ID'
+        required: true
+      auth0ClientSecret:
+        description: 'Auth0 Client Secret'
+        required: true
 
 jobs:
   teardown:
-
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v3
-
     - name: Use Node.js 20.x
       uses: actions/setup-node@v3
       with:
@@ -24,4 +33,8 @@ jobs:
       run: |
         eval "${{ github.event.inputs.awsCredentials }}"
         terraform init
-        terraform destroy -auto-approve
+        terraform destroy -auto-approve \
+          -var "auth0_secret=${{ github.event.inputs.auth0Secret }}" \
+          -var "auth0_issuer_base_url=${{ github.event.inputs.auth0IssuerBaseUrl }}" \
+          -var "auth0_client_id=${{ github.event.inputs.auth0ClientId }}" \
+          -var "auth0_client_secret=${{ github.event.inputs.auth0ClientSecret }}"

@@ -1,6 +1,6 @@
 # UniBasement
 
-## [Architecture](model/ARCHITECTURE.md) | [Handshake](docs/HANDSHAKE.md) | [Database](docs/DATABASE.md) | [AI](AI.md) | [Report](report/REPORT.md) | [Proposal](https://csse6400.github.io/project-proposal-2024/s4702098/proposal.html)
+## [Architecture](model/ARCHITECTURE.md) | [Handshake](docs/HANDSHAKE.md) | [Database](docs/DATABASE.md) | [AI](AI.md) | [Report](report/REPORT.md) | [Tests](docs/TESTS.MD) | [Proposal](https://csse6400.github.io/project-proposal-2024/s4702098/proposal.html)
 
 ## Description
 
@@ -24,11 +24,14 @@ This project is brought to you by the Evan Hughes FanClub. Our team consists of:
 
 - [Shanon Lakshan Chandrasekara](https://github.com/86LAK)
 - [Jackson Trenarry](https://github.com/JTrenarry)
-- [Ibrahim Cassim](https://github.com/IbrahimCassim)
+- [Olivia Ronda](https://github.com/vilnor)
 
 ### DevOps
 
 - [Shanon Lakshan Chandrasekara](https://github.com/86LAK)
+
+### QUT Guy Who Has Vanished?
+- [Ibrahim Cassim](https://github.com/IbrahimCassim)
 
 ## Deployment
 
@@ -51,15 +54,26 @@ Like Deployment, a teardown of UniBasement is managed via the GitHub Actions.
 
 ### Basic Unit Testing
 
-The below unit testing covers basic functionality and is also run on commits. 
+The below unit testing covers basic functionality and these tests are also incorporated into the GitHub Actions and will run on commits. 
 1. To execute the backend tests, navigate to the `backend` directory 
 2. Execute ```npm test```.
 
 ### Integration Tests
 
-The below integration testing is a more extensive suite of tests that tests various routes and functions. 
-It can currently be run by navigating into the integration_Tests directory and running docker-compose up --build and viewing the output of the test container. The plan is to incorporate this into the workflows but for now, this is the only way. 
+The below integration testing is a more extensive suite of tests that tests various routes and functions. These tests are also incorporated into the GitHub Actions and will run on commits. 
+The tests can be run by executing tests.sh inside integration_tests.
 
 1. Navigate to integration_tests
-2. Run ```docker-compose up --build```
-3. View the output of the integration_tests container to view the test output. 
+2. Run tests.sh
+3. View the output of the integration_tests container to view the test output.
+
+OR
+1. Navigate to GitHub Actions
+2. Select tests
+3. Run  the tests by pressing RUN and selecting the branch 
+
+Please note if you run docker-compose up --build to run the tests you will need to clear the DB of existing data to get an accurate result. The easiest way is to run the script as it cleans up the environment appropriately. 
+
+### More detailed information about tests
+
+[Tests](docs/TESTS.MD)

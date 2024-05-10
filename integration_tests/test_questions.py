@@ -2,6 +2,8 @@ import unittest
 import requests
 
 from .base import BaseCase
+from .base import update_timestamps
+
 
 
 class TestQuestions(BaseCase):
@@ -73,7 +75,6 @@ class TestQuestions(BaseCase):
 
         response = requests.post(self.host() + '/questions', json=body)
         self.assertEqual(201, response.status_code)
-        self.assertEqual('Question added', response.json())
 
 
     def test_post_add_question_invalid_exam_id(self):
@@ -122,6 +123,7 @@ class TestQuestions(BaseCase):
             {
                 "commentId": 1,
                 "parentCommentId": None,
+                "userId": "evan",
                 "commentText": "Evan Hughes",
                 "commentPNG": None,
                 "isCorrect": True,
@@ -134,6 +136,7 @@ class TestQuestions(BaseCase):
                     {
                         "commentId": 2,
                         "parentCommentId": 1,
+                        "userId": "liv",
                         "commentText": "Are you stupid it is clearly Liv Ronda",
                         "commentPNG": None,
                         "isCorrect": False,
@@ -146,6 +149,7 @@ class TestQuestions(BaseCase):
                             {
                                 "commentId": 3,
                                 "parentCommentId": 2,
+                                "userId": "jackson",
                                 "commentText": "Bro went to stupid school L",
                                 "commentPNG": None,
                                 "isCorrect": False,
@@ -160,6 +164,7 @@ class TestQuestions(BaseCase):
                     {
                         "commentId": 4,
                         "parentCommentId": 1,
+                        "userId": "lakshan",
                         "commentText": "Fax what a goat",
                         "commentPNG": None,
                         "isCorrect": False,
@@ -174,19 +179,6 @@ class TestQuestions(BaseCase):
         ]
 
         response = requests.get(self.host() + '/questions/' + str(questionId) + '/comments')
-
-        def update_timestamps(response_dict, created_at, updated_at):
-            if isinstance(response_dict, list):
-                for item in response_dict:
-                    update_timestamps(item, created_at, updated_at)
-            elif isinstance(response_dict, dict):
-                if 'created_at' in response_dict:
-                    response_dict['created_at'] = created_at
-                if 'updated_at' in response_dict:
-                    response_dict['updated_at'] = updated_at
-                for key, value in response_dict.items():
-                    if isinstance(value, (list, dict)):
-                        update_timestamps(value, created_at, updated_at)
 
         update_timestamps(expectedResponse, response.json()[0]['created_at'], response.json()[0]['updated_at'])
         

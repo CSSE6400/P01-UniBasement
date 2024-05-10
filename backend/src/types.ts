@@ -2,6 +2,9 @@ export type Course = {
     courseCode: string
     courseName: string
     courseDescription: string
+    university: string
+    stars: number
+    votes: number
 }
 
 export type Exam = {
@@ -21,6 +24,7 @@ export type Question = {
 export type Comment = {
     commentId: number
     parentCommentId: number | null
+    userId: number
     commentText: string
     commentPNG: string | null
     isCorrect: boolean

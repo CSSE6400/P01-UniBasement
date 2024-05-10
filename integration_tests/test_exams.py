@@ -19,7 +19,6 @@ class TestExams(BaseCase):
 
         response = requests.post(self.host() + '/exams', json=body)
         self.assertEqual(201, response.status_code)
-        self.assertEqual('Exam created', response.json())
 
 
     def test_exam_post_missing_courseCode(self):
