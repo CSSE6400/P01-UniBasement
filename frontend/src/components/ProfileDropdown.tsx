@@ -31,11 +31,6 @@ export default function ProfileCard() {
 
   let { resolvedTheme, setTheme } = useTheme()
   let otherTheme = resolvedTheme === 'dark' ? 'light' : 'dark'
-  let [mounted, setMounted] = useState(false)
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
 
   return (
     <div className="mt-1.5 flex text-zinc-600 dark:text-zinc-400">
