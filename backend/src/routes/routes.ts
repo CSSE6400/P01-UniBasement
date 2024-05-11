@@ -474,7 +474,7 @@ router.post('/questions', async (req: Request<any, any, QuestionBodyParams>, res
     const examRepository = getConnection().getRepository(ExamDb);
     const exam = await examRepository.findOne({ where: { examId } });
     if (!exam) {
-        res.status(404).json('Exam not found');
+        res.status(404).json('ExamId not found');
         return;
     }
 
