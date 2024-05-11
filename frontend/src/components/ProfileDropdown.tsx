@@ -1,11 +1,19 @@
 'use client'
-import { IconSettings, IconLogout2, IconUser } from '@tabler/icons-react'
-import React, { useState } from 'react'
+import {
+  IconSettings,
+  IconLogout2,
+  IconUser,
+  IconSun,
+  IconMoon,
+} from '@tabler/icons-react'
+import React, { useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useUser } from '@auth0/nextjs-auth0/client'
 import { useRouter } from 'next/navigation'
-import { ThemeToggle } from '@/components/ThemeToggle'
+import { useTheme } from 'next-themes'
+import { Switch } from '@headlessui/react'
+import Avatar from './Avatar'
 
 export default function ProfileCard() {
   const [open, setOpen] = useState(false)
@@ -20,6 +28,15 @@ export default function ProfileCard() {
       setOpen(openState)
     }
   }
+
+  let { resolvedTheme, setTheme } = useTheme()
+  let otherTheme = resolvedTheme === 'dark' ? 'light' : 'dark'
+  let [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
   return (
     <div className="mt-1.5 flex text-zinc-600 dark:text-zinc-400">
       <div className="flex items-start justify-end">
@@ -33,7 +50,7 @@ export default function ProfileCard() {
             <div className="text-sm hover:text-zinc-900 dark:hover:text-white">
               <div className="cursor-pointer">{name}</div>
             </div>
-            <div className="h-6 w-6 overflow-hidden rounded-full border-2 border-gray-900 dark:border-white">
+            <div className="border-1 h-6 w-6 overflow-hidden rounded-full border-gray-900 dark:border-white">
               <Image
                 src={user?.picture ? user.picture : ''}
                 alt=""
@@ -41,15 +58,16 @@ export default function ProfileCard() {
                 height={48}
                 className="h-full w-full object-cover"
               />
+              <Avatar name={user?.name} picture={user?.picture} size={48} />
             </div>
           </div>
           {open && (
-            <div className="absolute right-0 mt-5 w-40 rounded-lg border bg-white px-5 py-3 text-zinc-600 shadow dark:border-transparent dark:bg-zinc-900 dark:text-zinc-400">
+            <div className="absolute right-0 mt-5 w-40 rounded-lg border bg-white px-5 py-3 text-zinc-600 shadow dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-400">
               <ul className="space-y-3">
                 <li className="font-medium">
                   <Link
                     href="/account"
-                    className="flex transform items-center border-r-4 border-transparent transition-colors duration-200 hover:border-purple-800"
+                    className="flex transform items-center border-r-4 border-transparent transition-colors duration-200 hover:border-emerald-400"
                   >
                     <div className="mr-3">
                       <IconUser />
@@ -57,21 +75,30 @@ export default function ProfileCard() {
                     Account
                   </Link>
                 </li>
-                <li className="font-medium">
+                {/* <li className="font-medium">
                   <Link
                     href="/settings"
-                    className="flex transform items-center border-r-4 border-transparent transition-colors duration-200 hover:border-purple-800"
+                    className="flex transform items-center border-r-4 border-transparent transition-colors duration-200 hover:border-emerald-400"
                   >
                     <div className="mr-3">
                       <IconSettings />
                     </div>
                     Settings
                   </Link>
-                </li>
+                </li> */}
                 <li>
-                  <ThemeToggle />
+                  <div
+                    className="flex transform items-center border-r-4 border-transparent transition-colors duration-200 hover:cursor-pointer hover:border-emerald-400"
+                    onClick={() => setTheme(otherTheme)}
+                  >
+                    <div className="mr-3">
+                      <IconSun className="dark:hidden" />
+                      <IconMoon className="hidden dark:block" />
+                    </div>
+                    Theme
+                  </div>
                 </li>
-                <hr className="dark:border-purple-900" />
+                <hr className="dark:border-emerald-500" />
                 <li className="font-medium">
                   <a
                     href="/api/auth/logout"

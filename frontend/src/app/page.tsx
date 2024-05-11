@@ -69,24 +69,29 @@ function Course({
       className="group relative flex rounded-2xl bg-zinc-50 transition-shadow hover:shadow-md hover:shadow-zinc-900/5 dark:bg-white/2.5 dark:hover:shadow-black/5"
     >
       <div className="absolute inset-0 rounded-2xl ring-1 ring-inset ring-zinc-900/7.5 group-hover:ring-zinc-900/10 dark:ring-white/10 dark:group-hover:ring-white/20" />
-      <div className="relative rounded-2xl px-4 pb-4 pt-8">
+      <div className="rounded-2xl px-4 pb-4 pt-8">
         <h3 className="text-sm font-semibold leading-7 text-zinc-900 dark:text-white">
-          <div className="flex justify-between">
-            <div>{course.code}</div>
-            <Button onClick={() => setPinned(!pinned)} variant="icon">
-              {pinned ? (
-                <IconPinFilled className="h-5 w-5 fill-zinc-700/10 stroke-zinc-700 transition-colors duration-300 group-hover:stroke-zinc-900 dark:fill-white/10 dark:stroke-zinc-400 dark:group-hover:fill-emerald-300/10 dark:group-hover:stroke-emerald-400" />
-              ) : (
-                <IconPin className="h-5 w-5 fill-zinc-700/10 stroke-zinc-700 transition-colors duration-300 group-hover:stroke-zinc-900 dark:fill-white/10 dark:stroke-zinc-400 dark:group-hover:fill-emerald-300/10 dark:group-hover:stroke-emerald-400" />
-              )}
-            </Button>
-          </div>
+          <div>
+            <div className="flex justify-between">
+              <div>{course.code}</div>
 
+              <Button
+                onClick={() => setPinned(!pinned)}
+                variant="icon"
+                className="absolute right-2"
+              >
+                {pinned ? (
+                  <IconPin className="h-5 w-5 fill-zinc-700/10 stroke-zinc-700 transition-colors duration-300 group-hover:stroke-zinc-900 dark:fill-white/10 dark:stroke-zinc-400 dark:group-hover:fill-emerald-300/10 dark:group-hover:stroke-emerald-400" />
+                ) : (
+                  <IconPinFilled className="h-5 w-5 fill-zinc-700/10 stroke-zinc-700 transition-colors duration-300 group-hover:stroke-zinc-900 dark:fill-white/10 dark:stroke-zinc-400 dark:group-hover:fill-emerald-300/10 dark:group-hover:stroke-emerald-400" />
+                )}
+              </Button>
+            </div>
+          </div>
           <div>{course.name}</div>
         </h3>
         <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-          <span className="absolute inset-0 rounded-2xl" />
-          {course.last_viewed_name}
+          Last Viewed: {course.last_viewed_name}
         </p>
       </div>
     </div>
@@ -171,10 +176,8 @@ export default function Home() {
           </div>
         </div>
       </div>
-      <div className="flex min-h-10 items-center justify-center py-6">
-        <div className="mx-auto w-full max-w-4xl text-2xl font-bold">
-          So jump straight in and start learning the EVAN way!
-        </div>
+      <div className="mx-auto flex min-h-10 w-full max-w-4xl py-6 text-2xl font-bold">
+        So jump straight in and start learning the EVAN way!
       </div>
     </main>
   )
