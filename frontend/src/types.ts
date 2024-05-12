@@ -29,6 +29,7 @@ export type Comment = {
     downvotes: number
     created_at: string
     updated_at: string
+    userId: string
     children?: Comment[]
 }
 

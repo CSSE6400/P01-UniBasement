@@ -1,31 +1,16 @@
 import { Comment as IComment } from '@/types';
-import { IconArrowDown, IconArrowUp } from '@tabler/icons-react';
 import { useState } from 'react';
 import EditableComment from '@/components/EditableComment';
+import { useUser } from '@auth0/nextjs-auth0/client';
+import CommentForm from '@/components/CommentForm';
+import { Downvote, Upvote } from '@/components/CommentVotes';
 
-function Upvote({count, selected, onClick}: {count: number, selected: boolean, onClick: () => void}) {
-    return (
-        <div className="flex">
-            <button onClick={onClick}>
-                <IconArrowUp color={selected ? 'orange' : 'white'} />
-            </button>
-            <p>{count}</p>
-        </div>
-    )
-}
-function Downvote({count, selected, onClick}: {count: number, selected: boolean, onClick: () => void}) {
-    return (
-        <div className="flex">
-            <button onClick={onClick}>
-                <IconArrowDown color={selected ? 'red' : 'white'} />
-            </button>
-            <p>{count}</p>
-        </div>
-    )
-}
 
 export default function Comment({ comment }: { comment: IComment }) {
+    const { user } = useUser()
     const [replying, setReplying] = useState(false)
+    const [editing, setEditing] = useState(false)
+
     return (
         <div>
             <div className="flex items-stretch space-x-4">
@@ -41,12 +26,26 @@ export default function Comment({ comment }: { comment: IComment }) {
                     }}/>
                 </div>
                 <div className="min-w-0 flex-1 flex flex-col gap-3">
-                    <div className="min-h-[120px] p-4 flex flex-col justify-between rounded-lg shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-indigo-600">
-                        {comment.commentText}
-                        <button onClick={() => setReplying(true)} type="button" className="flex items-center text-sm text-gray-500 hover:underline dark:text-gray-400 font-medium">Reply</button>
-                    </div>
-                    {replying && (<EditableComment onCancel={() => setReplying(false)} onSubmit={() => {}} />)}
-                    {comment.children?.map((ch) => <Comment comment={ch} key={ch.commentId} />)}
+                    {editing ? (
+                        <CommentForm comment={comment} onCancel={() => setEditing(false)} onSubmit={() => {
+                    }} />
+                    ) : (
+                        <div
+                            className="min-h-[120px] p-4 flex flex-col justify-between rounded-lg shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-indigo-600">
+                            {comment.commentText}
+                            <div className="flex flex-row gap-3">
+                                <button onClick={() => setReplying(true)} type="button"
+                                        className="flex items-center text-sm text-gray-500 hover:underline dark:text-gray-400 font-medium">Reply
+                                </button>
+                                {(comment.userId === user?.sub) && (<button onClick={() => setEditing(true)} type="button"
+                                                                          className="flex items-center text-sm text-gray-500 hover:underline dark:text-gray-400 font-medium">Edit
+                                </button>)}
+                            </div>
+                        </div>
+                    )}
+                    {replying && (<EditableComment onCancel={() => setReplying(false)} onSubmit={() => {
+                    }}/>)}
+                    {comment.children?.map((ch) => <Comment comment={ch} key={ch.commentId}/>)}
                 </div>
             </div>
         </div>
