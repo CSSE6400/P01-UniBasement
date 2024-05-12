@@ -2,6 +2,10 @@ export type Course = {
     courseCode: string
     courseName: string
     courseDescription: string
+    university: string
+    stars: number
+    votes: number
+
 }
 
 export type Exam = {
