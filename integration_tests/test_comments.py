@@ -356,196 +356,254 @@ class TestComments(BaseCase):
         commentId = 86868686
 
         response = requests.patch(self.host() + '/comments/' + str(commentId) + '/unendorse')
+        
+        # Verify response from API
         self.assertEqual(404, response.status_code)
         self.assertEqual('Comment not found', response.json())
 
 
-    # def test_patch_downvotes_comment(self):
-    #     """
-    #     Checks for a 200 response from the /comments endpoint
-    #     Checks for the correct response message
-    #     """
-    #     commentId = 18
-    #     body = {
-    #         "userId": "evan"
-    #     }
+    def test_patch_downvotes_comment(self):
+        """
+        Checks for a 200 response from the /comments/:commentId/downvote endpoint
+        Checks for the correct response message
+        """
+        body = {
+            "userId": self.USER_ID
+        }
 
-    #     response = requests.patch(self.host() + '/comments/' + str(commentId) + '/downvote', json=body)
-    #     self.assertEqual(200, response.status_code)
-    #     self.assertEqual('Comment downvoted', response.json())
-
-
-    # def test_patch_downvotes_comment_invalid_id(self):
-    #     """
-    #     Checks for a 404 response from the /comments endpoint
-    #     Checks for the correct response message
-    #     """
-    #     commentId = 86868686
-    #     body = {
-    #         "userId": "evan"
-    #     }
-
-    #     response = requests.patch(self.host() + '/comments/' + str(commentId) + '/downvote', json=body)
-    #     self.assertEqual(404, response.status_code)
-    #     self.assertEqual('Comment not found', response.json())
-
-
-    # def test_patch_upvotes_comment(self):
-    #     """
-    #     Checks for a 200 response from the /comments endpoint
-    #     Checks for the correct response message
-    #     """
-    #     commentId = 19
-    #     body = {
-    #         "userId": "evan"
-    #     }
-
-    #     response = requests.patch(self.host() + '/comments/' + str(commentId) + '/upvote', json=body)
-    #     self.assertEqual(200, response.status_code)
-    #     self.assertEqual('Comment upvoted', response.json())
-
-
-    # def test_patch_upvotes_comment_invalid_id(self):
-    #     """
-    #     Checks for a 404 response from the /comments endpoint
-    #     Checks for the correct response message
-    #     """
-    #     commentId = 86868686
-    #     body = {
-    #         "userId": "evan"
-    #     }
-
-    #     response = requests.patch(self.host() + '/comments/' + str(commentId) + '/upvote', json=body)
-    #     self.assertEqual(404, response.status_code)
-    #     self.assertEqual('Comment not found', response.json())
-
-    # def test_post_comment_success(self):
-    #     """
-    #     Checks for a 201 response from the /comments endpoint
-    #     Checks for the correct response message
-    #     """
-    #     body = {
-    #         "questionId": 13,
-    #         "parentCommentId": 0,
-    #         "userId": "evan",
-    #         "commentText": "This is a comment",
-    #         "commentPNG": None,
-    #         "isCorrect": False,
-    #         "isEndorsed": False,
-    #         "upvotes": 0,
-    #         "downvotes": 0
-    #     }
+        response = requests.patch(self.host() + '/comments/' + str(self.commentId) + '/downvote', json=body)
         
-    #     response = requests.post(self.host() + '/comments', json=body)
-    #     self.assertEqual(201, response.status_code)
-
-    # def test_post_comment_invalid_question_id(self):
-    #     """
-    #     Checks for a 404 response from the /comments endpoint
-    #     Checks for the correct response message
-    #     """
-    #     body = {
-    #         "questionId": 868686,
-    #         "parentCommentId": 0,
-    #         "userId": "evan",
-    #         "commentText": "This is a comment",
-    #         "commentPNG": None,
-    #         "isCorrect": False,
-    #         "isEndorsed": False,
-    #         "upvotes": 0,
-    #         "downvotes": 0
-    #     }
-
-    #     response = requests.post(self.host() + '/comments', json=body)
-    #     self.assertEqual(404, response.status_code)
-    #     self.assertEqual('Question not found', response.json())
-
-
-    # def test_post_comment_no_question_id(self):
-    #     """
-    #     Checks for a 400 response from the /comments endpoint
-    #     Checks for the correct response message
-    #     """
-    #     body = {
-    #         "questionId": None,
-    #         "parentCommentId": 0,
-    #         "userId": "evan",
-    #         "commentText": "This is a comment",
-    #         "commentPNG": None,
-    #         "isCorrect": False,
-    #         "isEndorsed": False,
-    #         "upvotes": 0,
-    #         "downvotes": 0
-    #     }
-
-    #     response = requests.post(self.host() + '/comments', json=body)
-    #     self.assertEqual(400, response.status_code)
-    #     self.assertEqual('Missing questionId or userId', response.json())
-
-
-    # def test_post_comment_no_comment_text_or_png(self):
-    #     """
-    #     Checks for a 400 response from the /comments endpoint
-    #     Checks for the correct response message
-    #     """
-    #     body = {
-    #         "questionId": 13,
-    #         "parentCommentId": 0,
-    #         "userId": "evan",
-    #         "commentText": None,
-    #         "commentPNG": None,
-    #         "isCorrect": False,
-    #         "isEndorsed": False,
-    #         "upvotes": 0,
-    #         "downvotes": 0
-    #     }
-
-    #     response = requests.post(self.host() + '/comments', json=body)
-    #     self.assertEqual(400, response.status_code)
-    #     self.assertEqual('Missing commentText or commentPNG', response.json())
-
-
-    # def test_post_comment_nested_comment(self):
-    #     """
-    #     Checks for a 201 response from the /comments endpoint
-    #     Checks for the correct response message
-    #     """
-    #     body = {
-    #         "questionId": 14,
-    #         "parentCommentId": 21,
-    #         "userId": "evan",
-    #         "commentText": "This is a nested comment",
-    #         "commentPNG": None,
-    #         "isCorrect": False,
-    #         "isEndorsed": False,
-    #         "upvotes": 0,
-    #         "downvotes": 0
-    #     }
+        # Verify response from API
+        self.assertEqual(200, response.status_code)
+        self.assertEqual('Comment downvoted', response.json())
         
-    #     response = requests.post(self.host() + '/comments', json=body)
-    #     self.assertEqual(201, response.status_code)
+        # Verify database changes
+        comment = self.session.query(self.Comment).filter_by(commentId=self.commentId).first()
+        self.session.refresh(comment)
+        self.assertEqual(1, comment.downvotes)
 
 
-    # def test_post_comment_nested_invalid_parentID(self):
-    #     """
-    #     Checks for a 404 response from the /comments endpoint
-    #     Checks for the correct response message
-    #     """
-    #     body = {
-    #         "questionId": 14,
-    #         "parentCommentId": 868686,
-    #         "userId": "evan",
-    #         "commentText": "This is a nested comment",
-    #         "commentPNG": None,
-    #         "isCorrect": False,
-    #         "isEndorsed": False,
-    #         "upvotes": 0,
-    #         "downvotes": 0
-    #     }
+    def test_patch_downvotes_comment_invalid_id(self):
+        """
+        Checks for a 404 response from the /comments/:commentId/downvote endpoint
+        Checks for the correct response message
+        """
+        commentId = 86868686
+        body = {
+            "userId": self.USER_ID
+        }
 
-    #     response = requests.post(self.host() + '/comments', json=body)
-    #     self.assertEqual(404, response.status_code)
-    #     self.assertEqual('Parent comment not found', response.json())
+        response = requests.patch(self.host() + '/comments/' + str(commentId) + '/downvote', json=body)
+        
+        # Verify response from API
+        self.assertEqual(404, response.status_code)
+        self.assertEqual('Comment not found', response.json())
+
+
+    def test_patch_upvotes_comment(self):
+        """
+        Checks for a 200 response from the /comments/:commentId/upvote endpoint
+        Checks for the correct response message
+        """
+        body = {
+            "userId": self.USER_ID
+        }
+
+        response = requests.patch(self.host() + '/comments/' + str(self.commentId) + '/upvote', json=body)
+        
+        # Verify response from API
+        self.assertEqual(200, response.status_code)
+        self.assertEqual('Comment upvoted', response.json())
+        
+        # Verify database changes
+        comment = self.session.query(self.Comment).filter_by(commentId=self.commentId).first()
+        self.session.refresh(comment)
+        self.assertEqual(1, comment.upvotes)
+
+
+    def test_patch_upvotes_comment_invalid_id(self):
+        """
+        Checks for a 404 response from the /comments/:commentId/upvote endpoint
+        Checks for the correct response message
+        """
+        commentId = 86868686
+        body = {
+            "userId": self.USER_ID
+        }
+
+        response = requests.patch(self.host() + '/comments/' + str(commentId) + '/upvote', json=body)
+        
+        # Verify response from API
+        self.assertEqual(404, response.status_code)
+        self.assertEqual('Comment not found', response.json())
+
+    def test_post_comment_success(self):
+        """
+        Checks for a 201 response from the /comments endpoint
+        Checks for the correct response message
+        """
+        body = {
+            "questionId": self.questionId,
+            "parentCommentId": None,
+            "userId": self.USER_ID,
+            "commentText": self.COMMENT_TEXT,
+            "commentPNG": self.COMMENT_PNG,
+            "isCorrect": False,
+            "isEndorsed": False,
+            "upvotes": 0,
+            "downvotes": 0
+        }
+        
+        response = requests.post(self.host() + '/comments', json=body)
+        
+        # Verify response from API
+        self.assertEqual(201, response.status_code)
+        
+        # Verify database changes
+        comment = self.session.query(self.Comment).filter_by(commentText=self.COMMENT_TEXT).first()
+        self.session.refresh(comment)
+        self.assertEqual(self.questionId, comment.questionIdQuestionId)
+        self.assertEqual(None, comment.parentCommentId)
+        self.assertEqual(self.USER_ID, comment.userId)
+        self.assertEqual(self.COMMENT_TEXT, comment.commentText)
+        self.assertEqual(self.COMMENT_PNG, comment.commentPNG)
+        self.assertEqual(False, comment.isCorrect)
+        self.assertEqual(False, comment.isEndorsed)
+        self.assertEqual(0, comment.upvotes)
+        self.assertEqual(0, comment.downvotes)
+        
+
+    def test_post_comment_invalid_question_id(self):
+        """
+        Checks for a 404 response from the /comments endpoint
+        Checks for the correct response message
+        """
+        body = {
+            "questionId": 868686,
+            "parentCommentId": 0,
+            "userId": "evan",
+            "commentText": "This is a comment",
+            "commentPNG": None,
+            "isCorrect": False,
+            "isEndorsed": False,
+            "upvotes": 0,
+            "downvotes": 0
+        }
+
+        response = requests.post(self.host() + '/comments', json=body)
+        
+        # Verify response from API
+        self.assertEqual(404, response.status_code)
+        self.assertEqual('Question not found', response.json())
+
+
+    def test_post_comment_no_question_id(self):
+        """
+        Checks for a 400 response from the /comments endpoint
+        Checks for the correct response message
+        """
+        body = {
+            "questionId": None,
+            "parentCommentId": 0,
+            "userId": self.USER_ID,
+            "commentText": "This is a comment",
+            "commentPNG": None,
+            "isCorrect": False,
+            "isEndorsed": False,
+            "upvotes": 0,
+            "downvotes": 0
+        }
+
+        response = requests.post(self.host() + '/comments', json=body)
+        
+        # Verify response from API
+        self.assertEqual(400, response.status_code)
+        self.assertEqual('Missing questionId or userId', response.json())
+
+
+    def test_post_comment_no_comment_text_or_png(self):
+        """
+        Checks for a 400 response from the /comments endpoint
+        Checks for the correct response message
+        """
+        body = {
+            "questionId": self.questionId,
+            "parentCommentId": 0,
+            "userId": self.USER_ID,
+            "commentText": None,
+            "commentPNG": None,
+            "isCorrect": False,
+            "isEndorsed": False,
+            "upvotes": 0,
+            "downvotes": 0
+        }
+
+        response = requests.post(self.host() + '/comments', json=body)
+        
+        # Verify response from API
+        self.assertEqual(400, response.status_code)
+        self.assertEqual('Missing commentText or commentPNG', response.json())
+
+
+    def test_post_comment_nested_comment(self):
+        """
+        Checks for a 201 response from the /comments endpoint
+        Checks for the correct response message
+        """
+        body = {
+            "questionId": self.questionId,
+            "parentCommentId": self.commentId,
+            "userId": self.USER_ID,
+            "commentText": "This is a nested comment",
+            "commentPNG": None,
+            "isCorrect": False,
+            "isEndorsed": False,
+            "upvotes": 0,
+            "downvotes": 0
+        }
+        
+        response = requests.post(self.host() + '/comments', json=body)
+        
+        # Verify response from API
+        self.assertEqual(201, response.status_code)
+        
+        # Verify database changes
+        comment = self.session.query(self.Comment).filter_by(commentText='This is a nested comment').first()
+        self.session.refresh(comment)
+        self.assertEqual(self.questionId, comment.questionIdQuestionId)
+        self.assertEqual(self.commentId, comment.parentCommentId)
+        self.assertEqual(self.USER_ID, comment.userId)
+        self.assertEqual('This is a nested comment', comment.commentText)
+        self.assertEqual(None, comment.commentPNG)
+        self.assertEqual(False, comment.isCorrect)
+        self.assertEqual(False, comment.isEndorsed)
+        self.assertEqual(0, comment.upvotes)
+        self.assertEqual(0, comment.downvotes)
+        
+
+
+    def test_post_comment_nested_invalid_parentID(self):
+        """
+        Checks for a 404 response from the /comments endpoint
+        Checks for the correct response message
+        """
+        body = {
+            "questionId": self.questionId,
+            "parentCommentId": 868686,
+            "userId": self.USER_ID,
+            "commentText": "This is a nested comment",
+            "commentPNG": None,
+            "isCorrect": False,
+            "isEndorsed": False,
+            "upvotes": 0,
+            "downvotes": 0
+        }
+
+        response = requests.post(self.host() + '/comments', json=body)
+        
+        # Verify response from API
+        self.assertEqual(404, response.status_code)
+        self.assertEqual('Parent comment not found', response.json())
 
 
     # def test_post_comment_nested_parentId_not_from_same_question(self):
