@@ -48,7 +48,7 @@ export async function getExamQuestions(req: Request<ExamRouteParams, any, any>, 
    const { examId } = req.params;
 
     const questionRepository = getConnection().getRepository(QuestionDb);
-    const questions = await questionRepository.find({ where: { examId } });
+    const questions = await questionRepository.findOne({ where: { examId } });
 
     if (!questions) {
         res.status(404).json('Questions not found');
