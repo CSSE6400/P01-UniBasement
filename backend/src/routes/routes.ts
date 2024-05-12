@@ -25,18 +25,40 @@ import { Question as QuestionDb } from '../db/Questions';
 import { Comment as CommentDb } from '../db/Comments';
 import {
     starCourse,
+    postCourse,
+    getCourseExams,
+    getCourseInfo,
+    getCourses,
 } from './courses';
 
 import {
+    editComments,
+    deleteComments,
+    correctComments,
+    incorrectComments,
+    endorseComments,
+    unendorseComments,
+    downvoteComments,
+    upvoteComments,
+    postComment,
+    getComment,
 } from './comments';
 
 import {
+    postExam,
+    getExamQuestions,
+    getExamInfo,
 } from './exams';
 
 import {
+    postQuestion,
+    editQuestion,
+    getQuestionComments,
+    getQuestion,
 } from './questions';
 
 import {
+    postUser,
 } from './users';
 
 import { nest, single_nest } from './helpful_friends';
@@ -57,82 +79,10 @@ export const router = Router();
  */
 
 // Edits a question
-router.put('/questions/:questionId/edit', async (req: Request<QuestionRouteParams, any, QuestionBodyParams>, res: Response) => {
-    const { questionId } = req.params;
-    const { questionText, questionType, questionPNG } = req.body;
-
-    if (!questionText && !questionType && !questionPNG) {
-        res.status(400).json('No changes made');
-        return;
-    }
-
-    const questionRepository = getConnection().getRepository(QuestionDb);
-    const question = await questionRepository.findOne({ where: { questionId } });
-
-    if (!question) {
-        res.status(404).json('Question not found');
-        return;
-    }
-
-    if (questionText) {
-        question.questionText = questionText;
-    }
-
-    if (questionType) {
-        question.questionType = questionType;
-    }
-
-    if (questionPNG) {
-        question.questionPNG = questionPNG;
-    }
-
-    question.updated_at = new Date();
-    await questionRepository.update(question.questionId, question);
-
-    res.status(200).json('Question edited');
-});
+router.put('/questions/:questionId/edit', editQuestion);
 
 // Edits a comment
-router.put('/comments/:commentId/edit', async (req: Request<CommentRouteParams, any, CommentBodyParams>, res: Response) => {
-    const { commentId } = req.params;
-    const { commentText, commentPNG, userId } = req.body;
-
-    if (!commentId || !userId) {
-        res.status(400).json('Invalid commentId');
-        return;
-    }
-
-    if (!commentText && !commentPNG) {
-        res.status(400).json('No changes made');
-        return;
-    }
-
-    const commentRepository = getConnection().getRepository(CommentDb);
-    const comment = await commentRepository.findOne({ where: { commentId } });
-
-    if (!comment) {
-        res.status(404).json('Comment not found');
-        return;
-    }
-
-    if (comment.userId !== userId) {
-        res.status(401).json('Unauthorized');
-        return;
-    }
-
-    if (commentText) {
-        comment.commentText = commentText;
-    }
-
-    if (commentPNG) {
-        comment.commentPNG = commentPNG;
-    }
-
-    comment.updated_at = new Date();
-    await commentRepository.update(comment.commentId, comment);
-
-    res.status(200).json('Comment edited');
-});
+router.put('/comments/:commentId/edit', editComments);
 
 /*
  * Patches
@@ -146,178 +96,25 @@ router.put('/comments/:commentId/edit', async (req: Request<CommentRouteParams, 
 router.patch('/courses/:courseCode/star', starCourse);
 
 // Deletes a comment
-router.patch('/comments/:commentId/delete', async (req: Request<CommentRouteParams>, res: Response) => {
-    const { commentId } = req.params;
-    const { userId } = req.body;
-
-    const commentRepository = getConnection().getRepository(CommentDb);
-    const comment = await commentRepository.findOne({ where: { commentId } });
-
-    if (!comment) {
-        res.status(404).json('Comment not found');
-        return;
-    }
-
-    if (comment.userId !== userId) {
-        res.status(401).json('Unauthorized');
-        return;
-    }
-
-    comment.commentText = "Deleted";
-    comment.commentPNG = "Deleted";
-    comment.isCorrect = false;
-    comment.isEndorsed = false;
-    comment.upvotes = 0;
-    comment.downvotes = 0;
-    commentRepository.update(comment.commentId, comment);
-
-    res.status(200).json('Comment deleted');
-});
+router.patch('/comments/:commentId/delete', deleteComments);
 
 // Sets a comment as correct
-router.patch('/comments/:commentId/correct', async (req: Request<CommentRouteParams>, res: Response) => {
-    const { commentId } = req.params;
-
-    const commentRepository = getConnection().getRepository(CommentDb);
-    const comment = await commentRepository.findOne({ where: { commentId } });
-
-    if (!comment) {
-        res.status(404).json('Comment not found');
-        return;
-    }
-
-    comment.isCorrect = true;
-    commentRepository.update(comment.commentId, comment);
-
-    res.status(200).json('Comment marked as correct');
-});
+router.patch('/comments/:commentId/correct', correctComments);
 
 // Sets a comment as incorrect
-router.patch('/comments/:commentId/incorrect', async (req: Request<CommentRouteParams>, res: Response) => {
-    const { commentId } = req.params;
-
-    const commentRepository = getConnection().getRepository(CommentDb);
-    const comment = await commentRepository.findOne({ where: { commentId } });
-
-    if (!comment) {
-        res.status(404).json('Comment not found');
-        return;
-    }
-
-    comment.isCorrect = false;
-    commentRepository.update(comment.commentId, comment);
-
-    res.status(200).json('Comment marked as incorrect');
-});
+router.patch('/comments/:commentId/incorrect', incorrectComments);
 
 // Endorses a comment
-router.patch('/comments/:commentId/endorse', async (req: Request<CommentRouteParams>, res: Response) => {
-    const { commentId } = req.params;
-
-    const commentRepository = getConnection().getRepository(CommentDb);
-    const comment = await commentRepository.findOne({ where: { commentId } });
-
-    if (!comment) {
-        res.status(404).json('Comment not found');
-        return;
-    }
-
-    comment.isEndorsed = true;
-    commentRepository.update(comment.commentId, comment);
-
-    res.status(200).json('Comment endorsed');
-});
+router.patch('/comments/:commentId/endorse', endorseComments);
 
 // Removes endorsement from a comment
-router.patch('/comments/:commentId/unendorse', async (req: Request<CommentRouteParams>, res: Response) => {
-    const { commentId } = req.params;
-
-    const commentRepository = getConnection().getRepository(CommentDb);
-    const comment = await commentRepository.findOne({ where: { commentId } });
-
-    if (!comment) {
-        res.status(404).json('Comment not found');
-        return;
-    }
-
-    comment.isEndorsed = false;
-    commentRepository.update(comment.commentId, comment);
-
-    res.status(200).json('Comment removed endorsement');
-});
-
+router.patch('/comments/:commentId/unendorse', unendorseComments);
 
 // Downvotes a comment
-router.patch('/comments/:commentId/downvote', async (req: Request<CommentRouteParams>, res: Response) => {
-    const { commentId } = req.params;
-    const { userId } = req.body;
-
-    const userRows = getConnection().getRepository(UserDb);
-    const user = await userRows.findOne({ where: { userId } });
-
-    if (!user) {
-        res.status(400).json('User does not exist');
-        return;
-    }
-
-    // check to see if has been upvoted
-    if (user.downvoted.includes(commentId)) {
-        res.status(400).json('Already downvoted');
-        return;
-    }
-
-    const commentRows = getConnection().getRepository(CommentDb);
-    const comment = await commentRows.findOne({ where: { commentId } });
-
-    if (!comment) {
-        res.status(404).json('Comment not found');
-        return;
-    }
-
-    comment.downvotes += 1;
-    commentRows.update(comment.commentId, comment);
-
-    user.downvoted.push(commentId);
-    userRows.update(user.userId, user);
-
-    res.status(200).json('Comment downvoted');
-});
+router.patch('/comments/:commentId/downvote', downvoteComments);
 
 // Upvotes a comment
-router.patch('/comments/:commentId/upvote', async (req: Request<CommentRouteParams>, res: Response) => {
-    const { commentId } = req.params;
-    const { userId } = req.body;
-
-    const userRows = getConnection().getRepository(UserDb);
-    const user = await userRows.findOne({ where: { userId } });
-
-    if (!user) {
-        res.status(400).json('User does not exist');
-        return;
-    }
-
-    // check to see if has been downvoted
-    if (user.upvoted.includes(commentId)) {
-        res.status(400).json('Already upvoted');
-        return;
-    }
-
-    const commentRows = getConnection().getRepository(CommentDb);
-    const comment = await commentRows.findOne({ where: { commentId} });
-
-    if (!comment) {
-        res.status(404).json('Comment not found');
-        return;
-    }
-
-    comment.upvotes += 1;
-    commentRows.update(comment.commentId, comment);
-
-    user.upvoted.push(commentId);
-    userRows.update(user.userId, user);
-
-    res.status(200).json('Comment upvoted');
-});
+router.patch('/comments/:commentId/upvote', upvoteComments);
 
 /*
  * Post Requests below
@@ -328,175 +125,16 @@ router.patch('/comments/:commentId/upvote', async (req: Request<CommentRoutePara
  */
 
 // Adds a new user to the database
-router.post('/users', async (req: Request<any, any, any, any>, res: Response) => {
-    const { userId } = req.body;
-
-    if (!userId) {
-        res.status(400).json('Missing userId');
-        return;
-    }
-    
-    const userRepository = getConnection().getRepository(UserDb);
-    
-    // Check for user
-    const user = await userRepository.findOne({where: { userId } });
-    if (user) {
-        res.status(409).json('User already exists');
-        return;
-    }
-
-    // Add user
-    const newUser = new UserDb();
-    newUser.userId = userId;
-    await userRepository.save(newUser);
-
-    res.status(201).json('User Added');
-});
+router.post('/users', postUser);
 
 // Adds a new comment to the database
-router.post('/comments', async (req: Request<any, any, CommentBodyParams>, res: Response) => {
-    const {
-        userId,
-        questionId,
-        parentCommentId,
-        commentText,
-        commentPNG,
-    } = req.body;
-
-    // Check key
-    if (!questionId || !userId) {
-        res.status(400).json('Missing questionId or userId');
-        return;
-    }
-
-    if (!commentText && !commentPNG) {
-        res.status(400).json('Missing commentText or commentPNG');
-        return;
-    }
-
-    // Check question id
-    const questionRepository = getConnection().getRepository(QuestionDb);
-    const question = await questionRepository.findOne({ where: { questionId } });
-    if (!question) {
-        res.status(404).json('Question not found');
-        return;
-    }
-
-    const commentRepository = getConnection().getRepository(CommentDb);
-
-    // Check parent id
-    if (parentCommentId) {
-        const parentComment = await commentRepository.findOne({ where: { commentId: parentCommentId } });
-        if (!parentComment) {
-            res.status(404).json('Parent comment not found');
-            return;
-        }
-        if (parentComment.questionId !== questionId) {
-            res.status(400).json('Parent comment is not from the same question');
-            return;
-        }
-    }
-    // Query the database and get the id of the new comment
-    const newComment = new CommentDb();
-    newComment.userId = userId;
-    newComment.questionId = questionId;
-    
-    if (parentCommentId) {
-        newComment.parentCommentId = parentCommentId;
-    }
-    
-    if (commentText) {
-        newComment.commentText = commentText;
-    }
-    
-    if (commentPNG) {
-        newComment.commentPNG = commentPNG;
-    }
-    const savedComment = await commentRepository.save(newComment);
-
-    res.status(201).json({ commentId: savedComment.commentId });
-});
+router.post('/comments', postComment);
 
 // Adds a new question to the database
-router.post('/questions', async (req: Request<any, any, QuestionBodyParams>, res: Response) => {
-    const {
-        examId,
-        questionText,
-        questionType,
-        questionPNG,
-    } = req.body;
-
-    // Check key
-    if (!examId) {
-        res.status(400).json('Missing examId');
-        return;
-    }
-
-    if (!questionType) {
-        res.status(400).json('Missing questionType');
-        return;
-    }
-
-    // Check exam id
-    const examRepository = getConnection().getRepository(ExamDb);
-    const exam = await examRepository.findOne({ where: { examId } });
-    if (!exam) {
-        res.status(404).json('ExamId not found');
-        return;
-    }
-
-    const questionRepository = getConnection().getRepository(QuestionDb);
-
-    const newQuestion = new QuestionDb();
-    newQuestion.examId = examId;
-    
-    if (questionText) {
-        newQuestion.questionText = questionText;
-    }
-
-    if (questionPNG) {
-        newQuestion.questionPNG = questionPNG;
-    }
-    newQuestion.questionType = questionType;
-    const savedQuestion = await questionRepository.save(newQuestion);
-
-    res.status(201).json({ questionId: savedQuestion.questionId});
-});
+router.post('/questions', postQuestion);
 
 // Adds a new exam to the database
-router.post('/exams', async (req: Request<any, any, ExamBodyParams>, res: Response) => {
-    const {
-        examYear,
-        examSemester,
-        examType,
-        courseCode,
-    } = req.body;
-
-    // Check key
-    if (!courseCode || !examYear || !examSemester || !examType) {
-        res.status(400).json('Missing courseCode, examYear, examSemester, or examType');
-        return;
-    }
-
-    // Check course code
-    const courseRepository = getConnection().getRepository(CourseDb);
-    const course = await courseRepository.findOne({ where: { courseCode } });
-    if (!course) {
-        res.status(404).json('Course not found');
-        return;
-    }
-
-    const examRepository = getConnection().getRepository(ExamDb);
-    
-    const newExam = new ExamDb();
-    newExam.examYear = examYear;
-    newExam.examSemester = examSemester;
-    newExam.examType = examType;
-    newExam.courseCode = courseCode;
-    const savedExam = await examRepository.save(newExam);
-
-    res.status(201).json({ examId: savedExam.examId });
-});
+router.post('/exams', postExam);
 
 // Adds a new Course to the database
 router.post('/courses', postCourse);
@@ -510,84 +148,21 @@ router.post('/courses', postCourse);
  */
 
 // Gets comment by comment id
-router.get('/comments/:commentId', async (req: Request<CommentRouteParams>, res: Response) => {
-    const { commentId } = req.params;
-
-    const commentRepository = getConnection().getRepository(CommentDb);
-    const comment = await commentRepository.findOne({ where: { commentId } });
-
-    if (!comment) {
-        res.status(404).json('Comment not found');
-        return;
-    }
-
-    res.status(200).json(comment);
-});
+router.get('/comments/:commentId', getComment);
 
 // Gets all comments by question id
-router.get('/questions/:questionId/comments', async (req: Request<QuestionRouteParams>, res: Response) => {
-    const { questionId } = req.params;
-
-    const commentRepository = getConnection().getRepository(CommentDb);
-    const questionRepository = getConnection().getRepository(QuestionDb);
-    const questions = await questionRepository.findOne({ where: { questionId } });
-
-    if (!questions) {
-        res.status(404).json('Question not found');
-        return;
-    }
-
-    const comments = await commentRepository.find({ where: { questionId } });
-
-    res.status(200).json(nest(comments));
-});
+router.get('/questions/:questionId/comments', getQuestionComments);
 
 
 // Gets question information by question id
-router.get('/questions/:questionId', async (req: Request<QuestionRouteParams>, res: Response) => {
-    const { questionId } = req.params;
-
-    const questionRepository = getConnection().getRepository(QuestionDb);
-    const question = await questionRepository.findOne({ where: { questionId } });
-
-    if (!question) {
-        res.status(404).json('Question not found');
-        return;
-    }
-
-    res.status(200).json(question);
-});
+router.get('/questions/:questionId', getQuestion);
 
 // Exam questions by exam ID
-router.get('/exams/:examId/questions', async (req: Request<ExamRouteParams>, res: Response) => {
-    const { examId } = req.params;
-
-    const questionRepository = getConnection().getRepository(QuestionDb);
-    const questions = await questionRepository.find({ where: { examId } });
-
-    if (!questions) {
-        res.status(404).json('Questions not found');
-        return;
-    }
-
-    res.status(200).json(questions);
-});
+router.get('/exams/:examId/questions', getExamQuestions);
 
 
 // Exam by ID
-router.get('/exams/:examId', async (req: Request<ExamRouteParams>, res: Response) => {
-    const { examId } = req.params;
-
-    const examRepository = getConnection().getRepository(ExamDb);
-    const exam = await examRepository.findOne({ where: { examId } });
-
-    if (!exam) {
-        res.status(404).json('Exam not found');
-        return;
-    }
-
-    res.status(200).json(exam);
-});
+router.get('/exams/:examId', getExamInfo);
 
 // A course's exams by code
 router.get('/courses/:courseCode/exams', getCourseExams);

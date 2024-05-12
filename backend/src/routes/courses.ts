@@ -72,6 +72,7 @@ export async function starCourse(req: Request<CourseRouteParams>, res: Response)
     }
 
     await userRows.update(user.userId, user);
+    await courseRepository.update(course.courseCode, course);
 
     res.status(200).json('Course starred');
 }
