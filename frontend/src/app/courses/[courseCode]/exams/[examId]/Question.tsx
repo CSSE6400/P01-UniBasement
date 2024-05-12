@@ -4,6 +4,7 @@ import Card from '@/components/Card';
 import { Question as IQuestion } from '@/types';
 import useComments from '@/api/useComments';
 import { useMemo } from 'react';
+import Comment from '@/components/Comment';
 
 function Question({question}: { question: IQuestion }) {
     const { comments, isLoading, isError } = useComments(question.questionId);
@@ -12,7 +13,7 @@ function Question({question}: { question: IQuestion }) {
         !!comments && (
             <div>
                 {comments?.map((c) => (
-                    <div key={c.commentId}>{c.commentId} {c.commentText}</div>
+                    <Comment key={c.commentId} comment={c}/>
                 ))}
             </div>
         )

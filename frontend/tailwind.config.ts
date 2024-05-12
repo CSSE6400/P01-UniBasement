@@ -2,6 +2,7 @@ import { type Config } from 'tailwindcss'
 import typographyStyles from './typography'
 import typographyPlugin from '@tailwindcss/typography'
 import headlessuiPlugin from '@headlessui/tailwindcss'
+import forms from '@tailwindcss/forms'
 
 export default {
   content: ['./src/**/*.{js,mjs,jsx,ts,tsx,mdx}'],
@@ -42,5 +43,5 @@ export default {
       },
     },
   },
-  plugins: [typographyPlugin, headlessuiPlugin],
+  plugins: [typographyPlugin, headlessuiPlugin, forms],
 } satisfies Config
