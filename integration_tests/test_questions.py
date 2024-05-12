@@ -9,6 +9,11 @@ from .base import update_timestamps
 class TestQuestions(BaseCase):
     def setUp(self):
         self.session = self.get_db_session()
+        self.Course = self.Base.classes['course']
+        self.Exam = self.Base.classes['exam']
+        self.Question = self.Base.classes['question']
+        self.User = self.Base.classes['user']
+        self.Comment = self.Base.classes['comment']
 
         # Create course
         course_data = {
@@ -18,11 +23,8 @@ class TestQuestions(BaseCase):
             "university": "The University of Queensland"
         }
 
-        # Get the Course class
-        Course = self.Base.classes.course
-
         # Create a new course
-        newCourse = Course(**course_data)
+        newCourse = self.Course(**course_data)
 
         # Add the new course to the session
         self.session.add(newCourse)
@@ -35,14 +37,11 @@ class TestQuestions(BaseCase):
             "courseCodeCourseCode": "CSSE6400"
         }
 
-        Exam = self.Base.classes.exam
-
-        newExam = Exam(**body)
+        newExam = self.Exam(**body)
         self.session.add(newExam)
 
         # Get the id of the exam from db
-        examTable = self.Base.classes['exam']
-        self.examId = self.session.query(examTable).filter_by(
+        self.examId = self.session.query(self.Exam).filter_by(
             examYear=2024, examSemester='1', examType='Final', courseCodeCourseCode='CSSE6400').first().examId
 
         # Create a new question to be edited.
@@ -53,14 +52,11 @@ class TestQuestions(BaseCase):
             "questionPNG": None
         }
 
-        Question = self.Base.classes.question
-
-        newQuestion = Question(**body)
+        newQuestion = self.Question(**body)
         self.session.add(newQuestion)
 
         # Get the id of the question from db
-        questionTable = self.Base.classes['question']
-        self.questionId = self.session.query(questionTable).filter_by(
+        self.questionId = self.session.query(self.Question).filter_by(
             examIdExamId=self.examId, questionText='Who is the best tutor at UQ?', questionType='Multiple Choice').first().questionId
 
         # Create a new question to be edited 2
@@ -71,11 +67,11 @@ class TestQuestions(BaseCase):
             "questionPNG": None
         }
 
-        newQuestion = Question(**body)
+        newQuestion = self.Question(**body)
         self.session.add(newQuestion)
 
         # Get the id of the question from db
-        self.questionId2 = self.session.query(questionTable).filter_by(
+        self.questionId2 = self.session.query(self.Question).filter_by(
             examIdExamId=self.examId, questionText='What is the best Toyota?', questionType='Multiple Choice').first().questionId
 
         # Creates a new user
@@ -84,8 +80,7 @@ class TestQuestions(BaseCase):
             "userId": self.userId
         }
 
-        User = self.Base.classes.user
-        newUser = User(**userData)
+        newUser = self.User(**userData)
         self.session.add(newUser)
 
         # Create a new comment
@@ -95,16 +90,13 @@ class TestQuestions(BaseCase):
             "parentCommentId": None,
             "commentText": "This is a comment for the question",
             "commentPNG": None
-
         }
 
-        Comment = self.Base.classes.comment
-        newComment = Comment(**commentData)
+        newComment = self.Comment(**commentData)
         self.session.add(newComment)
 
         # # Get the id of the comment from db
-        commentTable = self.Base.classes['comment']
-        self.commentId = self.session.query(commentTable).filter_by(
+        self.commentId = self.session.query(self.Comment).filter_by(
             commentText='This is a comment for the question').first().commentId
 
         self.session.commit()
@@ -142,8 +134,7 @@ class TestQuestions(BaseCase):
         self.assertEqual('Question edited', response.json())
 
         # Verify database changes
-        questionTable = self.Base.classes['question']
-        updatedQuestion = self.session.query(questionTable).filter_by(
+        updatedQuestion = self.session.query(self.Question).filter_by(
             questionId=self.questionId).first()
         self.assertEqual(body["questionText"], updatedQuestion.questionText)
 
@@ -167,9 +158,8 @@ class TestQuestions(BaseCase):
         self.assertEqual('Question not found', response.json())
 
         # Verify no database changes
-        questionTable = self.Base.classes['question']
         updatedQuestion = self.session.query(
-            questionTable).filter_by(questionId=questionId).first()
+            self.Question).filter_by(questionId=questionId).first()
         self.assertIsNone(updatedQuestion)
 
     def test_put_edit_question_no_changes(self):
@@ -193,9 +183,8 @@ class TestQuestions(BaseCase):
         self.assertEqual('No changes made', response.json())
 
         # Verify no database changes
-        questionTable = self.Base.classes['question']
         updatedQuestion = self.session.query(
-            questionTable).filter_by(questionId=questionId).first()
+            self.Question).filter_by(questionId=questionId).first()
         self.assertIsNone(updatedQuestion)
 
     def test_post_add_question_successful(self):
@@ -216,8 +205,7 @@ class TestQuestions(BaseCase):
         questionId = response.json()['questionId']
 
         # Verify database changes
-        questionTable = self.Base.classes['question']
-        question = self.session.query(questionTable).filter_by(
+        question = self.session.query(self.Question).filter_by(
             questionId=questionId).first()
 
         expectedStoredQuestion = {
@@ -230,9 +218,9 @@ class TestQuestions(BaseCase):
             "updated_at": question.updated_at
         }
         # Convert SQLAlchemy ORM object to a dict
-        question_dict = {column.key: getattr(
+        questionDict = {column.key: getattr(
             question, column.key) for column in sqlalchemy.inspect(question).mapper.column_attrs}
-        self.assertEqual(expectedStoredQuestion, question_dict)
+        self.assertEqual(expectedStoredQuestion, questionDict)
 
     def test_post_add_question_invalid_exam_id(self):
         """
@@ -252,9 +240,8 @@ class TestQuestions(BaseCase):
         self.assertEqual('ExamId not found', response.json())
 
         # Verify no database changes
-        questionTable = self.Base.classes['question']
         updatedQuestion = self.session.query(
-            questionTable).filter(questionTable.questionText == "This question is going to an invalid examId").first()
+            self.Question).filter(self.Question.questionText == "This question is going to an invalid examId").first()
         self.assertIsNone(updatedQuestion)
 
     def test_post_add_question_no_exam_id(self):
@@ -275,9 +262,8 @@ class TestQuestions(BaseCase):
         self.assertEqual('Missing examId', response.json())
 
         # Verify no database changes
-        questionTable = self.Base.classes['question']
         updatedQuestion = self.session.query(
-            questionTable).filter(questionTable.questionText == "This question is going to an invalid examId").first()
+            self.Question).filter(self.Question.questionText == "This question is going to an invalid examId").first()
         self.assertIsNone(updatedQuestion)
 
     def test_get_comments_by_questionId(self):
@@ -286,8 +272,7 @@ class TestQuestions(BaseCase):
         Check for the correct response message
         """
         # To verify no database changes
-        commentTable = self.Base.classes['comment']
-        comment = self.session.query(commentTable)
+        comment = self.session.query(self.Comment)
 
         # Get comments for a question
         questionId = self.questionId
@@ -314,7 +299,7 @@ class TestQuestions(BaseCase):
         self.assertEqual(expectedResponse, response.json())
 
         # Verify no database changes
-        commentAfterGet = self.session.query(commentTable)
+        commentAfterGet = self.session.query(self.Comment)
         self.assertEqual(comment.count(), commentAfterGet.count())
 
     def test_get_comments_by_invalid_questionId(self):
@@ -323,8 +308,7 @@ class TestQuestions(BaseCase):
         Check for the correct response message
         """
         # To verify no database changes
-        commentTable = self.Base.classes['comment']
-        comment = self.session.query(commentTable)
+        comment = self.session.query(self.Comment)
 
         # Get comments for a question
         questionId = 3344
@@ -339,7 +323,7 @@ class TestQuestions(BaseCase):
         self.assertEqual(expectedResponse, response.json())
 
         # Verify no database changes
-        commentAfterGet = self.session.query(commentTable)
+        commentAfterGet = self.session.query(self.Comment)
         self.assertEqual(comment.count(), commentAfterGet.count())
 
     def test_get_comment_by_questionId_no_comments(self):
