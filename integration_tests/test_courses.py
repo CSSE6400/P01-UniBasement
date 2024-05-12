@@ -283,12 +283,13 @@ class TestCourse(BaseCase):
         # Verify response from API
         self.assertEqual(200, response.status_code)
         self.assertEqual('Course starred', response.json())
-
-        response = requests.get(self.host() + '/courses/' + 'CSSE6400')
-        # Verify response from API
-        self.assertEqual(200, response.status_code)
-        self.assertEqual(1, response.json()['votes'])
-        self.assertEqual(5, response.json()['stars'])
+        
+        
+        # Verify Database changes
+        course = self.session.query(self.Course).filter_by(
+            courseCode=self.COURSE_CODE).first()
+        self.session.refresh(course)
+        self.assertEqual(5, course.stars)
 
         stars = {
             "starRating": 3,
@@ -302,11 +303,11 @@ class TestCourse(BaseCase):
         self.assertEqual(200, response.status_code)
         self.assertEqual('Course starred', response.json())
 
-        response = requests.get(self.host() + '/courses/' + 'CSSE6400')
-
-        # Verify response from API
-        self.assertEqual(200, response.status_code)
-        self.assertEqual(3, response.json()['stars'])
+        # Verify Database changes
+        course = self.session.query(self.Course).filter_by(
+            courseCode=self.COURSE_CODE).first()
+        self.session.refresh(course)
+        self.assertEqual(3, course.stars)
 
 
     def test_course_patch_star_miss(self):
@@ -344,10 +345,19 @@ class TestCourse(BaseCase):
         }
 
         response = requests.patch(
-            self.host() + '/courses/' + 'STAR1001' + '/star', json=stars)
+            self.host() + '/courses/' + self.COURSE_CODE + '/star', json=stars)
+        
+        # Verify response from API
         self.assertEqual(400, response.status_code)
         self.assertEqual(
             'Star rating must be between 0 and 5', response.json())
+        
+        # Verify Database
+        course = self.session.query(self.Course).filter_by(
+            courseCode=self.COURSE_CODE).first()
+        self.session.refresh(course)
+        self.assertEqual(0, course.stars)
+        
 
         stars = {
             "starRating": -1,
@@ -355,10 +365,18 @@ class TestCourse(BaseCase):
         }
 
         response = requests.patch(
-            self.host() + '/courses/' + 'STAR1001' + '/star', json=stars)
+            self.host() + '/courses/' + self.COURSE_CODE + '/star', json=stars)
+        
+        # Verify response from API
         self.assertEqual(400, response.status_code)
         self.assertEqual(
             'Star rating must be between 0 and 5', response.json())
+        
+        # Verify Database
+        course = self.session.query(self.Course).filter_by(
+            courseCode=self.COURSE_CODE).first()
+        self.session.refresh(course)
+        self.assertEqual(0, course.stars)
 
     def test_course_patch_star_user(self):
         """
@@ -367,11 +385,11 @@ class TestCourse(BaseCase):
         """
         stars = {
             "starRating": 5,
-            "userId": "star",
+            "userId": "aRandomUserWhoDoesNotExist",
         }
 
         response = requests.patch(
-            self.host() + '/courses/' + 'STAR1001' + '/star', json=stars)
+            self.host() + '/courses/' + self.COURSE_CODE + '/star', json=stars)
         self.assertEqual(404, response.status_code)
         self.assertEqual('User not found', response.json())
 
@@ -380,21 +398,13 @@ class TestCourse(BaseCase):
         Checks for a 404 response from the /courses/:courseCode/star endpoint
         Checks for the correct response message
         """
-        user = {
-            "userId": "stary",
-        }
-
-        # Make a new user
-        response = requests.post(self.host() + '/users', json=user)
-        self.assertEqual(201, response.status_code)
-
         stars = {
             "starRating": 5,
-            "userId": "stary",
+            "userId": self.USER_ID,
         }
 
         response = requests.patch(
-            self.host() + '/courses/' + 'STAR2401' + '/star', json=stars)
+            self.host() + '/courses/' + 'NOEXISTCOURSE' + '/star', json=stars)
         self.assertEqual(404, response.status_code)
         self.assertEqual('Course not found', response.json())
 
