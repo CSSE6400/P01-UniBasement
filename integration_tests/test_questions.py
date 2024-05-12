@@ -5,7 +5,7 @@ import sqlalchemy
 from .base import BaseCase
 from .base import update_timestamps
 
-
+# TODO refactor to use the environment variables like comments
 class TestQuestions(BaseCase):
     def setUp(self):
         self.session = self.get_db_session()
@@ -85,8 +85,8 @@ class TestQuestions(BaseCase):
 
         # Create a new comment
         commentData = {
-            "userIdUserId": self.userId,
-            "questionIdQuestionId": self.questionId,
+            "userId": self.userId,
+            "questionId": self.questionId,
             "parentCommentId": None,
             "commentText": "This is a comment for the question",
             "commentPNG": None
@@ -286,7 +286,9 @@ class TestQuestions(BaseCase):
             "upvotes": 0,
             "downvotes": 0,
             "isCorrect": False,
-            "isEndorsed": False
+            "isEndorsed": False,
+            "userId": str(self.userId),
+            "questionId" : questionId
         }]
 
         response = requests.get(

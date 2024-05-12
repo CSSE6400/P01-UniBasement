@@ -22,15 +22,23 @@ export async function editComments(req: Request<CommentRouteParams, any, Comment
     }
 
     const commentRepository = getConnection().getRepository(CommentDb);
-    const comment = await commentRepository.findOne({ where: { commentId } });
+    const comment = await commentRepository.findOne({ where: { commentId }});
 
     if (!comment) {
         res.status(404).json('Comment not found');
         return;
     }
 
+    const userRows = getConnection().getRepository(UserDb);
+    const user = await userRows.findOne({ where: { userId } });
+
+    if (!user) {
+        res.status(400).json('User does not exist');
+        return;
+    }
+
     if (comment.userId !== userId) {
-        res.status(401).json('Unauthorized');
+        res.status(401).json("Unauthorized");
         return;
     }
 
@@ -71,7 +79,7 @@ export async function deleteComments(req: Request<CommentRouteParams>, res: Resp
     comment.isEndorsed = false;
     comment.upvotes = 0;
     comment.downvotes = 0;
-    commentRepository.update(comment.commentId, comment);
+    await commentRepository.update(comment.commentId, comment);
 
     res.status(200).json('Comment deleted');
 }
@@ -88,7 +96,7 @@ export async function correctComments(req: Request<CommentRouteParams>, res: Res
     }
 
     comment.isCorrect = true;
-    commentRepository.update(comment.commentId, comment);
+    await commentRepository.update(comment.commentId, comment);
 
     res.status(200).json('Comment marked as correct');
 }
@@ -105,7 +113,7 @@ export async function incorrectComments(req: Request<CommentRouteParams>, res: R
     }
 
     comment.isCorrect = false;
-    commentRepository.update(comment.commentId, comment);
+    await commentRepository.update(comment.commentId, comment);
 
     res.status(200).json('Comment marked as incorrect');
 }
@@ -122,7 +130,7 @@ export async function endorseComments(req: Request<CommentRouteParams>, res: Res
     }
 
     comment.isEndorsed = true;
-    commentRepository.update(comment.commentId, comment);
+    await commentRepository.update(comment.commentId, comment);
 
     res.status(200).json('Comment endorsed');
 }
@@ -139,7 +147,7 @@ export async function unendorseComments(req: Request<CommentRouteParams>, res: R
     }
 
     comment.isEndorsed = false;
-    commentRepository.update(comment.commentId, comment);
+    await commentRepository.update(comment.commentId, comment);
 
     res.status(200).json('Comment removed endorsement');
 }
@@ -171,10 +179,10 @@ export async function upvoteComments(req: Request<CommentRouteParams>, res: Resp
     }
 
     comment.upvotes += 1;
-    commentRows.update(comment.commentId, comment);
+    await commentRows.update(comment.commentId, comment);
 
     user.upvoted.push(commentId);
-    userRows.update(user.userId, user);
+    await userRows.update(user.userId, user);
 
     res.status(200).json('Comment upvoted');
 }
@@ -206,10 +214,10 @@ export async function downvoteComments(req: Request<CommentRouteParams>, res: Re
     }
 
     comment.downvotes += 1;
-    commentRows.update(comment.commentId, comment);
+    await commentRows.update(comment.commentId, comment);
 
     user.downvoted.push(commentId);
-    userRows.update(user.userId, user);
+    await userRows.update(user.userId, user);
 
     res.status(200).json('Comment downvoted');
 }

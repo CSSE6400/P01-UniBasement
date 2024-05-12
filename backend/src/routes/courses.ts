@@ -26,7 +26,7 @@ export async function starCourse(req: Request<CourseRouteParams>, res: Response)
     const user = await userRows.findOne({ where: { userId } });
 
     if (!user) {
-        res.status(400).json('User does not exist');
+        res.status(404).json('User not found');
         return;
     }
 
@@ -86,7 +86,7 @@ export async function postCourse(req: Request<any, any, CourseBodyParams>, res: 
     await courseRepository.save(newCourse);
 
 
-    res.status(201).json('Course Added');
+    res.status(201).json('Course added');
 }
 
 export async function getCourseExams(req: Request<CourseRouteParams>, res: Response) {
