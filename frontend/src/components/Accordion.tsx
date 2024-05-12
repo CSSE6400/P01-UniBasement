@@ -17,9 +17,7 @@ function Accordion({preview, content, forceOpen}: { preview: ReactNode, content:
                 </button>
             </h2>
             <div id="accordion-collapse-body" className={`${(open || forceOpen) ? '' : 'hidden'}`}>
-                <div className="py-5">
-                    {content}
-                </div>
+                {content}
             </div>
         </div>
 
