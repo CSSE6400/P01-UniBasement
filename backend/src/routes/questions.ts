@@ -26,7 +26,7 @@ import { Comment as CommentDb } from '../db/Comments';
 
 import { nest, single_nest } from './helpful_friends';
 
-export async function editQuestion(req: Request<QuestionRouteParams,any QuestionBodyParams>, res: Response) {
+export async function editQuestion(req: Request<QuestionRouteParams, any, QuestionBodyParams>, res: Response) {
     const { questionId } = req.params;
     const { questionText, questionType, questionPNG } = req.body;
 
@@ -106,7 +106,7 @@ export async function postQuestion(req: Request<any, any, QuestionBodyParams>, r
     res.status(201).json({ questionId: savedQuestion.questionId});
 }
 
-export async function getQuestionComments(req: Request<CommentRouteParams>, res: Response) {
+export async function getQuestionComments(req: Request<QuestionRouteParams>, res: Response) {
     const { questionId } = req.params;
 
     const commentRepository = getConnection().getRepository(CommentDb);
