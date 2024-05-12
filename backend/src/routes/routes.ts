@@ -474,7 +474,7 @@ router.post('/questions', async (req: Request<any, any, QuestionBodyParams>, res
     const examRepository = getConnection().getRepository(ExamDb);
     const exam = await examRepository.findOne({ where: { examId } });
     if (!exam) {
-        res.status(404).json('Exam not found');
+        res.status(404).json('ExamId not found');
         return;
     }
 
@@ -560,7 +560,7 @@ router.post('/courses', async (req: Request<any, any, CourseBodyParams>, res: Re
     await courseRepository.save(newCourse);
 
 
-    res.status(201).json('Course Added');
+    res.status(201).json('Course added');
 });
 
 /*
@@ -591,7 +591,14 @@ router.get('/questions/:questionId/comments', async (req: Request<QuestionRouteP
     const { questionId } = req.params;
 
     const commentRepository = getConnection().getRepository(CommentDb);
-    //TODO
+    const questionRepository = getConnection().getRepository(QuestionDb);
+    const questions = await questionRepository.findOne({ where: { questionId } });
+
+    if (!questions) {
+        res.status(404).json('Question not found');
+        return;
+    }
+
     const comments = await commentRepository.find({ where: { questionId } });
 
     res.status(200).json(nest(comments));
@@ -648,8 +655,16 @@ router.get('/exams/:examId', async (req: Request<ExamRouteParams>, res: Response
 router.get('/courses/:courseCode/exams', async (req: Request<CourseRouteParams>, res: Response) => {
     const { courseCode } = req.params;
 
+    const courseRepository = getConnection().getRepository(CourseDb);
+    const course = await courseRepository.findOne({ where: { courseCode } });
+    if (!course) {
+        res.status(404).json('Course not found');
+        return;
+    }
+
     const examRepository = getConnection().getRepository(ExamDb);
     const exams = await examRepository.find({ where: { courseCode } });
+
 
     res.status(200).json(exams);
 });
@@ -659,7 +674,7 @@ router.get('/courses/:courseCode', async (req: Request<CourseRouteParams>, res: 
     const { courseCode } = req.params;
     
     const courseRepository = getConnection().getRepository(CourseDb);  
-    const course = await courseRepository.find({ where: { courseCode } });
+    const course = await courseRepository.findOne({ where: { courseCode } });
 
     if (!course) {
         res.status(404).json('Course not found');
