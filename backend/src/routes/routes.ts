@@ -560,7 +560,7 @@ router.post('/courses', async (req: Request<any, any, CourseBodyParams>, res: Re
     await courseRepository.save(newCourse);
 
 
-    res.status(201).json('Course Added');
+    res.status(201).json('Course added');
 });
 
 /*
@@ -648,8 +648,16 @@ router.get('/exams/:examId', async (req: Request<ExamRouteParams>, res: Response
 router.get('/courses/:courseCode/exams', async (req: Request<CourseRouteParams>, res: Response) => {
     const { courseCode } = req.params;
 
+    const courseRepository = getConnection().getRepository(CourseDb);
+    const course = await courseRepository.findOne({ where: { courseCode } });
+    if (!course) {
+        res.status(404).json('Course not found');
+        return;
+    }
+
     const examRepository = getConnection().getRepository(ExamDb);
     const exams = await examRepository.find({ where: { courseCode } });
+
 
     res.status(200).json(exams);
 });
@@ -659,7 +667,7 @@ router.get('/courses/:courseCode', async (req: Request<CourseRouteParams>, res: 
     const { courseCode } = req.params;
     
     const courseRepository = getConnection().getRepository(CourseDb);  
-    const course = await courseRepository.find({ where: { courseCode } });
+    const course = await courseRepository.findOne({ where: { courseCode } });
 
     if (!course) {
         res.status(404).json('Course not found');
