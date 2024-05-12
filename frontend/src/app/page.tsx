@@ -1,7 +1,18 @@
-'use client';
-import { IconNotebook, IconPencilHeart, IconZoomCheck } from '@tabler/icons-react';
-import { useUser } from '@auth0/nextjs-auth0/client';
-import CourseCard from '@/components/CourseCard';
+'use client'
+import {
+  IconNotebook,
+  IconPencilHeart,
+  IconZoomCheck,
+} from '@tabler/icons-react'
+import { useUser } from '@auth0/nextjs-auth0/client'
+import CourseCard from '@/components/CourseCard'
+import { usePinned } from '@/api/usePins'
+import { DisplayCourse } from '@/types'
+import Image from 'next/image'
+import image from '@/images/logos/logo.png'
+import uq from '@/images/logos/uq.svg'
+import { Button } from '@/components/Button'
+import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react'
 
 function SearchIcon(props: React.ComponentPropsWithoutRef<'svg'>) {
   return (
@@ -37,27 +48,9 @@ function CourseSearch() {
   )
 }
 
-export default function Home() {
+function LoginHome() {
   const { user, error, isLoading } = useUser()
-
-  const courses = [
-    {
-      code: 'CSSE1001',
-      name: 'Introduction to Software Engineering',
-      lastViewed: 2,
-      lastViewedName: '2023 Sem 1 Final',
-      pinned: true,
-      href: '/course/2',
-    },
-    {
-      code: 'ENGG1300',
-      name: 'shit course',
-      lastViewed: 3,
-      lastViewedName: '2023 Sem 1 Final',
-      pinned: true,
-      href: '/course/2',
-    },
-  ]
+  const courses: DisplayCourse[] = usePinned()
   return (
     <main>
       <div className="px-0">
@@ -84,9 +77,11 @@ export default function Home() {
               role="list"
               className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
             >
-              {courses.map((value) => (
-                <CourseCard key={value.code} course={value} />
-              ))}
+              {courses
+                .filter((value: DisplayCourse) => value.pinned === true)
+                .map((value) => (
+                  <CourseCard key={value.code} course={value} />
+                ))}
             </ul>
           </div>
         </div>
@@ -109,15 +104,75 @@ export default function Home() {
             <div className="">
               <div className="flex items-center justify-center text-xl">
                 <IconPencilHeart size="48" />
-                <div className="ml-2">Prepare for an exam in the EVAN™️  way!</div>
+                <div className="ml-2">
+                  Prepare for an exam in the EVAN™️ way!
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
       <div className="mx-auto flex min-h-10 w-full max-w-4xl py-6 text-2xl font-bold">
-        So jump straight in and start learning the EVAN™️  way!
+        So jump straight in and start learning the EVAN™️ way!
       </div>
     </main>
   )
+}
+
+function SignupHome() {
+  return (
+    <main>
+      <div className="mx-auto max-w-4xl">
+        <div className="mt-8 items-center justify-center lg:flex">
+          <div className="">
+            <Image
+              src={image.src}
+              alt="Logo"
+              width={256}
+              height={256}
+              className="mx-auto"
+            />
+          </div>
+          <div className="max-w-96 text-center text-3xl font-bold sm:mx-auto">
+            <div className="sm:my-8">
+              Enhance your exam revision and level up with the community!
+            </div>
+            <div className="flex flex-col">
+              <Button variant="primary" className="mx-auto mt-2 max-w-xs">
+                Get Started
+              </Button>
+              <Button variant="secondary" className="mx-auto mt-2 max-w-xs">
+                I already have an account
+              </Button>
+            </div>
+          </div>
+        </div>
+        <div className="">
+          <div className="mt-16 flex flex-col items-center justify-between border-t border-zinc-900/5 pt-8 sm:flex-row dark:border-white/5"></div>
+          <div className="mx-auto mb-2 font-light">
+            Working with the following to give you all the exam prepartion you
+            need
+          </div>
+          <div className="mx-auto flex items-center justify-center rounded-full">
+            <IconChevronLeft className="mr-8" />
+            <div className="my-4 ml-1 flex">
+              <Image
+                src={uq.src}
+                alt="University of Queensland Logo"
+                width={128}
+                height={128}
+              ></Image>
+            </div>
+            <IconChevronRight className="ml-8" />
+          </div>
+        </div>
+      </div>
+    </main>
+  )
+}
+
+export default function Home() {
+  const { user } = useUser()
+  console.log(user)
+  return <main>{user ? LoginHome() : SignupHome()}</main>
 }

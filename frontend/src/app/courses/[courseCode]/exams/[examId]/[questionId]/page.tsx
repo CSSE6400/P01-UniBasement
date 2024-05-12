@@ -1,20 +1,28 @@
-'use client';
-import useComments from '@/api/useComments';
-import Comment from '@/components/Comment';
+'use client'
+import useComments from '@/api/useComments'
+import requireAuth from '@/app/requireAuth'
+import Comment from '@/components/Comment'
 
-export default function Question({ params }: { params: { courseCode: string, examId: number, questionId: number }}) {
-    const { comments, isLoading, isError } = useComments(params.questionId);
+function Question({
+  params,
+}: {
+  params: { courseCode: string; examId: number; questionId: number }
+}) {
+  const { comments, isLoading, isError } = useComments(params.questionId)
 
-    return (
-        <main>
-            {isLoading && <p>Loading...</p>}
-            {!isError && !isLoading && comments?.map(comment => (
-                <>
-                    <hr />
-                    <Comment comment={comment} />
-                </>
-                ))
-            }
-        </main>
-    );
+  return (
+    <main>
+      {isLoading && <p>Loading...</p>}
+      {!isError &&
+        !isLoading &&
+        comments?.map((comment) => (
+          <>
+            <hr />
+            <Comment comment={comment} />
+          </>
+        ))}
+    </main>
+  )
 }
+
+export default requireAuth(Question)
