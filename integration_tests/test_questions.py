@@ -86,7 +86,7 @@ class TestQuestions(BaseCase):
         # Create a new comment
         commentData = {
             "userId": self.userId,
-            "questionIdQuestionId": self.questionId,
+            "questionId": self.questionId,
             "parentCommentId": None,
             "commentText": "This is a comment for the question",
             "commentPNG": None
@@ -287,7 +287,8 @@ class TestQuestions(BaseCase):
             "downvotes": 0,
             "isCorrect": False,
             "isEndorsed": False,
-            "userId": str(self.userId)
+            "userId": str(self.userId),
+            "questionId" : questionId
         }]
 
         response = requests.get(

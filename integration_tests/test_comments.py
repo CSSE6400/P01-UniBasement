@@ -92,7 +92,7 @@ class TestComments(BaseCase):
         # Create a new comment
         commentData = {
             "userId": self.USER_ID,
-            "questionIdQuestionId": self.questionId,
+            "questionId": self.questionId,
             "parentCommentId": None,
             "commentText": self.COMMENT_TEXT,
             "commentPNG": self.COMMENT_PNG
@@ -108,7 +108,7 @@ class TestComments(BaseCase):
             commentText='This is a comment for the question').first().commentId
         
         # Add a second comment
-        self.session.add(self.Comment(userId=self.USER_ID, questionIdQuestionId=self.questionId, parentCommentId=None, commentText="This is a second comment for the question", commentPNG=None))
+        self.session.add(self.Comment(userId=self.USER_ID, questionId=self.questionId, parentCommentId=None, commentText="This is a second comment for the question", commentPNG=None))
         self.commentId2 = self.session.query(self.Comment).filter_by(
             commentText='This is a second comment for the question').first().commentId
 
@@ -473,7 +473,7 @@ class TestComments(BaseCase):
         # Verify database changes
         comment = self.session.query(self.Comment).filter_by(commentText=self.COMMENT_TEXT).first()
         self.session.refresh(comment)
-        self.assertEqual(self.questionId, comment.questionIdQuestionId)
+        self.assertEqual(self.questionId, comment.questionId)
         self.assertEqual(None, comment.parentCommentId)
         self.assertEqual(self.USER_ID, comment.userId)
         self.assertEqual(self.COMMENT_TEXT, comment.commentText)
@@ -581,7 +581,7 @@ class TestComments(BaseCase):
         # Verify database changes
         comment = self.session.query(self.Comment).filter_by(commentText='This is a nested comment').first()
         self.session.refresh(comment)
-        self.assertEqual(self.questionId, comment.questionIdQuestionId)
+        self.assertEqual(self.questionId, comment.questionId)
         self.assertEqual(self.commentId, comment.parentCommentId)
         self.assertEqual(self.USER_ID, comment.userId)
         self.assertEqual('This is a nested comment', comment.commentText)
@@ -640,49 +640,46 @@ class TestComments(BaseCase):
         self.assertEqual(400, response.status_code)
         self.assertEqual('Parent comment is not from the same question', response.json())
 
-    # def test_get_comment_by_id(self):
-    #     """
-    #     Checks for a 200 response from the /comments endpoint
-    #     Checks for the correct response message
-    #     """
-    #     commentId = 23
-    #     expectedResponse = {
-    #             "commentId": commentId,
-    #             "parentCommentId": None,
-    #             "userId": 'evan',
-    #             "commentText": "This is a comment.",
-    #             "commentPNG": None,
-    #             "isCorrect": True,
-    #             "isEndorsed": True,
-    #             "upvotes": 100,
-    #             "downvotes": 1,
-    #             "questionId": 16,
-    #             "created_at": "2001-06-01T09:00:00",
-    #             "updated_at": "2001-06-01T09:00:00"
-    #     }
+    def test_get_comment_by_id(self):
+        """
+        Checks for a 200 response from the /comments endpoint
+        Checks for the correct response message
+        """
+        expectedResponse = {
+                "commentId": self.commentId,
+                "parentCommentId": None,
+                "userId": self.USER_ID,
+                "commentText": self.COMMENT_TEXT,
+                "commentPNG": self.COMMENT_PNG,
+                "isCorrect": False,
+                "isEndorsed": False,
+                "upvotes": 0,
+                "downvotes": 0,
+                "questionId": self.questionId,
+                "created_at": "2001-06-01T09:00:00",
+                "updated_at": "2001-06-01T09:00:00"
+        }
 
-    #     response = requests.get(self.host() + '/comments/' + str(commentId))
+        response = requests.get(self.host() + '/comments/' + str(self.commentId))
 
-    #     update_timestamps(expectedResponse, response.json()['created_at'], response.json()['updated_at'])
+        update_timestamps(expectedResponse, response.json()['created_at'], response.json()['updated_at'])
 
-    #     self.assertEqual(200, response.status_code)
-    #     self.assertEqual(expectedResponse, response.json())
+        self.assertEqual(200, response.status_code)
+        self.assertEqual(expectedResponse, response.json())
 
 
-    # def test_get_comment_by_id_invalid_id(self):
-    #     """
-    #     Checks for a 404 response from the /comments endpoint
-    #     Checks for the correct response message
-    #     """
-    #     commentId = 868686
+    def test_get_comment_by_id_invalid_id(self):
+        """
+        Checks for a 404 response from the /comments endpoint
+        Checks for the correct response message
+        """
+        commentId = 868686
 
-    #     expectedResponse = {
-    #         "error": "Comment not found"
-    #     }
+        expectedResponse = "Comment not found"
 
-    #     response = requests.get(self.host() + '/comments/' + str(commentId))
-    #     self.assertEqual(404, response.status_code)
-    #     self.assertEqual(expectedResponse, response.json())
+        response = requests.get(self.host() + '/comments/' + str(commentId))
+        self.assertEqual(404, response.status_code)
+        self.assertEqual(expectedResponse, response.json())
 
 if __name__ == '__main__':
     unittest.main()
