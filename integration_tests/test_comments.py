@@ -219,104 +219,145 @@ class TestComments(BaseCase):
         }
 
         response = requests.patch(self.host() + '/comments/' + str(86) + '/delete', json=body)
+        
+        # Verify response from API
         self.assertEqual(404, response.status_code)
         self.assertEqual('Comment not found', response.json())
 
 
-    # def test_patch_sets_comment_as_correct(self):
-    #     """
-    #     Checks for a 200 response from the /comments endpoint
-    #     Checks for the correct response message
-    #     """
-    #     commentId = 14
+    def test_patch_sets_comment_as_correct(self):
+        """
+        Checks for a 200 response from the /comments/:commentId/correct endpoint
+        Checks for the correct response message
+        """
 
-    #     response = requests.patch(self.host() + '/comments/' + str(commentId) + '/correct')
-    #     self.assertEqual(200, response.status_code)
-    #     self.assertEqual('Comment marked as correct', response.json())
-
-
-    # def test_patch_sets_comment_as_correct_invalid_id(self):
-    #     """
-    #     Checks for a 404 response from the /comments endpoint
-    #     Checks for the correct response message
-    #     """
-    #     commentId = 86868686
-
-    #     response = requests.patch(self.host() + '/comments/' + str(commentId) + '/correct')
-    #     self.assertEqual(404, response.status_code)
-    #     self.assertEqual('Comment not found', response.json())
+        response = requests.patch(self.host() + '/comments/' + str(self.commentId) + '/correct')
+        
+        # Verify response from API
+        self.assertEqual(200, response.status_code)
+        self.assertEqual('Comment marked as correct', response.json())
+        
+        # Verify database changes
+        comment = self.session.query(self.Comment).filter_by(commentId=self.commentId).first()
+        self.session.refresh(comment)
+        self.assertEqual(True, comment.isCorrect)
 
 
-    # def test_patch_sets_comment_as_incorrect(self):
-    #     """
-    #     Checks for a 200 response from the /comments endpoint
-    #     Checks for the correct response message
-    #     """
-    #     commentId = 15
+    def test_patch_sets_comment_as_correct_invalid_id(self):
+        """
+        Checks for a 404 response from the /comments/:commentId/correct endpoint
+        Checks for the correct response message
+        """
+        commentId = 86868686
 
-    #     response = requests.patch(self.host() + '/comments/' + str(commentId) + '/incorrect')
-    #     self.assertEqual(200, response.status_code)
-    #     self.assertEqual('Comment marked as incorrect', response.json())
-
-
-    # def test_patch_sets_comment_as_incorrect_invalid_id(self):
-    #     """
-    #     Checks for a 404 response from the /comments endpoint
-    #     Checks for the correct response message
-    #     """
-    #     commentId = 86868686
-
-    #     response = requests.patch(self.host() + '/comments/' + str(commentId) + '/incorrect')
-    #     self.assertEqual(404, response.status_code)
-    #     self.assertEqual('Comment not found', response.json())
+        response = requests.patch(self.host() + '/comments/' + str(commentId) + '/correct')
+        
+        # Verify response from API
+        self.assertEqual(404, response.status_code)
+        self.assertEqual('Comment not found', response.json())
 
 
-    # def test_patch_sets_comment_as_endorsed(self):
-    #     """
-    #     Checks for a 200 response from the /comments endpoint
-    #     Checks for the correct response message
-    #     """
-    #     commentId = 16
+    def test_patch_sets_comment_as_incorrect(self):
+        """
+        Checks for a 200 response from the /comments/:commentId/incorrect endpoint
+        Checks for the correct response message
+        """
+        
+        # Set as correct
+        comment = self.session.query(self.Comment).filter_by(commentId=self.commentId).first()
+        comment.isCorrect = True
+        self.session.commit()
 
-    #     response = requests.patch(self.host() + '/comments/' + str(commentId) + '/endorse')
-    #     self.assertEqual(200, response.status_code)
-    #     self.assertEqual('Comment endorsed', response.json())
-
-
-    # def test_patch_sets_comment_as_endorsed_invalid_id(self):
-    #     """
-    #     Checks for a 404 response from the /comments endpoint
-    #     Checks for the correct response message
-    #     """
-    #     commentId = 86868686
-
-    #     response = requests.patch(self.host() + '/comments/' + str(commentId) + '/endorse')
-    #     self.assertEqual(404, response.status_code)
-    #     self.assertEqual('Comment not found', response.json())
-
-
-    # def test_patch_sets_comment_as_not_endorsed(self):
-    #     """
-    #     Checks for a 200 response from the /comments endpoint
-    #     Checks for the correct response message
-    #     """
-    #     commentId = 17
-
-    #     response = requests.patch(self.host() + '/comments/' + str(commentId) + '/unendorse')
-    #     self.assertEqual(200, response.status_code)
-    #     self.assertEqual('Comment removed endorsement', response.json())
+        response = requests.patch(self.host() + '/comments/' + str(self.commentId) + '/incorrect')
+        
+        # Verify response from API
+        self.assertEqual(200, response.status_code)
+        self.assertEqual('Comment marked as incorrect', response.json())
+        
+        # Verify database changes
+        comment = self.session.query(self.Comment).filter_by(commentId=self.commentId).first()
+        self.session.refresh(comment)
+        self.assertEqual(False, comment.isCorrect)
 
 
-    # def test_patch_sets_comment_as_not_endorsed_invalid_id(self):
-    #     """
-    #     Checks for a 404 response from the /comments endpoint
-    #     Checks for the correct response message
-    #     """
-    #     commentId = 86868686
+    def test_patch_sets_comment_as_incorrect_invalid_id(self):
+        """
+        Checks for a 404 response from the /comments/:commentId/incorrect endpoint
+        Checks for the correct response message
+        """
+        commentId = 86868686
 
-    #     response = requests.patch(self.host() + '/comments/' + str(commentId) + '/unendorse')
-    #     self.assertEqual(404, response.status_code)
-    #     self.assertEqual('Comment not found', response.json())
+        response = requests.patch(self.host() + '/comments/' + str(commentId) + '/incorrect')
+        
+        # Verify response from API
+        self.assertEqual(404, response.status_code)
+        self.assertEqual('Comment not found', response.json())
+
+
+    def test_patch_sets_comment_as_endorsed(self):
+        """
+        Checks for a 200 response from the /comments/:commentId/endorse endpoint
+        Checks for the correct response message
+        """
+        response = requests.patch(self.host() + '/comments/' + str(self.commentId) + '/endorse')
+        
+        # Verify response from API
+        self.assertEqual(200, response.status_code)
+        self.assertEqual('Comment endorsed', response.json())
+        
+        # Verify database changes
+        comment = self.session.query(self.Comment).filter_by(commentId=self.commentId).first()
+        self.session.refresh(comment)
+        self.assertEqual(True, comment.isEndorsed)
+
+
+    def test_patch_sets_comment_as_endorsed_invalid_id(self):
+        """
+        Checks for a 404 response from the /comments/:commentId/endorse endpoint
+        Checks for the correct response message
+        """
+        commentId = 86868686
+
+        response = requests.patch(self.host() + '/comments/' + str(commentId) + '/endorse')
+        
+        # Verify response from API
+        self.assertEqual(404, response.status_code)
+        self.assertEqual('Comment not found', response.json())
+
+
+    def test_patch_sets_comment_as_not_endorsed(self):
+        """
+        Checks for a 200 response from the /comments/:commentId/unendorse endpoint
+        Checks for the correct response message
+        """
+        
+        # Set as endorsed
+        comment = self.session.query(self.Comment).filter_by(commentId=self.commentId).first()
+        comment.isEndorsed = True
+        self.session.commit()
+
+        response = requests.patch(self.host() + '/comments/' + str(self.commentId) + '/unendorse')
+        
+        # Verify response from API
+        self.assertEqual(200, response.status_code)
+        self.assertEqual('Comment removed endorsement', response.json())
+        
+        # Verify database changes
+        comment = self.session.query(self.Comment).filter_by(commentId=self.commentId).first()
+        self.session.refresh(comment)
+        self.assertEqual(False, comment.isEndorsed)
+
+
+    def test_patch_sets_comment_as_not_endorsed_invalid_id(self):
+        """
+        Checks for a 404 response from the /comments/:commentId/unendorse endpoint
+        Checks for the correct response message
+        """
+        commentId = 86868686
+
+        response = requests.patch(self.host() + '/comments/' + str(commentId) + '/unendorse')
+        self.assertEqual(404, response.status_code)
+        self.assertEqual('Comment not found', response.json())
 
 
     # def test_patch_downvotes_comment(self):
