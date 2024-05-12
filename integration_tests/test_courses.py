@@ -5,102 +5,230 @@ from .base import BaseCase
 
 
 class TestCourse(BaseCase):
+    def setUp(self):
+        self.session = self.get_db_session()
+        self.Course = self.Base.classes['course']
+        self.Exam = self.Base.classes['exam']
+        self.Question = self.Base.classes['question']
+        self.User = self.Base.classes['user']
+        self.Comment = self.Base.classes['comment']
+        
+        
+        # Constant data for tests
+        self.COURSE_CODE = "CSSE6400"
+        self.EXAM_YEAR = 2024
+        self.EXAM_SEMESTER = 1
+        self.EXAM_TYPE = "Final"
+        self.COURSE_CODE = "CSSE6400"
+        self.COURSE_NAME = "Software Architecture"
+        self.COURSE_DESCRIPTION = "I have created this course to test."
+        self.UNIVERSITY = "The University of Queensland"
+        self.QUESTION_TEXT = "Who is the best tutor at UQ?"
+        self.QUESTION_TYPE = "Multiple Choice"
+        self.QUESTION_PNG = None
+        self.USER_ID = 86868686
+        self.COMMENT_TEXT = "This is a comment for the question"
+        self.COMMENT_PNG = None
+        self.PARENT_COMMENT_ID = None
+        
+
+        # Create course
+        courseData = {
+            "courseCode": self.COURSE_CODE,
+            "courseName": self.COURSE_NAME,
+            "courseDescription": self.COURSE_DESCRIPTION,
+            "university": self.UNIVERSITY
+        }
+
+        # Create a new course
+        newCourse = self.Course(**courseData)
+
+        # Add the new course to the session
+        self.session.add(newCourse)
+
+        # Create an Exam
+        body = {
+            "examYear": self.EXAM_YEAR,
+            "examSemester": self.EXAM_SEMESTER,
+            "examType": self.EXAM_TYPE,
+            "courseCodeCourseCode": self.COURSE_CODE
+        }
+
+        newExam = self.Exam(**body)
+        self.session.add(newExam)
+
+        # Get the id of the exam from db
+        self.examId = self.session.query(self.Exam).filter_by(
+            examYear=2024, examSemester='1', examType='Final', courseCodeCourseCode='CSSE6400').first().examId
+
+        # Create a new question to be edited.
+        body = {
+            "examIdExamId": self.examId,
+            "questionText": self.QUESTION_TEXT,
+            "questionType": self.QUESTION_TYPE,
+            "questionPNG": self.QUESTION_PNG
+        }
+
+        newQuestion = self.Question(**body)
+        self.session.add(newQuestion)
+
+        # Get the id of the question from db
+        self.questionId = self.session.query(self.Question).filter_by(
+            examIdExamId=self.examId, questionText=self.QUESTION_TEXT, questionType=self.QUESTION_TYPE).first().questionId
+
+        # Creates a new user
+        userData = {
+            "userId": self.USER_ID
+        }
+
+        newUser = self.User(**userData)
+        self.session.add(newUser)
+
+        # Create a new comment
+        commentData = {
+            "userIdUserId": self.USER_ID,
+            "questionIdQuestionId": self.questionId,
+            "parentCommentId": None,
+            "commentText": self.COMMENT_TEXT,
+            "commentPNG": self.COMMENT_PNG
+        }
+
+        newComment = self.Comment(**commentData)
+        self.session.add(newComment)
+
+        # # Get the id of the comment from db
+        self.commentId = self.session.query(self.Comment).filter_by(
+            commentText='This is a comment for the question').first().commentId
+
+        self.session.commit()
+
+    # Wipe all data in all tables
+
+    def tearDown(self):
+        self.session.rollback()
+        self.session.query(self.Base.classes.comment).delete()
+        self.session.query(self.Base.classes.user).delete()
+        self.session.query(self.Base.classes.question).delete()
+        self.session.query(self.Base.classes.exam).delete()
+        self.session.query(self.Base.classes.course).delete()
+        self.session.commit()
+        self.session.close()
 
     def test_course_post(self):
         """
         Checks for a 201 response from the /courses endpoint
         Checks for the correct response message
         """
-        course_data = {
-            "courseCode": "CSSE6400",
-            "courseName": "Software Architecture",
-            "courseDescription": "Doing some software architecture stuff with Richard and Evan (my bestie)",
+        courseData = {
+            "courseCode": "COMP3506",
+            "courseName": "Data Structures and Algorithms",
+            "courseDescription": "Doing some DSA",
             "university": "The University of Queensland",
         }
 
-        response = requests.post(self.host() + '/courses', json=course_data, headers={'Accept': 'application/json'})
+        response = requests.post(
+            self.host() + '/courses', json=courseData, headers={'Accept': 'application/json'})
 
+        # Verify response from API
         self.assertEqual(201, response.status_code)
+        self.assertEqual("Course added", response.json())
 
+        # Verify database changes
+        newCourse = self.session.query(self.Course).filter_by(
+            courseCode="COMP3506").first()
+        self.assertEqual(courseData["courseCode"], newCourse.courseCode)
+        self.assertEqual(courseData["courseName"], newCourse.courseName)
+        self.assertEqual(
+            courseData["courseDescription"], newCourse.courseDescription)
+        self.assertEqual(courseData["university"], newCourse.university)
+        self.assertEqual(0, newCourse.stars)
+        self.assertEqual(0, newCourse.votes)
 
     def test_course_post_null_coursecode(self):
         """
         Checks for a 400 response from the /courses endpoint
         Checks for the correct response message
         """
-        course_data = {
+        courseData = {
             "courseCode": "",
             "courseName": "Software Architecture",
             "courseDescription": "Doing some software architecture stuff with Richard and Evan (my bestie)",
             "university": "The University of Queensland",
         }
 
-        response = requests.post(self.host() + '/courses', json=course_data, headers={'Accept': 'application/json'})
+        response = requests.post(
+            self.host() + '/courses', json=courseData, headers={'Accept': 'application/json'})
 
+        # Verify response from API
         self.assertEqual(400, response.status_code)
+        self.assertEqual(
+            'Missing courseCode, courseName, courseDescription, or university', response.json())
 
-        self.assertEqual('Missing courseCode, courseName, courseDescription, or university', response.json())
-
+        # Verify no database changes
+        courseList = self.session.query(self.Course)
+        # One created in setup should be the only course.
+        self.assertEqual(1, courseList.count())
 
     def test_course_post_duplicate_coursecode(self):
         """
         Checks for a 400 response from the /courses endpoint
         Checks for the correct response message
         """
-        course_data = {
-            "courseCode": "DECO2500",
-            "courseName": "Human Computer Interaction",
-            "courseDescription": "Models of action, perception, cognition and interaction in human-machine systems. Methods of interaction analysis and interaction representation. Human-machine system evaluation. Practical implementation. Introduction to user and use-centred design principles. Broader topics may include: societal considerations, groupware, multimedia, media perspectives.",
+        courseData = {
+            "courseCode": "CSSE6400",
+            "courseName": "Software Architecture",
+            "courseDescription": "Doing some software architecture stuff with Richard and Evan (my bestie)",
             "university": "The University of Queensland",
         }
 
-        response = requests.post(self.host() + '/courses', json=course_data, headers={'Accept': 'application/json'})
-        # Should post the course fine the first time
-        self.assertEqual(201, response.status_code)
-
         # Should error as duplicate when posting same course again.
-        response = requests.post(self.host() + '/courses', json=course_data, headers={'Accept': 'application/json'})
+        response = requests.post(
+            self.host() + '/courses', json=courseData, headers={'Accept': 'application/json'})
 
+        # Verify response from API
         self.assertEqual(409, response.status_code)
+        self.assertEqual('Course already exists', response.json())
 
-        self.assertEqual('Course Code already exists', response.json())
-
+        # Verify no database changes
+        newCourse = self.session.query(self.Course)
+        self.assertEqual(1, newCourse.count())
 
     def test_course_get_exam_by_code(self):
         """
         Checks for a 200 response from the /courses/:courseCode/exams endpoint
         Checks for the correct response message
         """
-        courseCode = "ENGG1001"
+        courseCode = "CSSE6400"
 
         expectedExamsForCourse = [
-            {"examId": 1, "examYear": 2021, "examSemester": 1, "examType": "Final"},
-            {"examId": 2, "examYear": 2022, "examSemester": 1, "examType": "Final"},
-            {"examId": 3, "examYear": 2023, "examSemester": 1, "examType": "Final"}
+            {"examId": self.examId, "examYear": 2024, "examSemester": 1, "examType": "Final"},
         ]
 
         response = requests.get(self.host() + '/courses/' + courseCode + '/exams')
+        
+        # Verify response from API
         self.assertEqual(200, response.status_code)
         self.assertEqual(expectedExamsForCourse, response.json())
-
 
     def test_course_get_course(self):
         """
         Checks for a 200 response from the /courses/:courseCode endpoint
         Checks for the correct response message
         """
-        courseCode = "ENGG1001"
+        courseCode = "CSSE6400"
 
         expectedCourse = {
-            "courseCode": "ENGG1001",
-            "courseName": "Programming for Engineers",
-            "courseDescription": "An introductory course covering basic concepts of software engineering.",
-            "university": "UQ",
+            "courseCode": courseCode,
+            "courseName": "Software Architecture",
+            "courseDescription": "I have created this course to test.",
+            "university": "The University of Queensland",
             "stars": 0,
             "votes": 0
         }
 
         response = requests.get(self.host() + '/courses/' + courseCode)
+        
+        # Verify response from API
         self.assertEqual(200, response.status_code)
         self.assertEqual(expectedCourse, response.json())
 
@@ -112,9 +240,10 @@ class TestCourse(BaseCase):
         courseCode = "ENGG1000"
 
         response = requests.get(self.host() + '/courses/' + courseCode)
+        
+        # Verify response from API
         self.assertEqual(404, response.status_code)
         self.assertEqual('Course not found', response.json())
-
 
     def test_course_get_all(self):
         """
@@ -122,10 +251,7 @@ class TestCourse(BaseCase):
         Checks for the correct response message
         """
         expectedCourses = [
-            {"courseCode": "ENGG1001", "courseName": "Programming for Engineers", "courseDescription": "An introductory course covering basic concepts of software engineering.", "university": "UQ", "stars": 0, "votes": 0},
-            {"courseCode": "ENGG1100", "courseName": "Professional Engineering", "courseDescription": "An introductory course covering fundamental concepts in engineering principles.", "university": "UQ", "stars": 0, "votes": 0},
-            {"courseCode": "MATH1051", "courseName": "Calculus & Linear Algebra", "courseDescription": "A foundational course in calculus covering limits, derivatives, and integrals.", "university": "UQ", "stars": 0, "votes": 0},
-        ]
+            {"courseCode": "CSSE6400", "courseName": "Software Architecture", "courseDescription": "I have created this course to test.", "university": "The University of Queensland", "stars": 0, "votes": 0}]
 
         response = requests.get(self.host() + '/courses')
         self.assertEqual(200, response.status_code)
@@ -135,57 +261,69 @@ class TestCourse(BaseCase):
             self.assertIn(expectedCourse, response.json())
 
 
+
+
+    # TODO check what is going on ya know. the db check aint db checcking if u feel me 
     def test_course_patch_star(self):
         """
         Checks for a 200 response from the /courses/:courseCode/star endpoint
         Checks for the correct response message
         """
-        course_data = {
-            "courseCode": "STAR1001",
-            "courseName": "Stargazing",
-            "courseDescription": "An introductory course covering basic concepts of astronomy.",
-            "university": "UQ"
-        }
-
-        # Make a new course
-        response = requests.post(self.host() + '/courses', json=course_data, headers={'Accept': 'application/json'})
-        self.assertEqual(201, response.status_code)
-
-        user = {
-            "userId": "stars",
-        }
-
-        # Make a new user
-        response = requests.post(self.host() + '/users', json=user)
-        self.assertEqual(201, response.status_code)
+        
+        # Verify Database has 0 Stars for CSSE6400
+        course = self.session.query(self.Course).filter_by(courseCode=self.COURSE_CODE).first()
+        self.assertEqual(0, course.stars)
 
         stars = {
             "starRating": 5,
-            "userId": "stars",
+            "userId": self.USER_ID,
         }
 
-
-        response = requests.patch(self.host() + '/courses/' + 'STAR1001' + '/star', json=stars)
+        response = requests.patch(self.host() + '/courses/' + self.COURSE_CODE + '/star', json=stars)
+        
+        # Verify response from API
         self.assertEqual(200, response.status_code)
         self.assertEqual('Course starred', response.json())
 
-        response = requests.get(self.host() + '/courses/' + 'STAR1001')
+        response = requests.get(self.host() + '/courses/' + 'CSSE6400')
+        # Verify response from API
         self.assertEqual(200, response.status_code)
+        self.assertEqual(1, response.json()['votes'])
         self.assertEqual(5, response.json()['stars'])
+        
+        # TODO either get below working or use the above get...
+        # # Verify Database has 5 Stars for CSSE6400
+        # self.session.refresh(course)
+        # course = self.session.query(self.Course).filter_by(courseCode=self.COURSE_CODE).first()
+        
+        # self.assertEqual(5, course.stars)
 
         stars = {
             "starRating": 3,
             "userId": "stars",
         }
 
-        response = requests.patch(self.host() + '/courses/' + 'STAR1001' + '/star', json=stars)
+        response = requests.patch(self.host() + '/courses/' + 'CSSE6400' + '/star', json=stars)
+        
+        # Verify response from API
         self.assertEqual(200, response.status_code)
         self.assertEqual('Course starred', response.json())
+        
+        # TODO check below is fine 
+        # Verify Database has 3 Stars for CSSE6400
+        course = self.session.query(self.Course).filter_by(courseCode='CSSE6400').first()
+        self.assertEqual(3, course.stars)
 
-        response = requests.get(self.host() + '/courses/' + 'STAR1001')
+        response = requests.get(self.host() + '/courses/' + 'CSSE6400')
+        
+        # Verify response from API
         self.assertEqual(200, response.status_code)
         self.assertEqual(3, response.json()['stars'])
+        
+        
+        
 
+    # TODO the route is non existent in routes lmao. need a todo there when it seperated out to fix it.
     def test_course_patch_star_miss(self):
         """
         Checks for a 400 response from the /courses/:courseCode/star endpoint
@@ -207,7 +345,7 @@ class TestCourse(BaseCase):
         self.assertEqual(400, response.status_code)
         self.assertEqual('Missing starRating or userId', response.json())
 
-
+    # TODO the route is non existent in routes lmao. need a todo there when it seperated out to fix it.
     def test_course_patch_bad_star(self):
         """
         Checks for a 400 response from the /courses/:courseCode/star endpoint
@@ -218,7 +356,6 @@ class TestCourse(BaseCase):
             "starRating": 6,
             "userId": "stars",
         }
-
 
         response = requests.patch(self.host() + '/courses/' + 'STAR1001' + '/star', json=stars)
         self.assertEqual(400, response.status_code)
@@ -233,7 +370,7 @@ class TestCourse(BaseCase):
         self.assertEqual(400, response.status_code)
         self.assertEqual('Star rating must be between 0 and 5', response.json())
 
-
+    # TODO the route is non existent in routes lmao. need a todo there when it seperated out to fix it.
     def test_course_patch_star_user(self):
         """
         Checks for a 404 response from the /courses/:courseCode/star endpoint
@@ -244,11 +381,11 @@ class TestCourse(BaseCase):
             "userId": "stari",
         }
 
-
         response = requests.patch(self.host() + '/courses/' + 'STAR1001' + '/star', json=stars)
         self.assertEqual(404, response.status_code)
         self.assertEqual('User not found', response.json())
 
+    # TODO the route is non existent in routes lmao. need a todo there when it seperated out to fix it.
     def test_course_patch_star_course(self):
         """
         Checks for a 404 response from the /courses/:courseCode/star endpoint
