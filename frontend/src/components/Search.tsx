@@ -43,7 +43,9 @@ function useAutocomplete({ close }: { close: () => void }) {
     AutocompleteState<Result> | EmptyObject
   >({})
 
-  const courseCodes = ['CSSE1001', 'CSSE2002', 'CSSE2310']
+  const courseData = useCourses()?.courses?.map((value) => value.courseCode)
+  const courseCodes = courseData
+  console.log(courseCodes)
 
   function navigate({ itemUrl }: { itemUrl?: string }) {
     if (!itemUrl) {
@@ -87,13 +89,13 @@ function useAutocomplete({ close }: { close: () => void }) {
               const filteredCourses = courseCodes.filter((code) =>
                 code.toLowerCase().includes(query.toLowerCase()),
               )
-
+              console.log(courseCodes, query, filteredCourses)
               const value = filteredCourses.map((courseCode) => ({
                 courseCode: courseCode,
                 url: `/course/${courseCode}`,
                 title: courseCode, // Add the missing 'title' property
               }))
-
+              console.log(value)
               return value
             },
             getItemUrl({ item }) {
