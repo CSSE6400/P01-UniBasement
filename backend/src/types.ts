@@ -24,15 +24,15 @@ export type Question = {
 export type Comment = {
     commentId: number
     parentCommentId: number | null
-    userId: number
+    userId: string
     commentText: string
     commentPNG: string | null
     isCorrect: boolean
     isEndorsed: boolean
     upvotes: number
     downvotes: number
-    created_at: string
-    updated_at: string
+    created_at: Date
+    updated_at: Date
     children?: Comment[]
     questionId?: number
 }
@@ -71,4 +71,9 @@ export type CourseRouteParams = {
 export type CourseQueryParams = {
     offset?: number
     limit?: number
+}
+
+export type RateObject = {
+    courseCode: string
+    stars: number
 }

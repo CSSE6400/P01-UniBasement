@@ -1,11 +1,10 @@
 /**
  * Imports
  */
-import express from "express";
+import express from 'express';
 import cors from 'cors';
 
-import { routes } from './routes';
-import * as db from './db';
+import { router } from './routes/routes';
 
 const PORT: number = process.env.PORT ? parseInt(process.env.PORT) : 8080;
 
@@ -17,16 +16,9 @@ const app = express();
  */
 app.use(cors());
 app.use(express.json());
-app.use('/api', routes);
+app.use('/api', router);
 
 app.use(express.urlencoded({ extended: false }));
-
-/**
- * Database Connection
- */
-
-//TODO
-db.setupTables();
 
 /**
  * Server Activation / Confirmation

@@ -7,6 +7,7 @@ services:
       context: ../backend
     environment:
       PORT: 8080
+      DB_TYPE: "postgres"
       DB_USER: "postgres" 
       DB_PASSWORD: "postgres"
       DB_DATABASE: "postgres"
@@ -30,6 +31,12 @@ services:
       context: .
     environment:
       - API_URL=http://backend:8080/api
+      - DB_TYPE=postgres
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_DATABASE=postgres
+      - DB_PORT=5432
+      - DB_HOST=db
     depends_on:
       - db
       - backend
