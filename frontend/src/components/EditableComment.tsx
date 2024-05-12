@@ -2,7 +2,7 @@ import { Comment as IComment } from '@/types';
 import CommentForm from '@/components/CommentForm';
 import { Downvote, Upvote } from '@/components/CommentVotes';
 
-export function EditableComment({ comment, onCancel, onSubmit }: { comment?: IComment, onCancel:() => void, onSubmit:() => void }) {
+export function EditableComment({ comment, onCancel, onSubmit }: { comment?: IComment, onCancel:() => void, onSubmit:(newText?: string, newPng?: any) => void }) {
     return (
         <>
             <div className="flex items-start space-x-4">
@@ -20,7 +20,7 @@ export function EditableComment({ comment, onCancel, onSubmit }: { comment?: ICo
                     )}
                 </div>
                 <div className="min-w-0 flex-1">
-                    <CommentForm comment={comment} onSubmit={onCancel} onCancel={onSubmit} />
+                    <CommentForm comment={comment} onSubmit={onSubmit} onCancel={onCancel} />
                 </div>
             </div>
         </>

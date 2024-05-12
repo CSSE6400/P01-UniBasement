@@ -5,13 +5,13 @@ import { useState } from 'react';
 export function CommentForm({comment, onCancel, onSubmit}: {
     comment?: IComment,
     onCancel: () => void,
-    onSubmit: () => void
+    onSubmit: (newText?: string, newPng?: any) => void
 }) {
     const [text, setText] = useState(comment?.commentText);
     const [img, setImg] = useState(comment?.commentPNG);
 
     return (
-        <form action="#" className="relative">
+        <form className="relative">
             <div
                 className="overflow-hidden rounded-lg shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-indigo-600">
                 <label htmlFor="comment" className="sr-only">
@@ -58,7 +58,8 @@ export function CommentForm({comment, onCancel, onSubmit}: {
                         Cancel
                     </button>
                     <button
-                        type="submit"
+                        onClick={() => onSubmit(text, img)}
+                        type="button"
                         className="flex items-center text-sm text-gray-500 hover:underline dark:text-gray-400 font-medium"
                     >
                         Post
