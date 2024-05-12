@@ -312,15 +312,12 @@ class TestQuestions(BaseCase):
 
         # Get comments for a question
         questionId = 3344
-        expectedResponse = {
-            'error': 'Question not found'
-        }
         response = requests.get(
             self.host() + '/questions/' + str(questionId) + '/comments')
 
         # Verify response from API
         self.assertEqual(404, response.status_code)
-        self.assertEqual(expectedResponse, response.json())
+        self.assertEqual("Question not found", response.json())
 
         # Verify no database changes
         commentAfterGet = self.session.query(self.Comment)

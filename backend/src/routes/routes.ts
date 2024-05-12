@@ -591,7 +591,14 @@ router.get('/questions/:questionId/comments', async (req: Request<QuestionRouteP
     const { questionId } = req.params;
 
     const commentRepository = getConnection().getRepository(CommentDb);
-    //TODO
+    const questionRepository = getConnection().getRepository(QuestionDb);
+    const questions = await questionRepository.find({ where: { questionId } });
+
+    if (questions.length === 0) {
+        res.status(404).json('Question not found');
+        return;
+    }
+
     const comments = await commentRepository.find({ where: { questionId } });
 
     res.status(200).json(nest(comments));
