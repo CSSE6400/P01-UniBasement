@@ -22,15 +22,23 @@ export async function editComments(req: Request<CommentRouteParams, any, Comment
     }
 
     const commentRepository = getConnection().getRepository(CommentDb);
-    const comment = await commentRepository.findOne({ where: { commentId } });
+    const comment = await commentRepository.findOne({ where: { commentId }});
 
     if (!comment) {
         res.status(404).json('Comment not found');
         return;
     }
 
+    const userRows = getConnection().getRepository(UserDb);
+    const user = await userRows.findOne({ where: { userId } });
+
+    if (!user) {
+        res.status(400).json('User does not exist');
+        return;
+    }
+
     if (comment.userId !== userId) {
-        res.status(401).json('Unauthorized');
+        res.status(401).json("Unauthorized");
         return;
     }
 

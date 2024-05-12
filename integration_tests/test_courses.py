@@ -84,7 +84,7 @@ class TestCourse(BaseCase):
 
         # Create a new comment
         commentData = {
-            "userIdUserId": self.USER_ID,
+            "userId": self.USER_ID,
             "questionIdQuestionId": self.questionId,
             "parentCommentId": None,
             "commentText": self.COMMENT_TEXT,
