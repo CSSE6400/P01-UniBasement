@@ -18,7 +18,7 @@ import Avatar from './Avatar'
 export default function ProfileCard() {
   const [open, setOpen] = useState(false)
   const { user, error, isLoading } = useUser()
-  const name = user?.name ? user.name : 'Login or Register'
+  const name = user?.nickname
   const router = useRouter()
 
   function handleOpen(openState: boolean) {
@@ -70,17 +70,6 @@ export default function ProfileCard() {
                     Account
                   </Link>
                 </li>
-                {/* <li className="font-medium">
-                  <Link
-                    href="/settings"
-                    className="flex transform items-center border-r-4 border-transparent transition-colors duration-200 hover:border-emerald-400"
-                  >
-                    <div className="mr-3">
-                      <IconSettings />
-                    </div>
-                    Settings
-                  </Link>
-                </li> */}
                 <li>
                   <div
                     className="flex transform items-center border-r-4 border-transparent transition-colors duration-200 hover:cursor-pointer hover:border-emerald-400"

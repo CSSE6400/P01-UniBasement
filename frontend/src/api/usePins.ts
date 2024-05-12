@@ -1,13 +1,18 @@
-import { PinCourse } from '@/types'
+import { DisplayCourse, PinCourse } from '@/types'
+import { useEffect, useState } from 'react'
 
-export function getPinned() {
-  const pinnedItems = localStorage.getItem('pinned')
+export function usePinned() {
+  const [pin, setPin] = useState<string>()
 
-  return {
-    pinnedItems,
+  useEffect(() => {
+    let value: string | null = localStorage.getItem('pinned')
+    value ? setPin(value) : ''
+  }, [])
+
+  try {
+    return pin ? JSON.parse(pin) : []
+  } catch (error) {
+    console.error('Failed to parse pin:', error)
+    return []
   }
-}
-
-export function setPinned() {
-  localStorage.setItem('pinned', 'test')
 }
