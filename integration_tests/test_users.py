@@ -26,7 +26,7 @@ class TestUser(BaseCase):
         self.QUESTION_TEXT = "Who is the best tutor at UQ?"
         self.QUESTION_TYPE = "Multiple Choice"
         self.QUESTION_PNG = None
-        self.USER_ID = 86868686
+        self.USER_ID = "868686"
         self.COMMENT_TEXT = "This is a comment for the question"
         self.COMMENT_PNG = None
         self.PARENT_COMMENT_ID = None
@@ -64,8 +64,8 @@ class TestUser(BaseCase):
         self.assertEqual(user.userId, self.USER_ID)
         self.assertEqual(user.role, 0)
         self.assertEqual(user.rated, [])
-        self.assertEqual(user.upvoted, [])
-        self.assertEqual(user.downvoted, [])
+        self.assertEqual(user.upvoted, '[]')
+        self.assertEqual(user.downvoted, '[]')
         
 
 

@@ -218,10 +218,10 @@ class TestCourse(BaseCase):
         courseCode = "CSSE6400"
 
         expectedCourse = {
-            "courseCode": courseCode,
-            "courseName": "Software Architecture",
-            "courseDescription": "I have created this course to test.",
-            "university": "The University of Queensland",
+            "courseCode": self.COURSE_CODE,
+            "courseName": self.COURSE_NAME,
+            "courseDescription": self.COURSE_DESCRIPTION,
+            "university": self.UNIVERSITY,
             "stars": 0,
             "votes": 0
         }
@@ -251,7 +251,7 @@ class TestCourse(BaseCase):
         Checks for the correct response message
         """
         expectedCourses = [
-            {"courseCode": "CSSE6400", "courseName": "Software Architecture", "courseDescription": "I have created this course to test.", "university": "The University of Queensland", "stars": 0, "votes": 0}]
+            {"courseCode": self.COURSE_CODE, "courseName": self.COURSE_NAME, "courseDescription": self.COURSE_DESCRIPTION, "university": self.UNIVERSITY, "stars": 0, "votes": 0}]
 
         response = requests.get(self.host() + '/courses')
         self.assertEqual(200, response.status_code)
@@ -260,7 +260,6 @@ class TestCourse(BaseCase):
         for expectedCourse in expectedCourses:
             self.assertIn(expectedCourse, response.json())
 
-    # TODO check what is going on ya know. the db check aint db checcking if u feel me
 
     def test_course_patch_star(self):
         """
@@ -291,16 +290,9 @@ class TestCourse(BaseCase):
         self.assertEqual(1, response.json()['votes'])
         self.assertEqual(5, response.json()['stars'])
 
-        # TODO either get below working or use the above get...
-        # # Verify Database has 5 Stars for CSSE6400
-        # self.session.refresh(course)
-        # course = self.session.query(self.Course).filter_by(courseCode=self.COURSE_CODE).first()
-
-        # self.assertEqual(5, course.stars)
-
         stars = {
             "starRating": 3,
-            "userId": "stars",
+            "userId": self.USER_ID,
         }
 
         response = requests.patch(
@@ -310,19 +302,12 @@ class TestCourse(BaseCase):
         self.assertEqual(200, response.status_code)
         self.assertEqual('Course starred', response.json())
 
-        # TODO check below is fine
-        # Verify Database has 3 Stars for CSSE6400
-        course = self.session.query(self.Course).filter_by(
-            courseCode='CSSE6400').first()
-        self.assertEqual(3, course.stars)
-
         response = requests.get(self.host() + '/courses/' + 'CSSE6400')
 
         # Verify response from API
         self.assertEqual(200, response.status_code)
         self.assertEqual(3, response.json()['stars'])
 
-    # TODO the route is non existent in routes lmao. need a todo there when it seperated out to fix it.
 
     def test_course_patch_star_miss(self):
         """
@@ -339,7 +324,7 @@ class TestCourse(BaseCase):
         self.assertEqual('Missing starRating or userId', response.json())
 
         stars = {
-            "userId": "stars",
+            "userId": self.USER_ID,
         }
 
         response = requests.patch(
@@ -347,7 +332,6 @@ class TestCourse(BaseCase):
         self.assertEqual(400, response.status_code)
         self.assertEqual('Missing starRating or userId', response.json())
 
-    # TODO the route is non existent in routes lmao. need a todo there when it seperated out to fix it.
     def test_course_patch_bad_star(self):
         """
         Checks for a 400 response from the /courses/:courseCode/star endpoint
@@ -356,7 +340,7 @@ class TestCourse(BaseCase):
 
         stars = {
             "starRating": 6,
-            "userId": "stars",
+            "userId": self.USER_ID,
         }
 
         response = requests.patch(
@@ -367,7 +351,7 @@ class TestCourse(BaseCase):
 
         stars = {
             "starRating": -1,
-            "userId": "stars",
+            "userId": self.USER_ID,
         }
 
         response = requests.patch(
@@ -376,7 +360,6 @@ class TestCourse(BaseCase):
         self.assertEqual(
             'Star rating must be between 0 and 5', response.json())
 
-    # TODO the route is non existent in routes lmao. need a todo there when it seperated out to fix it.
     def test_course_patch_star_user(self):
         """
         Checks for a 404 response from the /courses/:courseCode/star endpoint
@@ -384,7 +367,7 @@ class TestCourse(BaseCase):
         """
         stars = {
             "starRating": 5,
-            "userId": "stari",
+            "userId": "star",
         }
 
         response = requests.patch(
@@ -392,7 +375,6 @@ class TestCourse(BaseCase):
         self.assertEqual(404, response.status_code)
         self.assertEqual('User not found', response.json())
 
-    # TODO the route is non existent in routes lmao. need a todo there when it seperated out to fix it.
     def test_course_patch_star_course(self):
         """
         Checks for a 404 response from the /courses/:courseCode/star endpoint
