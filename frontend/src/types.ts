@@ -31,3 +31,12 @@ export type Comment = {
     updated_at: string
     children?: Comment[]
 }
+
+export type DisplayCourse = {
+        href: string
+        pinned?: boolean
+        name: string
+        code: string
+        lastViewedName?: string
+        lastViewed?: number
+    }
