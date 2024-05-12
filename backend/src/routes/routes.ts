@@ -590,48 +590,13 @@ router.get('/exams/:examId', async (req: Request<ExamRouteParams>, res: Response
 });
 
 // A course's exams by code
-router.get('/courses/:courseCode/exams', async (req: Request<CourseRouteParams>, res: Response) => {
-    const { courseCode } = req.params;
-
-    const courseRepository = getConnection().getRepository(CourseDb);
-    const course = await courseRepository.findOne({ where: { courseCode } });
-    if (!course) {
-        res.status(404).json('Course not found');
-        return;
-    }
-
-    const examRepository = getConnection().getRepository(ExamDb);
-    const exams = await examRepository.find({ where: { courseCode } });
-
-
-    res.status(200).json(exams);
-});
+router.get('/courses/:courseCode/exams', getCourseExams);
 
 // A Courses information by code
-router.get('/courses/:courseCode', async (req: Request<CourseRouteParams>, res: Response) => {
-    const { courseCode } = req.params;
-    
-    const courseRepository = getConnection().getRepository(CourseDb);  
-    const course = await courseRepository.findOne({ where: { courseCode } });
-
-    if (!course) {
-        res.status(404).json('Course not found');
-        return;
-    }
-
-    res.status(200).json(course);
-});
+router.get('/courses/:courseCode', getCourseInfo);
 
 // All courses
-router.get('/courses', async (req: Request<any, any, any, CourseQueryParams>, res: Response) => {
-    const offset = req.query.offset ?? 0;
-    const limit = req.query.limit ?? 100;
-
-    const courseRepository = getConnection().getRepository(CourseDb);
-    const courses = await courseRepository.find({ skip: offset, take: limit });
-
-    res.status(200).json(courses);
-});
+router.get('/courses', getCourses);
 
 // Health Check
 router.get('/health', async (req: Request, res: Response) => {
