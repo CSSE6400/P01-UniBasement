@@ -43,7 +43,7 @@ class TestExams(BaseCase):
 
         # Add the new course to the session
         self.session.add(newCourse)
-        
+
         # Create an Exam
         body = {
             "examYear": self.EXAM_YEAR,
@@ -73,8 +73,7 @@ class TestExams(BaseCase):
         # Get the id of the question from db
         self.questionId = self.session.query(self.Question).filter_by(
             examIdExamId=self.examId, questionText=self.QUESTION_TEXT, questionType=self.QUESTION_TYPE).first().questionId
-        
-        
+
         self.session.commit()
 
     # Wipe all data in all tables
@@ -89,9 +88,6 @@ class TestExams(BaseCase):
         self.session.commit()
         self.session.close()
 
-
-
-
     def test_exam_post(self):
         """
         Checks for a 201 response from the /exam endpoint
@@ -105,17 +101,16 @@ class TestExams(BaseCase):
         }
 
         response = requests.post(self.host() + '/exams', json=body)
-        
+
         # Verify response from API
         self.assertEqual(201, response.status_code)
-        
+
         # Verify database changes
-        exam = self.session.query(self.Exam).filter_by(examId=response.json()['examId']).first()
+        exam = self.session.query(self.Exam).filter_by(
+            examId=response.json()['examId']).first()
         self.assertEqual(self.EXAM_YEAR, exam.examYear)
         self.assertEqual(self.EXAM_SEMESTER, exam.examSemester)
         self.assertEqual(self.EXAM_TYPE, exam.examType)
-        
-
 
     def test_exam_post_missing_courseCode(self):
         """
@@ -129,16 +124,15 @@ class TestExams(BaseCase):
         }
 
         response = requests.post(self.host() + '/exams', json=body)
-        
+
         # Verify response from API
         self.assertEqual(400, response.status_code)
-        self.assertEqual('Missing courseCode, examYear, examSemester, or examType', response.json())
-        
+        self.assertEqual(
+            'Missing courseCode, examYear, examSemester, or examType', response.json())
+
         # Verify no database changes
         exam = self.session.query(self.Exam).filter_by(examYear=self.EXAM_YEAR)
         self.assertEqual(1, exam.count())
-        
-
 
     def test_exam_post_course_not_found(self):
         """
@@ -153,23 +147,23 @@ class TestExams(BaseCase):
         }
 
         response = requests.post(self.host() + '/exams', json=body)
-        
+
         # Verify response from API
         self.assertEqual(404, response.status_code)
         self.assertEqual('Course not found', response.json())
-        
+
         # Verify no database changes
         exam = self.session.query(self.Exam).filter_by(examYear=self.EXAM_YEAR)
         self.assertEqual(1, exam.count())
-
 
     def test_exam_get_questions_by_exam_id(self):
         """
         Checks for a 200 response from the /exam endpoint
         Checks for the correct response message
         """
-        response = requests.get(self.host() + f'/exams/{self.examId}/questions')
-        
+        response = requests.get(
+            self.host() + f'/exams/{self.examId}/questions')
+
         expectedBody = {
             "questionId": self.questionId,
             "questionText": self.QUESTION_TEXT,
@@ -178,11 +172,10 @@ class TestExams(BaseCase):
             "created_at": response.json()['created_at'],
             "updated_at": response.json()['updated_at']
         }
-        
+
         # Verify response from API
         self.assertEqual(200, response.status_code)
         self.assertEqual(expectedBody, response.json())
-
 
     def test_exam_get_questions_by_examId_not_found(self):
         """
@@ -193,7 +186,6 @@ class TestExams(BaseCase):
         response = requests.get(self.host() + f'/exams/{examId}/questions')
         self.assertEqual(404, response.status_code)
         self.assertEqual('Questions not found', response.json())
-
 
     def test_exam_get_exam_by_id(self):
         """
@@ -209,7 +201,6 @@ class TestExams(BaseCase):
         response = requests.get(self.host() + f'/exams/{self.examId}')
         self.assertEqual(200, response.status_code)
         self.assertEqual(expectedBody, response.json())
-
 
     def test_exam_get_exam_by_id_not_found(self):
         """
