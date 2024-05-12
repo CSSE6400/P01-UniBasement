@@ -66,7 +66,7 @@ NEEDS TO BE WRITTERN PROPERLY (dot points probs ok but should be expanded upon)
 ## Architecture Options
 
 ## Architecture
-The architecture we decided upon was a 3-Tier Architecture, as it nicely seperates the code into three blocks, presentation, business and persistence.
+The architecture we decided upon was a 3-Layered Architecture, as it nicely seperates the code into three blocks, presentation, business and persistence. 
 
 ## Trade-Offs
 
