@@ -74,6 +74,12 @@ class TestComments(BaseCase):
         # Get the id of the question from db
         self.questionId = self.session.query(self.Question).filter_by(
             examIdExamId=self.examId, questionText=self.QUESTION_TEXT, questionType=self.QUESTION_TYPE).first().questionId
+        
+        # Add a second question
+        self.session.add(self.Question(examIdExamId=self.examId, questionText="What is the best course?", questionType="Multiple Choice", questionPNG=None))
+        self.questionId2 = self.session.query(self.Question).filter_by(
+            examIdExamId=self.examId, questionText="What is the best course?", questionType="Multiple Choice").first().questionId
+        
 
         # Creates a new user
         userData = {
@@ -100,6 +106,11 @@ class TestComments(BaseCase):
         # # Get the id of the comment from db
         self.commentId = self.session.query(self.Comment).filter_by(
             commentText='This is a comment for the question').first().commentId
+        
+        # Add a second comment
+        self.session.add(self.Comment(userId=self.USER_ID, questionIdQuestionId=self.questionId, parentCommentId=None, commentText="This is a second comment for the question", commentPNG=None))
+        self.commentId2 = self.session.query(self.Comment).filter_by(
+            commentText='This is a second comment for the question').first().commentId
 
         self.session.commit()
 
@@ -606,26 +617,28 @@ class TestComments(BaseCase):
         self.assertEqual('Parent comment not found', response.json())
 
 
-    # def test_post_comment_nested_parentId_not_from_same_question(self):
-    #     """
-    #     Checks for a 400 response from the /comments endpoint
-    #     Checks for the correct response message
-    #     """
-    #     body = {
-    #         "questionId": 15,
-    #         "parentCommentId": 1,
-    #         "userId": "evan",
-    #         "commentText": "This is a nested comment",
-    #         "commentPNG": None,
-    #         "isCorrect": False,
-    #         "isEndorsed": False,
-    #         "upvotes": 0,
-    #         "downvotes": 0
-    #     }
+    def test_post_comment_nested_parentId_not_from_same_question(self):
+        """
+        Checks for a 400 response from the /comments endpoint
+        Checks for the correct response message
+        """
+        body = {
+            "questionId": self.questionId2,
+            "parentCommentId": self.commentId2,
+            "userId": self.USER_ID,
+            "commentText": "This is a nested comment",
+            "commentPNG": None,
+            "isCorrect": False,
+            "isEndorsed": False,
+            "upvotes": 0,
+            "downvotes": 0
+        }
 
-    #     response = requests.post(self.host() + '/comments', json=body)
-    #     self.assertEqual(400, response.status_code)
-    #     self.assertEqual('Parent comment is not from the same question', response.json())
+        response = requests.post(self.host() + '/comments', json=body)
+        
+        # Verify response from API
+        self.assertEqual(400, response.status_code)
+        self.assertEqual('Parent comment is not from the same question', response.json())
 
     # def test_get_comment_by_id(self):
     #     """
