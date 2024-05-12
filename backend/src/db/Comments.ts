@@ -7,8 +7,12 @@ export class Comment {
     @PrimaryGeneratedColumn()
     commentId: number;
 
-    @ManyToOne(() => Question, (question: Question) => question.questionId)
-    questionId: Question['questionId'];
+    @ManyToOne(() => Question)
+    @JoinColumn()
+    question: Question;
+
+    @Column()
+    questionId: number;
 
     @ManyToOne(() => User)
     @JoinColumn()
