@@ -51,10 +51,22 @@ with your architecture or software design.
 ## Abstract
 
 ## Changes to propsal
-
+NEEDS TO BE WRITTERN PROPERLY (dot points probs ok but should be expanded upon)
+#### Account
+- Users do not make accounts nor do they register with an institution, they instead use AUTH0 to sign in with a different login (taking security risks off of us to an extent),
+- They also then do not really have the ability to update information or profile pictures without changing their original account
+#### Courses
+- Users should not be able to edit courses information due to changes of correct information to incorrect or malicious information being a key factor in designing the software
+#### Exams
+- Users should not be able to edit exams information due to changes of correct information to incorrect or malicious information being a key factor in designing the software
+#### Scope
+- No real changes to scope, we do add alot more than 'some units' though
+#### Maintability
+- Was expanded to be more than just having documentation and github actions, from things like listed ADRs (so people can understand why we did what we did) to decisions that were purely made for readability and maintainability reasons.
 ## Architecture Options
 
 ## Architecture
+The architecture we decided upon was a 3-Tier Architecture, as it nicely seperates the code into three blocks, presentation, business and persistence.
 
 ## Trade-Offs
 
