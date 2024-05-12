@@ -1,10 +1,10 @@
-import { createConnection, Connection, DataSource } from 'typeorm';
+import { DataSource } from 'typeorm';
 
 import { User } from './User';
 import { Course } from './Course';
 import { Exam } from './Exam';
 import { Question } from './Questions';
-import { Comment as Com} from './Comments';
+import { Comment as Com } from './Comments';
 
 const BackendDataSource = new DataSource({
   type: process.env.DB_TYPE as 'postgres',

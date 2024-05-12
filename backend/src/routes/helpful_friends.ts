@@ -1,7 +1,5 @@
 // Imports
-import {
-    Comment as IComment,
-} from '../types';
+import { Comment as IComment } from '../types';
 
 // Helper functions
 
