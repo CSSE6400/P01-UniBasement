@@ -50,7 +50,7 @@ export async function getExamQuestions(req: Request<ExamRouteParams, any, any>, 
     const questionRepository = getConnection().getRepository(QuestionDb);
     const questions = await questionRepository.find({ where: { examId } });
 
-    if (!questions) {
+    if (!questions.length) {
         res.status(404).json('Questions not found');
         return;
     }
