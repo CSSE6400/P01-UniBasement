@@ -4,7 +4,7 @@ import useQuestions from '@/api/useQuestions';
 import requireAuth from '@/app/requireAuth';
 import Accordion from '@/components/Accordion';
 import Card from '@/components/Card';
-import Question from '@/app/courses/[courseCode]/exams/[examId]/Question';
+import Question from '@/components/Exams/Question';
 
 function Exam({ params }: { params: { courseCode: string; examId: number } }) {
   const { exam, isLoading, isError } = useExam(params.examId)

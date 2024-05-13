@@ -1,15 +1,13 @@
-'use client';
 import Accordion from '@/components/Accordion';
 import Card from '@/components/Card';
 import { Question as IQuestion } from '@/types';
 import useComments from '@/api/useComments';
 import { useMemo, useState } from 'react';
-import Comment from '@/components/Comment';
+import Comment from '@/components/Exams/Comment';
 import useUpdateComments from '@/api/useUpdateComments';
 import usePostComment from '@/api/usePostComment';
-import EditableComment from '@/components/EditableComment';
+import EditableComment from '@/components/Exams/EditableComment';
 import { useUser } from '@auth0/nextjs-auth0/client';
-import * as net from 'net';
 
 function Question({question}: { question: IQuestion }) {
     const { user } = useUser();
@@ -34,12 +32,12 @@ function Question({question}: { question: IQuestion }) {
                 updateCommentUpvote={updateCommentUpvote}
                 key={c.commentId}
                 comment={c}
-                postComment={(parentCommentId, newText, newPng) => {
-                    postComment(user?.sub || '', newText || '', newPng, parentCommentId);
+                postComment={async (parentCommentId, newText, newPng) => {
+                    await postComment(user?.sub || '', newText || '', newPng, parentCommentId);
                 }}
             />
         ))
-    ), [comments, editing]);
+    ), [comments, postComment, updateCommentContent, updateCommentDownvote, updateCommentUpvote, user?.sub]);
 
     return (
         <Card>
@@ -47,10 +45,13 @@ function Question({question}: { question: IQuestion }) {
             <Accordion key={question.questionId} preview="Answers" content={(
                 <div className="flex flex-col gap-3">
                     {editing ? (
-                        <EditableComment onCancel={() => setEditing(false)} onSubmit={(newText, newPng) => {
-                            postComment(user?.sub || '', newText || '', newPng, null);
-                            setEditing(false);
-                        }}/>
+                        <EditableComment
+                            onCancel={() => setEditing(false)}
+                            onSubmit={async (newText, newPng) => {
+                                await postComment(user?.sub || '', newText || '', newPng, null);
+                                setEditing(false);
+                            }}
+                        />
                     ) : (
                         <button
                             onClick={() => setEditing(true)}

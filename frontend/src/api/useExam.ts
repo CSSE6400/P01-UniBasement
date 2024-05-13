@@ -4,7 +4,15 @@ import { Exam } from '@/types';
 
 const ENDPOINT = `${process.env.API_URL}/api/exams/`;
 
-const fetcher: Fetcher<Exam, string> = (...args) => fetch(...args).then(res => res.json())
+const fetcher: Fetcher<Exam, string> = async (...args) => {
+  const res = await fetch(...args)
+
+  if (!res.ok) {
+    throw new Error(await res.json())
+  }
+
+  return res.json()
+}
 
 export default function useExam(examId: number) {
     const { data, error, isLoading } = useSWR(ENDPOINT + examId, fetcher)

@@ -16,7 +16,7 @@ export default function usePostComment(questionId: number) {
         });
 
         if (res.ok) {
-            await mutate(ENDPOINT + '/questions' + questionId + '/comments');
+            await mutate(ENDPOINT + 'questions/' + questionId + '/comments');
         }
     };
 
