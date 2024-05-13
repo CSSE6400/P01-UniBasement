@@ -156,6 +156,11 @@ export async function upvoteComments(req: Request<CommentRouteParams>, res: Resp
     const { commentId } = req.params;
     const { userId } = req.body;
 
+    if (!userId) {
+        res.status(404).json("Needs a user id");
+        return;
+    }
+    
     const userRows = getConnection().getRepository(UserDb);
     const user = await userRows.findOne({ where: { userId } });
 
@@ -164,7 +169,7 @@ export async function upvoteComments(req: Request<CommentRouteParams>, res: Resp
         return;
     }
 
-    // check to see if has been downvoted
+    // check to see if has been downvoted TODO
     if (user.upvoted.includes(commentId)) {
         res.status(400).json('Already upvoted');
         return;
@@ -191,6 +196,11 @@ export async function downvoteComments(req: Request<CommentRouteParams>, res: Re
     const { commentId } = req.params;
     const { userId } = req.body;
 
+    if (!userId) {
+        res.status(404).json("Needs a user id");
+        return;
+    }
+
     const userRows = getConnection().getRepository(UserDb);
     const user = await userRows.findOne({ where: { userId } });
 
@@ -199,7 +209,7 @@ export async function downvoteComments(req: Request<CommentRouteParams>, res: Re
         return;
     }
 
-    // check to see if has been upvoted
+    // check to see if has been upvoted TODO
     if (user.downvoted.includes(commentId)) {
         res.status(400).json('Already downvoted');
         return;
