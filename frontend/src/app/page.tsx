@@ -51,69 +51,61 @@ function CourseSearch() {
 function LoginHome() {
   const { user, error, isLoading } = useUser()
   const courses: DisplayCourse[] = usePinned()
+
+  const greeting = () => {
+    const currentHour = new Date().getHours()
+    if (currentHour < 12) {
+      return 'Good morning'
+    } else if (currentHour < 18) {
+      return 'Good afternoon'
+    } else {
+      return 'Good evening'
+    }
+  }
   return (
     <main>
-      <div className="px-0">
-        <div className="min-h-80 bg-indigo-300">
-          <div className="flex items-center justify-center pt-12 text-5xl font-bold text-zinc-900">
-            Exam Study Made Simple
-          </div>
-          <div className="flex items-center justify-center pt-12 text-2xl text-zinc-900">
-            Empowering a collaborative approach to study
-          </div>
-          <div className="mt-8 flex items-center justify-center">
-            <div className="container min-h-16 max-w-prose rounded-lg bg-slate-100">
-              <CourseSearch />
+      <div className="mx-auto max-w-4xl text-zinc-900 dark:text-white">
+        <div className="mt-8 items-center justify-center lg:flex">
+          <div className="">
+            <div className="mt-8 text-3xl font-bold">
+              {greeting()}, {user?.nickname}
             </div>
           </div>
         </div>
-      </div>
-      <div className="flex min-h-60 items-center justify-center">
-        <div className="w-full max-w-4xl space-y-10">
-          <div className="text-xl">Pinned Courses</div>
+        <div className="flex min-h-60 items-center justify-center">
+          <div className="w-full max-w-4xl space-y-10">
+            <div className="text-xl text-zinc-900 dark:text-white">
+              Pinned Courses
+            </div>
 
-          <div className="mt-4 flex flex-col sm:flex-row">
-            <ul
-              role="list"
-              className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
-            >
-              {courses
-                .filter((value: DisplayCourse) => value.pinned === true)
-                .map((value) => (
-                  <CourseCard key={value.code} course={value} />
-                ))}
-            </ul>
-          </div>
-        </div>
-      </div>
-      <div className="flex min-h-60 items-center justify-center">
-        <div className="w-full max-w-4xl space-y-10">
-          <div className="mt-4 flex flex-col sm:flex-row">
-            <div className="">
-              <div className="flex items-center justify-center text-xl">
-                <IconZoomCheck size="48" />
-                <div className="ml-2">Answers verified by the community</div>
-              </div>
-            </div>
-            <div className="">
-              <div className="flex items-center justify-center text-xl">
-                <IconNotebook size="36" />
-                <div className="ml-2">Notes provided by the community</div>
-              </div>
-            </div>
-            <div className="">
-              <div className="flex items-center justify-center text-xl">
-                <IconPencilHeart size="48" />
-                <div className="ml-2">
-                  Prepare for an exam in the EVAN™️ way!
-                </div>
-              </div>
+            <div className="mt-4 flex flex-col sm:flex-row">
+              <ul
+                role="list"
+                className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
+              >
+                {courses
+                  .filter((value: DisplayCourse) => value.pinned === true)
+                  .map((value) => (
+                    <CourseCard key={value.code} course={value} />
+                  ))}
+              </ul>
             </div>
           </div>
         </div>
-      </div>
-      <div className="mx-auto flex min-h-10 w-full max-w-4xl py-6 text-2xl font-bold">
-        So jump straight in and start learning the EVAN™️ way!
+        <div className="min-h-60 items-center justify-center">
+          <div className="w-full max-w-4xl space-y-10">
+            <div className="text-xl text-zinc-900 dark:text-white">
+              Recent Activity
+            </div>
+
+            <div className="mt-4 flex flex-col sm:flex-row">
+              <ul
+                role="list"
+                className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
+              ></ul>
+            </div>
+          </div>
+        </div>
       </div>
     </main>
   )
@@ -122,7 +114,7 @@ function LoginHome() {
 function SignupHome() {
   return (
     <main>
-      <div className="mx-auto max-w-4xl">
+      <div className="mx-auto max-w-4xl text-zinc-900 dark:text-white">
         <div className="mt-8 items-center justify-center lg:flex">
           <div className="">
             <Image
