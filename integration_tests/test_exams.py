@@ -164,14 +164,14 @@ class TestExams(BaseCase):
         response = requests.get(
             self.host() + f'/exams/{self.examId}/questions')
 
-        expectedBody = {
+        expectedBody = [{
             "questionId": self.questionId,
             "questionText": self.QUESTION_TEXT,
             "questionType": self.QUESTION_TYPE,
             "questionPNG": self.QUESTION_PNG,
             "created_at": response.json()['created_at'],
             "updated_at": response.json()['updated_at']
-        }
+        }]
 
         # Verify response from API
         self.assertEqual(200, response.status_code)

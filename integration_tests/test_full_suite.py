@@ -136,14 +136,14 @@ class TestFullSuite(BaseCase):
         response = requests.get(
             self.host() + '/exams/' + str(exam['examId']) + '/questions')
         self.assertEqual(200, response.status_code)
-        expectedResponse = {
+        expectedResponse = [{
             "questionId": question['questionId'],
             "questionText": question['questionText'],
             "questionPNG": question['questionPNG'],
             "questionType": question['questionType'],
             "created_at": response.json()['created_at'],
             "updated_at": response.json()['updated_at']
-        }
+        }]
         self.assertEqual(expectedResponse, response.json())
 
         # Create comments for the question
