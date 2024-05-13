@@ -14,10 +14,9 @@ export default function useUpdateComments(questionId: number) {
             },
             body: JSON.stringify({ userId }),
         });
-        console.log(res)
 
         if (res.ok) {
-            await mutate(ENDPOINT + '/questions' + questionId + '/comments');
+            await mutate(ENDPOINT + '/questions/' + questionId + '/comments');
         }
     };
 
@@ -31,7 +30,7 @@ export default function useUpdateComments(questionId: number) {
         });
 
         if (res.ok) {
-            await mutate(ENDPOINT + '/questions' + questionId + '/comments');
+            await mutate(ENDPOINT + '/questions/' + questionId + '/comments');
         }
     };
 
@@ -45,7 +44,7 @@ export default function useUpdateComments(questionId: number) {
         });
 
         if (res.ok) {
-            await mutate(ENDPOINT + '/questions' + questionId + '/comments');
+            await mutate(ENDPOINT + '/questions/' + questionId + '/comments');
         }
     };
 

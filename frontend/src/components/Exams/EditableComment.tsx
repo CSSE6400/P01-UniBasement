@@ -1,6 +1,6 @@
 import { Comment as IComment } from '@/types';
-import CommentForm from '@/components/CommentForm';
-import { Downvote, Upvote } from '@/components/CommentVotes';
+import CommentForm from '@/components/Exams/CommentForm';
+import { Downvote, Upvote } from '@/components/Exams/CommentVotes';
 
 export function EditableComment({ comment, onCancel, onSubmit }: { comment?: IComment, onCancel:() => void, onSubmit:(newText?: string, newPng?: any) => void }) {
     return (
