@@ -55,7 +55,7 @@ export default function Comment({
                         />
                     ) : (
                         <div
-                            className="min-h-[120px] p-4 flex flex-col justify-between rounded-lg shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-indigo-600">
+                            className="min-h-[120px] p-4 flex flex-col justify-between rounded-lg shadow-sm ring-1 ring-inset ring-gray-700 focus-within:ring-2 focus-within:ring-emerald-500">
                             {comment.commentText}
                             <div className="flex flex-row gap-3">
                                 <button onClick={() => setReplying(true)}

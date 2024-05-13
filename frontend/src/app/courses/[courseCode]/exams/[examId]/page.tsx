@@ -1,4 +1,4 @@
-'use client'
+'use client';
 import useExam from '@/api/useExam';
 import useQuestions from '@/api/useQuestions';
 import requireAuth from '@/app/requireAuth';
@@ -16,13 +16,24 @@ function Exam({ params }: { params: { courseCode: string; examId: number } }) {
 
     return (
         <main>
-            <h1>{`${params.courseCode} ${exam?.examType}`}</h1>
-            <h2>{`${exam?.examYear} Semester ${exam?.examSemester}`}</h2>
-            {isLoadingQuestions && <p>Loading...</p>}
-            {!isErrorQuestions && !isLoadingQuestions && questions?.map(question => (
-                    <Question key={question.questionId} question={question} />
-                ))
-            }
+            <div className="max-w-4xl w-full mx-auto flex flex-col items-center justify-center">
+                {isLoadingQuestions && <p>Loading...</p>}
+                {!isLoading && !isError && (
+                    <>
+                        <div className="flex items-center justify-center pt-8 text-5xl font-bold">
+                            {`${params.courseCode} ${exam?.examType}`}
+                        </div>
+                        <div className="flex items-center justify-center pb-8 text-3xl">
+                            {`${exam?.examYear} Semester ${exam?.examSemester}`}
+                        </div>
+                    </>
+                )}
+                <div className="grid grid-cols-1 gap-4 w-full">
+                    {!isErrorQuestions && !isLoadingQuestions && questions?.map(question => (
+                        <Question key={question.questionId} question={question}/>
+                    ))}
+                </div>
+            </div>
         </main>
     );
 }

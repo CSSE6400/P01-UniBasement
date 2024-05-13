@@ -13,11 +13,12 @@ export function CommentForm({comment, onCancel, onSubmit}: {
     return (
         <form className="relative">
             <div
-                className="overflow-hidden rounded-lg shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-indigo-600">
+                className="overflow-hidden rounded-lg shadow-sm ring-1 ring-inset ring-gray-700 focus-within:ring-2 focus-within:ring-emerald-500">
                 <label htmlFor="comment" className="sr-only">
                     Add an answer...
                 </label>
                 <textarea
+                    autoFocus
                     rows={3}
                     name="comment"
                     id="comment"
