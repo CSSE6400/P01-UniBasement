@@ -164,18 +164,18 @@ class TestExams(BaseCase):
         response = requests.get(
             self.host() + f'/exams/{self.examId}/questions')
 
-        expectedBody = [{
+        expectedBody = {
             "questionId": self.questionId,
             "questionText": self.QUESTION_TEXT,
             "questionType": self.QUESTION_TYPE,
             "questionPNG": self.QUESTION_PNG,
-            "created_at": response.json()['created_at'],
-            "updated_at": response.json()['updated_at']
-        }]
+            "created_at": response.json()[0]['created_at'],
+            "updated_at": response.json()[0]['updated_at']
+        }
 
         # Verify response from API
         self.assertEqual(200, response.status_code)
-        self.assertEqual(expectedBody, response.json())
+        self.assertEqual(expectedBody, response.json()[0])
 
     def test_exam_get_questions_by_examId_not_found(self):
         """
