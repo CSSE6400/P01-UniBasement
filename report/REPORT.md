@@ -49,6 +49,8 @@ with your architecture or software design.
 
 # UniBasement
 ## Abstract
+The purpose of this report is to document the various design decision made throughout the completion of the project. To begin, changes made to the project from what was outlined in the project proposal will be described and justified. Secondly, the types of architectures that were considered for the implementation of the project will be outlined alongside their pros and cons followed by the MVP's chosen software architecture being described in detail. Thirdly, the trade-offs that were made when designing the architecture will be justified. Fourthly, there will be a critique of the architecutres implementation and how well it delivers the project. Fithly, the report will contain a evaluation that summarises the testing results and justifies how well the software achieves its quality attributes. Finally, there will be a reflection on the lessons learnt throughout the project and if were able to start from the begining what we would do differenlty. 
+
 
 ## Changes to propsal
 NEEDS TO BE WRITTERN PROPERLY (dot points probs ok but should be expanded upon)
