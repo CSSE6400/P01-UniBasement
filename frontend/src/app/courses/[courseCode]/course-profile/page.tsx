@@ -1,13 +1,13 @@
-'use client'
+'use client';
 import useCourse from '@/api/useCourse';
 import useExams from '@/api/useExams';
 import { Course } from '@/types';
-import Link from 'next/link';
 import requireAuth from '@/app/requireAuth';
-import { SetStateAction, useEffect, useState } from 'react';
-import { IconStar, IconStarFilled, IconStarHalfFilled, IconStarHalf } from '@tabler/icons-react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { IconStarFilled } from '@tabler/icons-react';
 import Card from '@/components/Card';
 import { useUser } from '@auth0/nextjs-auth0/client';
+import useUpdateCourse from '@/api/useUpdateCourse';
 
 function CourseDescription({ course} : { course: Course }) {
 
@@ -30,7 +30,7 @@ function CourseExams({ course} : { course: Course }) {
             {!isError && !isLoading && exams && (
                 <div className='flex flex-wrap space-x-4'>
                     {exams.map(exam => (
-                        <Card>
+                        <Card key={exam.examId}>
                             <a href="#">
                                 <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Semester {exam!.examSemester} - {exam!.examYear}</h5>
                             </a>
@@ -54,50 +54,36 @@ function CourseExams({ course} : { course: Course }) {
 function CourseRating ({ course } : { course: Course }) {
     const [rating, setRating] = useState(Number(localStorage.getItem('rating')) || 0);
     const [tempRating, setTempRating] = useState(rating);
+
     const { user, error, isLoading } = useUser()
-    let endpoint = `${process.env.API_URL}/api/courses/`
-    let call = endpoint + course.courseCode + '/star'
+    const { updateCourseRating } = useUpdateCourse(course.courseCode)
 
-    const patchRating = async (starId: number) => {
-        if (!isLoading && user) {
-            try {
-                const response = await fetch(call,  {
-                    method: 'PATCH',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        starRating: starId,
-                        userId: user.sub
-                    }),
-                });
-
-                if (!response.ok) {
-                    throw new Error('Error with PATCH requests')
-                }
-            } catch (error) {
-                console.error('Error:', error)
-            }
-        }
-    }
-
-    const handleMouseOver = (starId: number) => {
-        setTempRating(starId);
-    };
-
-    const handleMouseOut = () => {
-        setTempRating(rating)
-    };
-
-    const handleSaveRating = (starId: number) => {
+    const handleSaveRating = useCallback(async (starId: number) => {
         setRating(starId);
         localStorage.setItem('rating', starId.toString());
-        patchRating(starId)
-    };
+        await updateCourseRating(user?.sub || '', starId)
+    }, [user, updateCourseRating]);
 
     useEffect(() => {
         setTempRating(rating);
     }, [rating]);
+
+    const ratingStars = useMemo(() => (
+        [...Array(5)].map((_, i) => {
+            const starId = i + 1;
+            return (
+                <span
+                    key={starId}
+                    className={`cursor-pointer text-2xl mx-1 ${starId <= tempRating ? 'text-yellow-400' : 'text-gray-300'}`}
+                    onMouseOver={() => setTempRating(starId)}
+                    onMouseOut={() => setTempRating(rating)}
+                    onClick={async () => await handleSaveRating(starId)}
+                >
+                    <IconStarFilled />
+                </span>
+            );
+        })
+    ), [rating, tempRating, handleSaveRating])
 
     return (
         <div>
@@ -109,30 +95,15 @@ function CourseRating ({ course } : { course: Course }) {
                 </div>
             )}
             {!error && !isLoading && user && (
-                        <Card>
-
-                        <div>
-                            <h2 className="mb-4 text-3xl font-extrabold text-gray-900 dark:text-white md:text-3xl lg:text-3xl flex flex-row items-stretch">
-                                Leave your rating:
-                            </h2>
-                            <div className='flex flex-row pt-2 place-items-end'>
-                                {[...Array(5)].map((star, i) => {
-                                    const starId = i + 1;
-                                    return (
-                                    <span
-                                        key={starId}
-                                        className={`cursor-pointer text-2xl mx-1 ${starId <= tempRating ? 'text-yellow-400' : 'text-gray-300'}`}
-                                        onMouseOver={() => handleMouseOver(starId)}
-                                        onMouseOut={handleMouseOut}
-                                        onClick={() => handleSaveRating(starId)}
-                                    >
-                                        <IconStarFilled />
-                                    </span>
-                                    );
-                                })}
-                            </div>
+                <Card>
+                    <div>
+                        <h2 className="mb-4 text-3xl font-semibold text-gray-900 dark:text-white md:text-3xl lg:text-3xl flex flex-row items-stretch">
+                            Leave your rating:
+                        </h2>
+                        <div className='flex flex-row pt-2 place-items-end'>
+                            {ratingStars}
                         </div>
-
+                    </div>
                 </Card>
             )}
         </div>
@@ -191,28 +162,6 @@ function CourseHeader({ course }: { course: Course }) {
     if (votes == 0) {
         val = 0
     }
-  return (
-    <div>
-      <h1 className="mb-4 text-3xl font-extrabold text-gray-900 md:text-5xl lg:text-6xl dark:text-white">
-        <span className="bg-gradient-to-r from-sky-400 to-emerald-600 bg-clip-text text-transparent">
-          {course!.courseName}
-        </span>
-      </h1>
-      <h2 className="flex items-center text-5xl font-extrabold dark:text-white">
-        <span className="me-2 ml-0 rounded bg-blue-100 px-2.5 py-0.5 text-2xl font-semibold text-blue-800 dark:bg-blue-200 dark:text-blue-800">
-          {course!.university}
-        </span>
-        <span className="me-2 ms-2 rounded bg-blue-100 px-2.5 py-0.5 text-2xl font-semibold text-blue-800 dark:bg-blue-200 dark:text-blue-800">
-          {course!.courseCode}
-        </span>
-        <span className="me-2 ms-2 rounded bg-blue-100 px-2.5 py-0.5 text-2xl font-semibold text-blue-800 dark:bg-blue-200 dark:text-blue-800">
-          STARS: {val}
-        </span>
-      </h2>
-      <CourseDescription course={course}></CourseDescription>
-    </div>
-  )
-
     return (
         <div>
             <h1 className="mb-4 text-3xl font-extrabold text-gray-900 dark:text-white md:text-5xl lg:text-6xl flex flex-row">
@@ -220,13 +169,10 @@ function CourseHeader({ course }: { course: Course }) {
                     {course!.courseCode}: {course!.courseName}
                 </span>
             </h1>
-            <h2 className="mb-4 text-3xl font-extrabold text-gray-900 dark:text-white md:text-3xl lg:text-3xl flex flex-row items-center">
-                <IconStarFilled /> {val} Course Rating - {votes} Ratings
+            <h2 className="mb-4 text-3xl  text-gray-900 dark:text-white md:text-3xl lg:text-3xl flex flex-row items-center">
+                 {val} <IconStarFilled /> <span className="ml-3 text-lg ">{votes} rating{votes > 1 && 's'}</span>
             </h2>
-
-
         </div>
-
     );
 }
 
@@ -239,9 +185,7 @@ function CourseProfile({ params }: { params: { courseCode: string } }) {
       {isLoading && <p>Loading...</p>}
       {!isError && !isLoading && course && (
         <div key={course!.courseCode}>
-          <Link href={`/courses/${course!.courseCode}/course-profile`}>
-            <CourseHeader course={course}></CourseHeader>
-          </Link>
+          <CourseHeader course={course}></CourseHeader>
           <CourseProfileTabs course={course}></CourseProfileTabs>
         </div>
       )}
