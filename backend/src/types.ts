@@ -31,8 +31,8 @@ export type Comment = {
     isEndorsed: boolean
     upvotes: number
     downvotes: number
-    created_at: Date
-    updated_at: Date
+    createdAt: Date
+    updatedAt: Date
     children?: Comment[]
     questionId?: number
 }

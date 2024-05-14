@@ -656,13 +656,13 @@ class TestComments(BaseCase):
                 "upvotes": 0,
                 "downvotes": 0,
                 "questionId": self.questionId,
-                "created_at": "2001-06-01T09:00:00",
-                "updated_at": "2001-06-01T09:00:00"
+                "createdAt": "2001-06-01T09:00:00",
+                "updatedAt": "2001-06-01T09:00:00"
         }
 
         response = requests.get(self.host() + '/comments/' + str(self.commentId))
 
-        update_timestamps(expectedResponse, response.json()['created_at'], response.json()['updated_at'])
+        update_timestamps(expectedResponse, response.json()['createdAt'], response.json()['updatedAt'])
 
         self.assertEqual(200, response.status_code)
         self.assertEqual(expectedResponse, response.json())

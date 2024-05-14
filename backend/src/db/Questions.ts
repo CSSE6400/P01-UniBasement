@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Exam } from './Exam';
 
 @Entity()
@@ -6,7 +6,14 @@ export class Question {
     @PrimaryGeneratedColumn()
     questionId: number;
 
-    @ManyToOne(() => Exam, exam => exam.examId)
+    @ManyToOne(() => Exam, { nullable: false })
+    @JoinColumn({
+        name: 'examId',
+        referencedColumnName: 'examId',
+    })
+    exam: Exam;
+
+    @Column()
     examId: Exam['examId'];
 
     @Column('text', { nullable: true })
@@ -19,9 +26,9 @@ export class Question {
     questionType: string;
 
     @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-    created_at: Date;
+    createdAt: Date;
 
     @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-    updated_at: Date;
+    updatedAt: Date;
 }
 

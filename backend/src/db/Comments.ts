@@ -7,19 +7,25 @@ export class Comment {
     @PrimaryGeneratedColumn()
     commentId: number;
 
-    @ManyToOne(() => Question)
-    @JoinColumn()
+    @ManyToOne(() => Question, { nullable: false })
+    @JoinColumn({
+        name: 'questionId',
+        referencedColumnName: 'questionId',
+    })
     question: Question;
 
     @Column()
-    questionId: number;
+    questionId: Question['questionId'];
 
-    @ManyToOne(() => User)
-    @JoinColumn()
+    @ManyToOne(() => User, { nullable: false })
+    @JoinColumn({
+        name: 'userId',
+        referencedColumnName: 'userId',
+    })
     user: User;
 
     @Column()
-    userId: string;
+    userId: User['userId'];
 
     @Column({ nullable: true })
     parentCommentId: number;
@@ -43,9 +49,9 @@ export class Comment {
     downvotes: number;
 
     @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-    created_at: Date;
+    createdAt: Date;
 
     @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-    updated_at: Date;
+    updatedAt: Date;
 }
 

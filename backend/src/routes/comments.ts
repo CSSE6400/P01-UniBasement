@@ -50,7 +50,7 @@ export async function editComments(req: Request<CommentRouteParams, any, Comment
         comment.commentPNG = commentPNG;
     }
 
-    comment.updated_at = new Date();
+    comment.updatedAt = new Date();
     await commentRepository.update(comment.commentId, comment);
 
     res.status(200).json('Comment edited');
