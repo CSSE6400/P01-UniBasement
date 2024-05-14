@@ -1,7 +1,6 @@
 // Imports
 import { Request, Response } from 'express'; // Import Request and Response types
-
-import { getConnection } from '../db/index';
+import { getConnection } from '../db';
 import { User as UserDb } from '../db/User';
 import { Course as CourseDb } from '../db/Course';
 import { Exam as ExamDb } from '../db/Exam';
@@ -56,7 +55,7 @@ export async function setupData(req: Request, res: Response) {
             university: 'UQ',
         },
     ];
-    
+
     for (const c of courses) {
         const newCourse = new CourseDb();
         newCourse.courseCode = c.courseCode;
@@ -318,6 +317,6 @@ export async function setupData(req: Request, res: Response) {
         newComment.commentText = c.commentText;
         await comment.save(newComment);
     }
-    
+
     res.status(200).json(`THIS SHIT SKETCH ASF AND WAS LIV'S IDEA!!!\n`);
 }

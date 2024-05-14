@@ -76,7 +76,7 @@ export async function postQuestion(req: Request<any, any, QuestionBodyParams>, r
 
     const newQuestion = new QuestionDb();
     newQuestion.examId = examId;
-    
+
     if (questionText) {
         newQuestion.questionText = questionText;
     }
@@ -87,7 +87,7 @@ export async function postQuestion(req: Request<any, any, QuestionBodyParams>, r
     newQuestion.questionType = questionType;
     const savedQuestion = await questionRepository.save(newQuestion);
 
-    res.status(201).json({ questionId: savedQuestion.questionId});
+    res.status(201).json({ questionId: savedQuestion.questionId });
 }
 
 export async function getQuestionComments(req: Request<QuestionRouteParams, any, any, QuestionQueryParams>, res: Response) {
@@ -123,9 +123,9 @@ export async function getQuestionComments(req: Request<QuestionRouteParams, any,
             ...comment,
             upvoted: user.upvoted.includes(comment.commentId),
             downvoted: user.downvoted.includes(comment.commentId),
-        }
+        };
     });
-    
+
     res.status(200).json(nest(commentsWithFlag));
 }
 

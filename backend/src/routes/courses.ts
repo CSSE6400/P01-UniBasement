@@ -40,12 +40,12 @@ export async function starCourse(req: Request<CourseRouteParams>, res: Response)
 
     // Goes through the JSON array and sees if the course is there
     const rating: RateObject | undefined = user.rated.find((course: RateObject) => course.courseCode === courseCode);
-    
+
     course.stars += rating ? starRating - rating.stars : starRating;
     course.votes += rating ? 0 : 1;
 
     const i = user.rated.findIndex((course: RateObject) => course.courseCode === courseCode);
-    
+
     if (i !== -1) {
         user.rated[i].stars = starRating;
     } else {

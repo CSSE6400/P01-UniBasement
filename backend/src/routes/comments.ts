@@ -22,7 +22,7 @@ export async function editComments(req: Request<CommentRouteParams, any, Comment
     }
 
     const commentRepository = getConnection().getRepository(CommentDb);
-    const comment = await commentRepository.findOne({ where: { commentId }});
+    const comment = await commentRepository.findOne({ where: { commentId } });
 
     if (!comment) {
         res.status(404).json('Comment not found');
@@ -38,7 +38,7 @@ export async function editComments(req: Request<CommentRouteParams, any, Comment
     }
 
     if (comment.userId !== userId) {
-        res.status(401).json("Unauthorized");
+        res.status(401).json('Unauthorized');
         return;
     }
 
@@ -73,8 +73,8 @@ export async function deleteComments(req: Request<CommentRouteParams>, res: Resp
         return;
     }
 
-    comment.commentText = "Deleted";
-    comment.commentPNG = "Deleted";
+    comment.commentText = 'Deleted';
+    comment.commentPNG = 'Deleted';
     comment.isCorrect = false;
     comment.isEndorsed = false;
     comment.upvotes = 0;
@@ -157,10 +157,10 @@ export async function upvoteComments(req: Request<CommentRouteParams>, res: Resp
     const { userId } = req.body;
 
     if (!userId) {
-        res.status(404).json("Needs a user id");
+        res.status(404).json('Needs a user id');
         return;
     }
-    
+
     const userRows = getConnection().getRepository(UserDb);
     const user = await userRows.findOne({ where: { userId } });
 
@@ -171,7 +171,7 @@ export async function upvoteComments(req: Request<CommentRouteParams>, res: Resp
 
 
     const commentRows = getConnection().getRepository(CommentDb);
-    const comment = await commentRows.findOne({ where: { commentId} });
+    const comment = await commentRows.findOne({ where: { commentId } });
 
     if (!comment) {
         res.status(404).json('Comment not found');
@@ -187,7 +187,7 @@ export async function upvoteComments(req: Request<CommentRouteParams>, res: Resp
     } else {
         user.upvoted.push(+commentId);
     }
-    
+
     if (user.downvoted.includes(+commentId)) {
         comment.downvotes -= 1;
         user.downvoted = user.downvoted.filter((id) => id !== +commentId);
@@ -206,7 +206,7 @@ export async function downvoteComments(req: Request<CommentRouteParams>, res: Re
     const { userId } = req.body;
 
     if (!userId) {
-        res.status(404).json("Needs a user id");
+        res.status(404).json('Needs a user id');
         return;
     }
 
@@ -235,7 +235,7 @@ export async function downvoteComments(req: Request<CommentRouteParams>, res: Re
     } else {
         user.downvoted.push(+commentId);
     }
-    
+
     if (user.upvoted.includes(+commentId)) {
         comment.upvotes -= 1;
         user.upvoted = user.upvoted.filter((id) => id !== +commentId);
@@ -268,7 +268,7 @@ export async function postComment(req: Request<any, any, CommentBodyParams>, res
         res.status(400).json('Missing commentText or commentPNG');
         return;
     }
-    
+
     const userRows = getConnection().getRepository(UserDb);
     const user = await userRows.findOne({ where: { userId } });
 
@@ -303,15 +303,15 @@ export async function postComment(req: Request<any, any, CommentBodyParams>, res
     const newComment = new CommentDb();
     newComment.userId = userId;
     newComment.questionId = questionId;
-    
+
     if (parentCommentId) {
         newComment.parentCommentId = parentCommentId;
     }
-    
+
     if (commentText) {
         newComment.commentText = commentText;
     }
-    
+
     if (commentPNG) {
         newComment.commentPNG = commentPNG;
     }

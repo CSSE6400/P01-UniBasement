@@ -24,5 +24,5 @@ app.use(express.urlencoded({ extended: false }));
  * Server Activation / Confirmation
  */
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+    console.log(`Server is running on port ${PORT}`);
 });

@@ -1,7 +1,6 @@
 // Imports
 import { Request, Response } from 'express'; // Import Request and Response types
-
-import { getConnection } from '../db/index';
+import { getConnection } from '../db';
 
 export async function healthCheck(req: Request, res: Response) {
     try {
