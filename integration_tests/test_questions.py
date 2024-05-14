@@ -295,7 +295,7 @@ class TestQuestions(BaseCase):
         }]
 
         response = requests.get(
-            self.host() + '/questions/' + str(questionId) + '/comments' + str(userId))
+            self.host() + '/questions/' + str(questionId) + '/comments/' + str(userId))
         update_timestamps(expectedResponse, response.json()[
                           0]['created_at'], response.json()[0]['updated_at'])
 
@@ -319,7 +319,7 @@ class TestQuestions(BaseCase):
         questionId = 3344
         userId = self.userId
         response = requests.get(
-            self.host() + '/questions/' + str(questionId) + '/comments' + str(userId))
+            self.host() + '/questions/' + str(questionId) + '/comments/' + str(userId))
 
         # Verify response from API
         self.assertEqual(404, response.status_code)
@@ -338,7 +338,7 @@ class TestQuestions(BaseCase):
         userId = self.userId
         expectedResponse = []
         response = requests.get(
-            self.host() + '/questions/' + str(questionId) + '/comments' + str(userId))
+            self.host() + '/questions/' + str(questionId) + '/comments/' + str(userId))
 
         # Verify response from API
         self.assertEqual(200, response.status_code)
