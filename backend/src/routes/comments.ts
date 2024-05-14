@@ -268,6 +268,14 @@ export async function postComment(req: Request<any, any, CommentBodyParams>, res
         res.status(400).json('Missing commentText or commentPNG');
         return;
     }
+    
+    const userRows = getConnection().getRepository(UserDb);
+    const user = await userRows.findOne({ where: { userId } });
+
+    if (!user) {
+        res.status(400).json('User does not exist');
+        return;
+    }
 
     // Check question id
     const questionRepository = getConnection().getRepository(QuestionDb);

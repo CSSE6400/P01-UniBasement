@@ -492,7 +492,7 @@ class TestComments(BaseCase):
         body = {
             "questionId": 868686,
             "parentCommentId": 0,
-            "userId": "evan",
+            "userId": self.USER_ID,
             "commentText": "This is a comment",
             "commentPNG": None,
             "isCorrect": False,

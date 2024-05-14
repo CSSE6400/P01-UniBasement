@@ -71,6 +71,14 @@ class TestFullSuite(BaseCase):
             "votes": 0
         }
 
+        # Create a user
+        user = {
+            "userId": self.USER_ID,
+        }
+
+        response = requests.post(self.host() + '/users', json=user)
+        self.assertEqual(201, response.status_code)
+
         # Create a course
         response = requests.post(self.host() + '/courses', json=course)
         self.assertEqual(201, response.status_code)
@@ -167,7 +175,7 @@ class TestFullSuite(BaseCase):
 
         # Check the question has the comment
         response = requests.get(
-            self.host() + '/questions/' + str(question['questionId']) + '/comments')
+            self.host() + '/questions/' + str(question['questionId']) + '/comments/' + str(self.USER_ID))
         self.assertEqual(200, response.status_code)
         expectedResponse = {
             "commentId": comment['commentId'],
@@ -181,7 +189,9 @@ class TestFullSuite(BaseCase):
             "downvotes": comment['downvotes'],
             "created_at": response.json()[0]['created_at'],
             "updated_at": response.json()[0]['updated_at'],
-            "questionId": question['questionId']
+            "questionId": question['questionId'],
+            "upvoted": False,
+            "downvoted": False
         }
 
         self.assertEqual([expectedResponse], response.json())
@@ -197,7 +207,7 @@ class TestFullSuite(BaseCase):
 
         # Check the question has no comments
         response = requests.get(
-            self.host() + '/questions/' + str(question['questionId']) + '/comments')
+            self.host() + '/questions/' + str(question['questionId']) + '/comments/' + str(self.USER_ID))
         self.assertEqual(200, response.status_code)
 
 
