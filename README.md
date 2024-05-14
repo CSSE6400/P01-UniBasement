@@ -30,7 +30,7 @@ This project is brought to you by the Evan Hughes FanClub. Our team consists of:
 
 - [Shanon Lakshan Chandrasekara](https://github.com/86LAK)
 
-### QUT Guy Who Has Vanished?
+### QUT Guy Who Has Vanished!
 - [Ibrahim Cassim](https://github.com/IbrahimCassim)
 
 ## Deployment
