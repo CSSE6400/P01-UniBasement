@@ -44,6 +44,11 @@ jobs:
   
       - name: Set up Debug Logging for Integration Tests
         run: echo "ACTIONS_STEP_DEBUG=true" >> $GITHUB_ENV
+
+      - name: Create .env.local
+        run: |
+          cd frontend 
+          touch .env.local
   
       - name: Run integration tests
         working-directory: ./integration_tests
