@@ -1,28 +1,12 @@
-import { useState } from 'react'
-import { Button } from '@/components/Button'
-import { IconPin, IconPinFilled } from '@tabler/icons-react'
-import Card from '@/components/Card'
-import Link from 'next/link'
-import { DisplayCourse } from '@/types'
-import { usePinned } from '@/api/usePins'
+import { Button } from '@/components/Button';
+import { IconPin, IconPinFilled } from '@tabler/icons-react';
+import Card from '@/components/Card';
+import Link from 'next/link';
+import { DisplayCourse } from '@/types';
+import { usePinned } from '@/api/usePins';
 
 function CourseCard({ course }: { course: DisplayCourse }) {
-  const [pinned, setPinned] = useState(course.pinned ?? false)
-  const curPins = usePinned()
-
-  function updatePins(currentPins: DisplayCourse[]) {
-    const thisPin = currentPins.find(
-      (value: DisplayCourse) => value.code === course.code,
-    )
-    if (thisPin) {
-      thisPin.pinned = false
-      const newPins = curPins.filter(
-        (value: DisplayCourse) => value.code !== course.code,
-      )
-      newPins.push(thisPin)
-      localStorage.setItem('pinned', JSON.stringify(newPins))
-    }
-  }
+  const { updatePinned } = usePinned()
 
   return (
     <Link href={course.href}>
@@ -35,14 +19,13 @@ function CourseCard({ course }: { course: DisplayCourse }) {
               <Button
                 onClick={(e) => {
                   e.preventDefault()
-                  setPinned(!pinned)
-                  updatePins(curPins)
+                  updatePinned({ ...course, pinned: !course.pinned })
                 }}
                 variant="icon"
                 className="absolute right-2"
               >
-                {pinned ? (
-                  <IconPin className="h-5 w-5 fill-zinc-700/10 stroke-zinc-700 transition-colors duration-300 group-hover:stroke-zinc-900 dark:fill-white/10 dark:stroke-zinc-400 dark:group-hover:fill-emerald-300/10 dark:group-hover:stroke-emerald-400" />
+                {course.pinned ? (
+                  <IconPin className="h-5 w-5 fill-zinc-700/10 stroke-zinc-700 transition-colors duration-300 group-hover:stroke-zinc-900 dark:fill-emerald-300/10 dark:stroke-emerald-400 dark:group-hover:fill-emerald-100/10 dark:group-hover:stroke-emerald-200" />
                 ) : (
                   <IconPinFilled className="h-5 w-5 fill-zinc-700/10 stroke-zinc-700 transition-colors duration-300 group-hover:stroke-zinc-900 dark:fill-white/10 dark:stroke-zinc-400 dark:group-hover:fill-emerald-300/10 dark:group-hover:stroke-emerald-400" />
                 )}

@@ -1,10 +1,9 @@
 import { Course, DisplayCourse } from '@/types';
 
-export function backendCourseToFrontend(course: Course): DisplayCourse {
-    // TODO: update to handle last viewed & pinned
+export function backendCourseToFrontend(course: Course, pinnedCourses: DisplayCourse[]): DisplayCourse {
     return ({
         href: `/courses/${course.courseCode}/course-profile`,
-        pinned: false,
+        pinned: pinnedCourses.some(pinnedCourse => pinnedCourse.code === course.courseCode),
         name: course.courseName,
         code: course.courseCode,
     })
