@@ -64,8 +64,8 @@ class TestUser(BaseCase):
         self.assertEqual(user.userId, self.USER_ID)
         self.assertEqual(user.role, 0)
         self.assertEqual(user.rated, [])
-        self.assertEqual(user.upvoted, '[]')
-        self.assertEqual(user.downvoted, '[]')
+        self.assertEqual(user.upvoted, [])
+        self.assertEqual(user.downvoted, [])
         
 
 

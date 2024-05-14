@@ -181,16 +181,16 @@ export async function upvoteComments(req: Request<CommentRouteParams>, res: Resp
     let vote = 1;
 
     // check to see if has been upvoted
-    if (user.upvoted.includes(commentId)) {
+    if (user.upvoted.includes(+commentId)) {
         vote = -1;
-        user.upvoted = user.upvoted.filter((id) => id !== commentId);
+        user.upvoted = user.upvoted.filter((id) => id !== +commentId);
     } else {
-        user.upvoted.push(commentId);
+        user.upvoted.push(+commentId);
     }
     
-    if (user.downvoted.includes(commentId)) {
+    if (user.downvoted.includes(+commentId)) {
         comment.downvotes -= 1;
-        user.downvoted = user.downvoted.filter((id) => id !== commentId);
+        user.downvoted = user.downvoted.filter((id) => id !== +commentId);
     }
 
     comment.upvotes += vote;
@@ -229,16 +229,16 @@ export async function downvoteComments(req: Request<CommentRouteParams>, res: Re
     let vote = 1;
 
     // check to see if has been upvoted
-    if (user.downvoted.includes(commentId)) {
+    if (user.downvoted.includes(+commentId)) {
         vote = -1;
-        user.downvoted = user.downvoted.filter((id) => id !== commentId);
+        user.downvoted = user.downvoted.filter((id) => id !== +commentId);
     } else {
-        user.downvoted.push(commentId);
+        user.downvoted.push(+commentId);
     }
     
-    if (user.upvoted.includes(commentId)) {
+    if (user.upvoted.includes(+commentId)) {
         comment.upvotes -= 1;
-        user.upvoted = user.upvoted.filter((id) => id !== commentId);
+        user.upvoted = user.upvoted.filter((id) => id !== +commentId);
     }
 
     comment.downvotes += vote;

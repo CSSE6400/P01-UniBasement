@@ -14,8 +14,8 @@ const fetcher: Fetcher<IComment[], string> = async (...args) => {
   return res.json()
 }
 
-export default function useComments(questionId: number) {
-    const { data, error, isLoading } = useSWR(ENDPOINT + questionId +'/comments', fetcher, {revalidateIfStale: true})
+export default function useComments(questionId: number, userId?: string | null) {
+    const { data, error, isLoading } = useSWR(`${ENDPOINT}${questionId}/comments${!!userId ? `?userId=${userId}` : ''}`, fetcher, {revalidateIfStale: true})
 
     return {
         comments: data,
