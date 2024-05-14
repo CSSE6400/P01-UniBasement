@@ -21,14 +21,6 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  let pages = await glob('**/*.mdx', { cwd: 'src/app' })
-  let allSectionsEntries = (await Promise.all(
-    pages.map(async (filename) => [
-      '/' + filename.replace(/(^|\/)page\.mdx$/, ''),
-      (await import(`./${filename}`)).sections,
-    ]),
-  )) as Array<[string, Array<Section>]>
-  let allSections = Object.fromEntries(allSectionsEntries)
 
   return (
     <html lang="en" className="h-full" suppressHydrationWarning>
@@ -36,7 +28,7 @@ export default async function RootLayout({
         <Providers>
           <UserProvider>
             <div className="w-full">
-              <Layout allSections={allSections}>{children}</Layout>
+              <Layout>{children}</Layout>
             </div>
           </UserProvider>
         </Providers>
