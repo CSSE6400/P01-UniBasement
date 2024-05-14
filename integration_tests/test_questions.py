@@ -214,8 +214,8 @@ class TestQuestions(BaseCase):
             "questionText": body["questionText"],
             "questionType": body["questionType"],
             "questionPNG": body["questionPNG"],
-            "created_at": question.created_at,
-            "updated_at": question.updated_at
+            "createdAt": question.createdAt,
+            "updatedAt": question.updatedAt
         }
         # Convert SQLAlchemy ORM object to a dict
         questionDict = {column.key: getattr(
@@ -282,8 +282,8 @@ class TestQuestions(BaseCase):
             "parentCommentId": None,
             "commentText": "This is a comment for the question",
             "commentPNG": None,
-            "created_at": None,
-            "updated_at": None,
+            "createdAt": None,
+            "updatedAt": None,
             "upvotes": 0,
             "downvotes": 0,
             "isCorrect": False,
@@ -297,7 +297,7 @@ class TestQuestions(BaseCase):
         response = requests.get(
             self.host() + '/questions/' + str(questionId) + '/comments?userId=' + str(userId))
         update_timestamps(expectedResponse, response.json()[
-                          0]['created_at'], response.json()[0]['updated_at'])
+                          0]['createdAt'], response.json()[0]['updatedAt'])
 
         # Verify response from API
         self.assertEqual(200, response.status_code)
@@ -357,8 +357,8 @@ class TestQuestions(BaseCase):
             "questionText": "Who is the best tutor at UQ?",
             "questionType": "Multiple Choice",
             "questionPNG": None,
-            "created_at": response.json()['created_at'],
-            "updated_at": response.json()['updated_at']
+            "createdAt": response.json()['createdAt'],
+            "updatedAt": response.json()['updatedAt']
         }
 
         # Verify response from API

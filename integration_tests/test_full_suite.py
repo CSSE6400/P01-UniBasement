@@ -149,8 +149,8 @@ class TestFullSuite(BaseCase):
             "questionText": question['questionText'],
             "questionPNG": question['questionPNG'],
             "questionType": question['questionType'],
-            "created_at": response.json()[0]['created_at'],
-            "updated_at": response.json()[0]['updated_at']
+            "createdAt": response.json()[0]['createdAt'],
+            "updatedAt": response.json()[0]['updatedAt']
         }
         self.assertEqual(expectedResponse, response.json()[0])
 
@@ -187,8 +187,8 @@ class TestFullSuite(BaseCase):
             "isEndorsed": comment['isEndorsed'],
             "upvotes": comment['upvotes'],
             "downvotes": comment['downvotes'],
-            "created_at": response.json()[0]['created_at'],
-            "updated_at": response.json()[0]['updated_at'],
+            "createdAt": response.json()[0]['createdAt'],
+            "updatedAt": response.json()[0]['updatedAt'],
             "questionId": question['questionId'],
             "upvoted": False,
             "downvoted": False

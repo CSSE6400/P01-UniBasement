@@ -142,8 +142,8 @@ None
     isendoresed: boolean - Is the comment endorsed i.e. false
     upvotes: Integer - How many upvotes does the comment have i.e. 3
     downvotes: Integer - How many downvotes does the comment have i.e. 2
-    created_at: timestamp - When the comment was made
-    updated_at: timestamp - When the comment was last edited or updated
+    createdAt: timestamp - When the comment was made
+    updatedAt: timestamp - When the comment was last edited or updated
   }
 ]
 ```
@@ -169,7 +169,7 @@ None
   isendoresed: boolean - Is the comment endorsed i.e. false
   upvotes: Integer - How many upvotes does the comment have i.e. 3
   downvotes: Integer - How many downvotes does the comment have i.e. 2
-  created_at: timestamp - When the comment was made
-  updated_at: timestamp - When the comment was last edited or updated
+  createdAt: timestamp - When the comment was made
+  updatedAt: timestamp - When the comment was last edited or updated
 }
 ```

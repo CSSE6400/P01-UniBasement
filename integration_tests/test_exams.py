@@ -169,8 +169,8 @@ class TestExams(BaseCase):
             "questionText": self.QUESTION_TEXT,
             "questionType": self.QUESTION_TYPE,
             "questionPNG": self.QUESTION_PNG,
-            "created_at": response.json()[0]['created_at'],
-            "updated_at": response.json()[0]['updated_at']
+            "createdAt": response.json()[0]['createdAt'],
+            "updatedAt": response.json()[0]['updatedAt']
         }
 
         # Verify response from API

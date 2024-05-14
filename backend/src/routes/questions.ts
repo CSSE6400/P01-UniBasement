@@ -39,7 +39,7 @@ export async function editQuestion(req: Request<QuestionRouteParams, any, Questi
         question.questionPNG = questionPNG;
     }
 
-    question.updated_at = new Date();
+    question.updatedAt = new Date();
     await questionRepository.update(question.questionId, question);
 
     res.status(200).json('Question edited');

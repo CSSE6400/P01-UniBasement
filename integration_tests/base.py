@@ -53,10 +53,10 @@ def update_timestamps(response_dict, created_at, updated_at):
         for item in response_dict:
             update_timestamps(item, created_at, updated_at)
     elif isinstance(response_dict, dict):
-        if 'created_at' in response_dict:
-            response_dict['created_at'] = created_at
-        if 'updated_at' in response_dict:
-            response_dict['updated_at'] = updated_at
+        if 'createdAt' in response_dict:
+            response_dict['createdAt'] = created_at
+        if 'updatedAt' in response_dict:
+            response_dict['updatedAt'] = updated_at
         for key, value in response_dict.items():
             if isinstance(value, (list, dict)):
                 update_timestamps(value, created_at, updated_at)
