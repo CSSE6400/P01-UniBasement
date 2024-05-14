@@ -91,8 +91,7 @@ export async function postQuestion(req: Request<any, any, QuestionBodyParams>, r
 }
 
 export async function getQuestionComments(req: Request<QuestionRouteParams>, res: Response) {
-    const { questionId } = req.params;
-    const { userId } = req.body;
+    const { questionId, userId } = req.params;
 
     const commentRepository = getConnection().getRepository(CommentDb);
     const questionRepository = getConnection().getRepository(QuestionDb);

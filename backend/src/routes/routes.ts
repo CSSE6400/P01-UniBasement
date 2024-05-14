@@ -113,7 +113,7 @@ router.post('/courses', postCourse);
 router.get('/comments/:commentId', getComment);
 
 // Gets all comments by question id
-router.get('/questions/:questionId/comments', getQuestionComments);
+router.get('/questions/:questionId/comments/:userId', getQuestionComments);
 
 
 // Gets question information by question id

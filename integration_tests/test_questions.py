@@ -276,6 +276,7 @@ class TestQuestions(BaseCase):
 
         # Get comments for a question
         questionId = self.questionId
+        userId = self.userId
         expectedResponse = [{
             "commentId": self.commentId,
             "parentCommentId": None,
@@ -288,11 +289,13 @@ class TestQuestions(BaseCase):
             "isCorrect": False,
             "isEndorsed": False,
             "userId": str(self.userId),
-            "questionId" : questionId
+            "questionId" : questionId,
+            "upvoted": False,
+            "downvoted": False
         }]
 
         response = requests.get(
-            self.host() + '/questions/' + str(questionId) + '/comments')
+            self.host() + '/questions/' + str(questionId) + '/comments' + str(userId))
         update_timestamps(expectedResponse, response.json()[
                           0]['created_at'], response.json()[0]['updated_at'])
 
@@ -314,8 +317,9 @@ class TestQuestions(BaseCase):
 
         # Get comments for a question
         questionId = 3344
+        userId = self.userId
         response = requests.get(
-            self.host() + '/questions/' + str(questionId) + '/comments')
+            self.host() + '/questions/' + str(questionId) + '/comments' + str(userId))
 
         # Verify response from API
         self.assertEqual(404, response.status_code)
@@ -331,9 +335,10 @@ class TestQuestions(BaseCase):
         Check for the correct response message
         """
         questionId = self.questionId2
+        userId = self.userId
         expectedResponse = []
         response = requests.get(
-            self.host() + '/questions/' + str(questionId) + '/comments')
+            self.host() + '/questions/' + str(questionId) + '/comments' + str(userId))
 
         # Verify response from API
         self.assertEqual(200, response.status_code)
