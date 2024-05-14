@@ -6,6 +6,7 @@ import { getConnection } from '../db/index';
 import { Exam as ExamDb } from '../db/Exam';
 import { Question as QuestionDb } from '../db/Questions';
 import { Comment as CommentDb } from '../db/Comments';
+import { User as UserDb } from '../db/User';
 
 import { nest } from './helpful_friends';
 
@@ -91,6 +92,7 @@ export async function postQuestion(req: Request<any, any, QuestionBodyParams>, r
 
 export async function getQuestionComments(req: Request<QuestionRouteParams>, res: Response) {
     const { questionId } = req.params;
+    const { userId } = req.body;
 
     const commentRepository = getConnection().getRepository(CommentDb);
     const questionRepository = getConnection().getRepository(QuestionDb);
@@ -101,9 +103,30 @@ export async function getQuestionComments(req: Request<QuestionRouteParams>, res
         return;
     }
 
+    if (!userId) {
+        res.status(400).json('Missing userId');
+        return;
+    }
+
+    const userRepository = getConnection().getRepository(UserDb);
+    const user = await userRepository.findOne({ where: { userId } });
+
+    if (!user) {
+        res.status(404).json('User not found');
+        return;
+    }
+
     const comments = await commentRepository.find({ where: { questionId } });
 
-    res.status(200).json(nest(comments));
+    let commentsWithFlag = comments.map((comment) => {
+        return {
+            ...comment,
+            upvoted: user.upvoted.includes(comment.commentId),
+            downvoted: user.downvoted.includes(comment.commentId),
+        }
+    });
+    
+    res.status(200).json(nest(commentsWithFlag));
 }
 
 export async function getQuestion(req: Request<QuestionRouteParams>, res: Response) {
