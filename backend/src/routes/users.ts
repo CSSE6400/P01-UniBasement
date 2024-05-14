@@ -1,7 +1,6 @@
 // Imports
 import { Request, Response } from 'express'; // Import Request and Response types
-
-import { getConnection } from '../db/index';
+import { getConnection } from '../db';
 import { User as UserDb } from '../db/User';
 
 export async function postUser(req: Request, res: Response) {
@@ -11,12 +10,12 @@ export async function postUser(req: Request, res: Response) {
         res.status(400).json('Missing userId');
         return;
     }
-    
+
     const userRepository = getConnection().getRepository(UserDb);
-    
+
     // Check for user
-    const user = await userRepository.findOne({where: { userId } });
-    
+    const user = await userRepository.findOne({ where: { userId } });
+
     if (user) {
         res.status(409).json('User already exists');
         return;

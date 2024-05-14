@@ -11,7 +11,7 @@ import { Question as QuestionDb } from '../db/Questions';
 export const router = Router();
 
 export async function postExam(req: Request<any, any, ExamBodyParams>, res: Response) {
-const {
+    const {
         examYear,
         examSemester,
         examType,
@@ -45,7 +45,7 @@ const {
 }
 
 export async function getExamQuestions(req: Request<ExamRouteParams, any, any>, res: Response) {
-   const { examId } = req.params;
+    const { examId } = req.params;
 
     const questionRepository = getConnection().getRepository(QuestionDb);
     const questions = await questionRepository.find({ where: { examId } });
