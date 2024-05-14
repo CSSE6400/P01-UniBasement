@@ -25,6 +25,17 @@ services:
       POSTGRES_PASSWORD: "postgres"
       POSTGRES_DATABASE: "postgres"
 
+  frontend:
+    build:
+      dockerfile: Dockerfile
+      context: ../frontend
+    environment:
+      NEXT_PUBLIC_API_URL: "http://localhost:8080"
+    ports:
+      - 3000:3000
+    depends_on:
+      - backend
+
   tests:
     build:
       dockerfile: Dockerfile
@@ -40,3 +51,4 @@ services:
     depends_on:
       - db
       - backend
+      - frontend
