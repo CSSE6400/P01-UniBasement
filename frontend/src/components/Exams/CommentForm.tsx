@@ -2,7 +2,7 @@ import { Comment as IComment } from '@/types';
 import { IconPaperclip } from '@tabler/icons-react';
 import { useState } from 'react';
 
-export function CommentForm({comment, onCancel, onSubmit}: {
+export function CommentForm({ comment, onCancel, onSubmit }: {
     comment?: IComment,
     onCancel: () => void,
     onSubmit: (newText?: string, newPng?: any) => void
@@ -13,8 +13,12 @@ export function CommentForm({comment, onCancel, onSubmit}: {
     return (
         <form className="relative">
             <div
-                className="overflow-hidden rounded-lg shadow-sm ring-1 ring-inset ring-gray-700 focus-within:ring-2 focus-within:ring-emerald-500">
-                <label htmlFor="comment" className="sr-only">
+                className="overflow-hidden rounded-lg shadow-sm ring-1 ring-inset ring-gray-700 focus-within:ring-2 focus-within:ring-emerald-500"
+            >
+                <label
+                    htmlFor="comment"
+                    className="sr-only"
+                >
                     Add an answer...
                 </label>
                 <textarea
@@ -30,7 +34,10 @@ export function CommentForm({comment, onCancel, onSubmit}: {
                 />
 
                 {/* Spacer element to match the height of the toolbar */}
-                <div className="py-2" aria-hidden="true">
+                <div
+                    className="py-2"
+                    aria-hidden="true"
+                >
                     {/* Matches height of button in toolbar (1px border + 36px content height) */}
                     <div className="py-px">
                         <div className="h-9"/>

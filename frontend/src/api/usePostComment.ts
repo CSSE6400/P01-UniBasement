@@ -24,6 +24,6 @@ export default function usePostComment(questionId: number) {
     };
 
     return {
-        postComment
+        postComment,
     };
 }

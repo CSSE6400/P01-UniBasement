@@ -6,5 +6,5 @@ export function backendCourseToFrontend(course: Course, pinnedCourses: DisplayCo
         pinned: pinnedCourses.some(pinnedCourse => pinnedCourse.code === course.courseCode),
         name: course.courseName,
         code: course.courseCode,
-    })
+    });
 }

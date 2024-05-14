@@ -2,18 +2,16 @@
 import useExam from '@/api/useExam';
 import useQuestions from '@/api/useQuestions';
 import requireAuth from '@/app/requireAuth';
-import Accordion from '@/components/Accordion';
-import Card from '@/components/Card';
 import Question from '@/components/Exams/Question';
 import Title from '@/components/Title';
 
 function Exam({ params }: { params: { courseCode: string; examId: number } }) {
-  const { exam, isLoading, isError } = useExam(params.examId)
-  const {
-    questions,
-    isLoading: isLoadingQuestions,
-    isError: isErrorQuestions,
-  } = useQuestions(params.examId)
+    const { exam, isLoading, isError } = useExam(params.examId);
+    const {
+        questions,
+        isLoading: isLoadingQuestions,
+        isError: isErrorQuestions,
+    } = useQuestions(params.examId);
 
     return (
         <main>
@@ -21,7 +19,7 @@ function Exam({ params }: { params: { courseCode: string; examId: number } }) {
                 {isLoadingQuestions && <p>Loading...</p>}
                 {!isLoading && !isError && (
                     <>
-                        <Title title={`${params.courseCode} ${exam?.examType}`} />
+                        <Title title={`${params.courseCode} ${exam?.examType}`}/>
                         <div className="flex items-center justify-center pb-8 text-3xl">
                             {`${exam?.examYear} Semester ${exam?.examSemester}`}
                         </div>
@@ -29,7 +27,10 @@ function Exam({ params }: { params: { courseCode: string; examId: number } }) {
                 )}
                 <div className="grid grid-cols-1 gap-4 w-full">
                     {!isErrorQuestions && !isLoadingQuestions && questions?.map(question => (
-                        <Question key={question.questionId} question={question}/>
+                        <Question
+                            key={question.questionId}
+                            question={question}
+                        />
                     ))}
                 </div>
             </div>
@@ -37,4 +38,4 @@ function Exam({ params }: { params: { courseCode: string; examId: number } }) {
     );
 }
 
-export default requireAuth(Exam)
+export default requireAuth(Exam);

@@ -40,10 +40,10 @@ export type Comment = {
 }
 
 export type DisplayCourse = {
-        href: string
-        pinned?: boolean
-        name: string
-        code: string
-        lastViewedName?: string
-        lastViewed?: number
-    }
+    href: string
+    pinned?: boolean
+    name: string
+    code: string
+    lastViewedName?: string
+    lastViewed?: number
+}
