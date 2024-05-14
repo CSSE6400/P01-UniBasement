@@ -22,7 +22,7 @@ This project is brought to you by the Evan Hughes FanClub. Our team consists of:
 
 ### Backend
 
-- [Jackson Trenarry](https://github.com/JTrenarry)
+- [Jackson Trenerry](https://github.com/JTrenerry)
 - [Olivia Ronda](https://github.com/vilnor)
 
 ### Tests
