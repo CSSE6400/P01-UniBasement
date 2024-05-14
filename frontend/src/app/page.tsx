@@ -165,6 +165,5 @@ function SignupHome() {
 
 export default function Home() {
   const { user } = useUser()
-  console.log(user)
-  return <main>{user ? LoginHome() : SignupHome()}</main>
+  return <main>{user ? <LoginHome /> : <SignupHome />}</main>
 }
