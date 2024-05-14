@@ -9,7 +9,7 @@ WORKDIR /app
 # Install any needed packages specified in requirements.txt
 RUN pip install requests pytest pytest-reportlog rfc3339-validator pendulum python-lorem sqlalchemy psycopg2 pytest-playwright
 
-RUN playwright install
+RUN playwright install-deps
 
 # Copy the current directory contents into the container at /app
 COPY . tests
