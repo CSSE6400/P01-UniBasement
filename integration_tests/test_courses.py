@@ -199,7 +199,7 @@ class TestCourse(BaseCase):
         courseCode = "CSSE6400"
 
         expectedExamsForCourse = [
-            {"examId": self.examId, "examYear": 2024,
+            {"courseCode": self.COURSE_CODE, "examId": self.examId, "examYear": 2024,
                 "examSemester": 1, "examType": "Final"},
         ]
 

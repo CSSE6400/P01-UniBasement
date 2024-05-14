@@ -165,6 +165,7 @@ class TestExams(BaseCase):
             self.host() + f'/exams/{self.examId}/questions')
 
         expectedBody = {
+            "examId": self.examId,
             "questionId": self.questionId,
             "questionText": self.QUESTION_TEXT,
             "questionType": self.QUESTION_TYPE,
@@ -193,6 +194,7 @@ class TestExams(BaseCase):
         Checks for the correct response message
         """
         expectedBody = {
+            "courseCode": self.COURSE_CODE,
             "examId": self.examId,
             "examYear": self.EXAM_YEAR,
             "examSemester": self.EXAM_SEMESTER,

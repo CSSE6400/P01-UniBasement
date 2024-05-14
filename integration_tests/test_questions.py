@@ -353,6 +353,7 @@ class TestQuestions(BaseCase):
         response = requests.get(
             self.host() + '/questions/' + str(self.questionId))
         expectedResponse = {
+            "examId": self.examId,
             "questionId": self.questionId,
             "questionText": "Who is the best tutor at UQ?",
             "questionType": "Multiple Choice",
