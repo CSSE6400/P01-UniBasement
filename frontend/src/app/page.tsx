@@ -50,7 +50,7 @@ function CourseSearch() {
 
 function LoginHome() {
   const { user, error, isLoading } = useUser()
-  const courses: DisplayCourse[] = usePinned()
+  const { pinned } = usePinned()
 
   const greeting = () => {
     const currentHour = new Date().getHours()
@@ -83,7 +83,7 @@ function LoginHome() {
                 role="list"
                 className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
               >
-                {courses
+                {pinned
                   .filter((value: DisplayCourse) => value.pinned === true)
                   .map((value) => (
                     <CourseCard key={value.code} course={value} />

@@ -5,11 +5,28 @@ import { IconCirclePlus } from '@tabler/icons-react'
 import CourseCard from '@/components/CourseCard'
 import { backendCourseToFrontend } from '@/lib/courseUtils'
 import requireAuth from '../requireAuth'
+import { usePinned } from '@/api/usePins';
+import { useMemo } from 'react';
 
 function Courses() {
   const { courses, isError, isLoading } = useCourses()
+  const { pinned } = usePinned()
 
-  // TODO: get pinned courses and move pinned ones to top
+  const displayCourses = useMemo(
+      () => courses
+          ?.map((course) => {
+            return backendCourseToFrontend(course, pinned)
+          })
+          ?.sort((a, b) => {
+            if (a.pinned && !b.pinned) {
+              return -1
+            } else if (!a.pinned && b.pinned) {
+              return 1
+            } else {
+              return 0
+            }
+          }),
+      [courses, pinned])
 
   return (
     <main>
@@ -17,10 +34,10 @@ function Courses() {
       <div className="m-5 grid grid-cols-4 gap-4">
         {!isError &&
           !isLoading &&
-          courses?.map((course) => (
+          displayCourses?.map((course) => (
             <CourseCard
-              course={backendCourseToFrontend(course)}
-              key={course.courseCode}
+              course={course}
+              key={course.code}
             />
           ))}
         <Card>
