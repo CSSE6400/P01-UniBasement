@@ -24,6 +24,7 @@ import { postUser } from './users';
 import { EVAN, healthCheck } from './health';
 
 import { setupData } from './sketch';
+import { getRecentChanges } from './recentChanges';
 
 // Export Routers
 export const router = Router();
@@ -45,6 +46,8 @@ router.put('/questions/:questionId/edit', editQuestion);
 
 // Edits a comment
 router.put('/comments/:commentId/edit', editComments);
+
+router.get('/recent_changes', getRecentChanges);
 
 /*
  * Patches
