@@ -34,7 +34,7 @@ class TestQuestions(BaseCase):
             "examYear": 2024,
             "examSemester": "1",
             "examType": "Final",
-            "courseCodeCourseCode": "CSSE6400"
+            "courseCode": "CSSE6400"
         }
 
         newExam = self.Exam(**body)
@@ -42,11 +42,11 @@ class TestQuestions(BaseCase):
 
         # Get the id of the exam from db
         self.examId = self.session.query(self.Exam).filter_by(
-            examYear=2024, examSemester='1', examType='Final', courseCodeCourseCode='CSSE6400').first().examId
+            examYear=2024, examSemester='1', examType='Final', courseCode='CSSE6400').first().examId
 
         # Create a new question to be edited.
         body = {
-            "examIdExamId": self.examId,
+            "examId": self.examId,
             "questionText": "Who is the best tutor at UQ?",
             "questionType": "Multiple Choice",
             "questionPNG": None
@@ -57,11 +57,11 @@ class TestQuestions(BaseCase):
 
         # Get the id of the question from db
         self.questionId = self.session.query(self.Question).filter_by(
-            examIdExamId=self.examId, questionText='Who is the best tutor at UQ?', questionType='Multiple Choice').first().questionId
+            examId=self.examId, questionText='Who is the best tutor at UQ?', questionType='Multiple Choice').first().questionId
 
         # Create a new question to be edited 2
         body = {
-            "examIdExamId": self.examId,
+            "examId": self.examId,
             "questionText": "What is the best Toyota?",
             "questionType": "Multiple Choice",
             "questionPNG": None
@@ -72,7 +72,7 @@ class TestQuestions(BaseCase):
 
         # Get the id of the question from db
         self.questionId2 = self.session.query(self.Question).filter_by(
-            examIdExamId=self.examId, questionText='What is the best Toyota?', questionType='Multiple Choice').first().questionId
+            examId=self.examId, questionText='What is the best Toyota?', questionType='Multiple Choice').first().questionId
 
         # Creates a new user
         self.userId = 86868686
@@ -209,7 +209,7 @@ class TestQuestions(BaseCase):
             questionId=questionId).first()
 
         expectedStoredQuestion = {
-            "examIdExamId": body["examId"],
+            "examId": body["examId"],
             "questionId": questionId,
             "questionText": body["questionText"],
             "questionType": body["questionType"],

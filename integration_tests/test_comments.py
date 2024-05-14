@@ -50,7 +50,7 @@ class TestComments(BaseCase):
             "examYear": self.EXAM_YEAR,
             "examSemester": self.EXAM_SEMESTER,
             "examType": self.EXAM_TYPE,
-            "courseCodeCourseCode": self.COURSE_CODE
+            "courseCode": self.COURSE_CODE
         }
 
         newExam = self.Exam(**body)
@@ -58,11 +58,11 @@ class TestComments(BaseCase):
 
         # Get the id of the exam from db
         self.examId = self.session.query(self.Exam).filter_by(
-            examYear=2024, examSemester='1', examType='Final', courseCodeCourseCode='CSSE6400').first().examId
+            examYear=2024, examSemester='1', examType='Final', courseCode='CSSE6400').first().examId
 
         # Create a new question to be edited.
         body = {
-            "examIdExamId": self.examId,
+            "examId": self.examId,
             "questionText": self.QUESTION_TEXT,
             "questionType": self.QUESTION_TYPE,
             "questionPNG": self.QUESTION_PNG
@@ -73,12 +73,12 @@ class TestComments(BaseCase):
 
         # Get the id of the question from db
         self.questionId = self.session.query(self.Question).filter_by(
-            examIdExamId=self.examId, questionText=self.QUESTION_TEXT, questionType=self.QUESTION_TYPE).first().questionId
+            examId=self.examId, questionText=self.QUESTION_TEXT, questionType=self.QUESTION_TYPE).first().questionId
         
         # Add a second question
-        self.session.add(self.Question(examIdExamId=self.examId, questionText="What is the best course?", questionType="Multiple Choice", questionPNG=None))
+        self.session.add(self.Question(examId=self.examId, questionText="What is the best course?", questionType="Multiple Choice", questionPNG=None))
         self.questionId2 = self.session.query(self.Question).filter_by(
-            examIdExamId=self.examId, questionText="What is the best course?", questionType="Multiple Choice").first().questionId
+            examId=self.examId, questionText="What is the best course?", questionType="Multiple Choice").first().questionId
         
 
         # Creates a new user
