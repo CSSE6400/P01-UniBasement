@@ -42,9 +42,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
   
-      - name: Set up Docker Compose
-        run: docker-compose -f ./integration_tests/docker-compose.yml up -d
-  
       - name: Set up Debug Logging for Integration Tests
         run: echo "ACTIONS_STEP_DEBUG=true" >> $GITHUB_ENV
   
