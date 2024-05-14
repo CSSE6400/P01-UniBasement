@@ -17,11 +17,11 @@ export default function Comment({
     updateCommentContent,
     updateCommentUpvote,
     updateCommentDownvote,
-    postComment
+    postComment,
 }: CommentProps) {
-    const { user } = useUser()
-    const [replying, setReplying] = useState(false)
-    const [editing, setEditing] = useState(false)
+    const { user } = useUser();
+    const [replying, setReplying] = useState(false);
+    const [editing, setEditing] = useState(false);
 
     return (
         <div>
@@ -35,12 +35,14 @@ export default function Comment({
                     <Upvote
                         count={comment.upvotes}
                         selected={comment.upvoted}
-                        onClick={user ? async () => await updateCommentUpvote(user.sub || '', comment.commentId) : () => {}}
+                        onClick={user ? async () => await updateCommentUpvote(user.sub || '', comment.commentId) : () => {
+                        }}
                     />
                     <Downvote
                         count={comment.downvotes}
                         selected={comment.downvoted}
-                        onClick={user ? async () => await updateCommentDownvote(user.sub || '', comment.commentId) : () => {}}
+                        onClick={user ? async () => await updateCommentDownvote(user.sub || '', comment.commentId) : () => {
+                        }}
                     />
                 </div>
                 <div className="min-w-0 flex-1 flex flex-col gap-3">
@@ -48,19 +50,21 @@ export default function Comment({
                         <CommentForm
                             comment={comment}
                             onCancel={() => setEditing(false)}
-                            onSubmit={async (newText?:string, newPng?: any) => {
+                            onSubmit={async (newText?: string, newPng?: any) => {
                                 await updateCommentContent(user?.sub || '', comment.commentId, newText || '', newPng);
                                 setEditing(false);
                             }}
                         />
                     ) : (
                         <div
-                            className="min-h-[120px] p-4 flex flex-col justify-between rounded-lg shadow-sm ring-1 ring-inset ring-gray-700 focus-within:ring-2 focus-within:ring-emerald-500">
+                            className="min-h-[120px] p-4 flex flex-col justify-between rounded-lg shadow-sm ring-1 ring-inset ring-gray-700 focus-within:ring-2 focus-within:ring-emerald-500"
+                        >
                             {comment.commentText}
                             <div className="flex flex-row gap-3">
-                                <button onClick={() => setReplying(true)}
-                                        type="button"
-                                        className="flex items-center text-sm text-gray-500 hover:underline dark:text-gray-400 font-medium"
+                                <button
+                                    onClick={() => setReplying(true)}
+                                    type="button"
+                                    className="flex items-center text-sm text-gray-500 hover:underline dark:text-gray-400 font-medium"
                                 >
                                     Reply
                                 </button>
@@ -93,7 +97,7 @@ export default function Comment({
                             updateCommentContent={updateCommentContent}
                             updateCommentDownvote={updateCommentDownvote}
                             updateCommentUpvote={updateCommentUpvote}
-                        />
+                        />,
                     )}
                 </div>
             </div>

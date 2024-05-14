@@ -24,6 +24,6 @@ export default function useUpdateCourse(courseCode: string) {
     };
 
     return {
-        updateCourseRating
+        updateCourseRating,
     };
 }

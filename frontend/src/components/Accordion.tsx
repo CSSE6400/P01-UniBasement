@@ -1,7 +1,7 @@
 import { ReactNode, useState } from 'react';
 import { IconChevronDown, IconChevronUp } from '@tabler/icons-react';
 
-function Accordion({preview, content, forceOpen}: { preview: ReactNode, content: ReactNode, forceOpen?: boolean }) {
+function Accordion({ preview, content, forceOpen }: { preview: ReactNode, content: ReactNode, forceOpen?: boolean }) {
     const [open, setOpen] = useState(false);
 
     return (
@@ -16,12 +16,15 @@ function Accordion({preview, content, forceOpen}: { preview: ReactNode, content:
                     {(open || forceOpen) ? <IconChevronDown/> : <IconChevronUp/>}
                 </button>
             </h2>
-            <div id="accordion-collapse-body" className={`${(open || forceOpen) ? '' : 'hidden'}`}>
+            <div
+                id="accordion-collapse-body"
+                className={`${(open || forceOpen) ? '' : 'hidden'}`}
+            >
                 {content}
             </div>
         </div>
 
-    )
+    );
 }
 
 export default Accordion;

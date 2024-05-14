@@ -1,38 +1,39 @@
-import glob from 'fast-glob'
+import { Providers } from '@/app/providers';
+import { Layout } from '@/components/Layout';
 
-import { Providers } from '@/app/providers'
-import { Layout } from '@/components/Layout'
+import '@/styles/tailwind.css';
+import { type Metadata } from 'next';
 
-import '@/styles/tailwind.css'
-import { type Metadata } from 'next'
-import { type Section } from '@/components/SectionProvider'
-
-import { UserProvider } from '@auth0/nextjs-auth0/client'
+import { UserProvider } from '@auth0/nextjs-auth0/client';
 
 export const metadata: Metadata = {
-  title: {
-    template: '%s - EVAN',
-    default: 'Home - EVAN',
-  },
-}
+    title: {
+        template: '%s - EVAN',
+        default: 'Home - EVAN',
+    },
+};
 
 export default async function RootLayout({
-  children,
+    children,
 }: {
-  children: React.ReactNode
+    children: React.ReactNode
 }) {
 
-  return (
-    <html lang="en" className="h-full" suppressHydrationWarning>
-      <body className="flex min-h-full bg-white antialiased dark:bg-zinc-900">
+    return (
+        <html
+            lang="en"
+            className="h-full"
+            suppressHydrationWarning
+        >
+        <body className="flex min-h-full bg-white antialiased dark:bg-zinc-900">
         <Providers>
-          <UserProvider>
-            <div className="w-full">
-              <Layout>{children}</Layout>
-            </div>
-          </UserProvider>
+            <UserProvider>
+                <div className="w-full">
+                    <Layout>{children}</Layout>
+                </div>
+            </UserProvider>
         </Providers>
-      </body>
-    </html>
-  )
+        </body>
+        </html>
+    );
 }
