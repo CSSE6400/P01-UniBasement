@@ -28,6 +28,20 @@ function ThemeWatcher() {
 }
 
 export function Providers({ children }: { children: React.ReactNode }) {
+    useEffect(() => {
+        const saveTimeToLocalStorage = () => {
+            const time = new Date().getTime();
+            localStorage.setItem('lastVisited', time.toString());
+        };
+
+        // add page unload event listener
+        window.addEventListener('beforeunload', saveTimeToLocalStorage);
+        return () => {
+            // remove page unload event listener
+            window.removeEventListener('beforeunload', saveTimeToLocalStorage);
+        };
+    }, []);
+
     return (
         <ThemeProvider
             attribute="class"

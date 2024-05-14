@@ -33,8 +33,8 @@ export type Comment = {
     downvotes: number
     upvoted: boolean
     downvoted: boolean
-    created_at: string
-    updated_at: string
+    createdAt: string
+    updatedAt: string
     userId: string
     children?: Comment[]
 }

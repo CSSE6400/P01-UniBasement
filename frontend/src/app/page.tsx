@@ -8,6 +8,7 @@ import Image from 'next/image';
 import image from '@/images/logos/logo.png';
 import uq from '@/images/logos/uq.svg';
 import { Button } from '@/components/Button';
+import useRecentChanges from '@/api/useRecentChanges';
 
 function SearchIcon(props: React.ComponentPropsWithoutRef<'svg'>) {
     return (
@@ -49,10 +50,12 @@ function CourseSearch() {
 function LoginHome() {
     const { user, error, isLoading } = useUser();
     const { pinned } = usePinned();
-
+    const { recentChanges } = useRecentChanges();
     const greeting = () => {
         const currentHour = new Date().getHours();
-        if (currentHour < 12) {
+        if (currentHour < 5) {
+            return 'Wtf why you up at this hour';
+        } else if (currentHour < 12) {
             return 'Good morning';
         } else if (currentHour < 18) {
             return 'Good afternoon';
@@ -103,7 +106,14 @@ function LoginHome() {
                             <ul
                                 role="list"
                                 className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
-                            ></ul>
+                            >{
+                                recentChanges?.map((c) => (
+                                    <div key={c.commentId}>
+                                        {c.commentText}
+                                    </div>
+                                ))
+                            }
+                            </ul>
                         </div>
                     </div>
                 </div>
