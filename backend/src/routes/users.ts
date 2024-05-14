@@ -16,6 +16,7 @@ export async function postUser(req: Request, res: Response) {
     
     // Check for user
     const user = await userRepository.findOne({where: { userId } });
+    
     if (user) {
         res.status(409).json('User already exists');
         return;
