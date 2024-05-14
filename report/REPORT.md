@@ -51,6 +51,18 @@ with your architecture or software design.
 ## Abstract
 The purpose of this report is to document the various design decision made throughout the completion of the project. To begin, changes made to the project from what was outlined in the project proposal will be described and justified. Secondly, the types of architectures that were considered for the implementation of the project will be outlined alongside their pros and cons followed by the MVP's chosen software architecture being described in detail. Thirdly, the trade-offs that were made when designing the architecture will be justified. Fourthly, there will be a critique of the architecutres implementation and how well it delivers the project. Fithly, the report will contain a evaluation that summarises the testing results and justifies how well the software achieves its quality attributes. Finally, there will be a reflection on the lessons learnt throughout the project and if were able to start from the begining what we would do differenlty. 
 
+## Changes
+Throughout the project there were required changes compared to what was outlined in the proposal due to limitations in time as well as to better adhere to the quality attributes we aimed to achieve. 
+
+#### Accounts 
+Initially, we wanted users to sign up for their account. However, this would require us to take into account the various secuirty risks that comes with storing user data, especially user passwords. Instead of having to implement a hashing system to safely secure the users passwords we decided to use AUTH0 as this would allow them to log in with their external accounts such as gmail or github and would make us not liable to the security risks. We didn't just use AUTH0 blindly, beleiving it to be the miracle solution to our problem but did a deep dive analysis into AUTH0 to ensure that it handled the data security properly and helped us achieve the quality attributes we set. 
+
+Using AUTH0 however, removed our ability to update the users profile information as that was passed onto whatever account the user used to login. 
+
+
+#### Courses 
+
+
 
 ## Changes to propsal
 NEEDS TO BE WRITTERN PROPERLY (dot points probs ok but should be expanded upon)
