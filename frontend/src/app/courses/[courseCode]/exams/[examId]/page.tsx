@@ -5,6 +5,7 @@ import requireAuth from '@/app/requireAuth';
 import Accordion from '@/components/Accordion';
 import Card from '@/components/Card';
 import Question from '@/components/Exams/Question';
+import Title from '@/components/Title';
 
 function Exam({ params }: { params: { courseCode: string; examId: number } }) {
   const { exam, isLoading, isError } = useExam(params.examId)
@@ -20,9 +21,7 @@ function Exam({ params }: { params: { courseCode: string; examId: number } }) {
                 {isLoadingQuestions && <p>Loading...</p>}
                 {!isLoading && !isError && (
                     <>
-                        <div className="flex items-center justify-center pt-8 text-5xl font-bold">
-                            {`${params.courseCode} ${exam?.examType}`}
-                        </div>
+                        <Title title={`${params.courseCode} ${exam?.examType}`} />
                         <div className="flex items-center justify-center pb-8 text-3xl">
                             {`${exam?.examYear} Semester ${exam?.examSemester}`}
                         </div>
