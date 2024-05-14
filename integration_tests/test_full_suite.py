@@ -146,6 +146,7 @@ class TestFullSuite(BaseCase):
             self.host() + '/exams/' + str(exam['examId']) + '/questions')
         self.assertEqual(200, response.status_code)
         expectedResponse = {
+            "examId": exam['examId'],
             "questionId": question['questionId'],
             "questionText": question['questionText'],
             "questionPNG": question['questionPNG'],
