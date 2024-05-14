@@ -25,7 +25,7 @@ This project is brought to you by the Evan Hughes FanClub. Our team consists of:
 - [Jackson Trenerry](https://github.com/JTrenerry)
 - [Olivia Ronda](https://github.com/vilnor)
 
-### Tests
+### QA
 
 - [Shanon Lakshan Chandrasekara](https://github.com/86LAK)
 
