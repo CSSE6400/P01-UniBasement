@@ -159,6 +159,7 @@ function CourseProfileTabs({ course } : { course: Course }) {
           <ul className="flex space-x-10">
             {tabs.map((tab) => (
               <li
+                id={tab.name}
                 key={tab.name}
                 className={`border-b-2 text-base ${
                   tab.name === currentTab
