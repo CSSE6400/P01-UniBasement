@@ -22,9 +22,12 @@ This project is brought to you by the Evan Hughes FanClub. Our team consists of:
 
 ### Backend
 
-- [Shanon Lakshan Chandrasekara](https://github.com/86LAK)
 - [Jackson Trenarry](https://github.com/JTrenarry)
 - [Olivia Ronda](https://github.com/vilnor)
+
+### Tests
+
+- [Shanon Lakshan Chandrasekara](https://github.com/86LAK)
 
 ### DevOps
 
