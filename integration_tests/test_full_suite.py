@@ -175,7 +175,7 @@ class TestFullSuite(BaseCase):
 
         # Check the question has the comment
         response = requests.get(
-            self.host() + '/questions/' + str(question['questionId']) + '/comments/' + str(self.USER_ID))
+            self.host() + '/questions/' + str(question['questionId']) + '/comments?userId=' + str(self.USER_ID))
         self.assertEqual(200, response.status_code)
         expectedResponse = {
             "commentId": comment['commentId'],
@@ -207,7 +207,7 @@ class TestFullSuite(BaseCase):
 
         # Check the question has no comments
         response = requests.get(
-            self.host() + '/questions/' + str(question['questionId']) + '/comments/' + str(self.USER_ID))
+            self.host() + '/questions/' + str(question['questionId']) + '/comments?userId=' + str(self.USER_ID))
         self.assertEqual(200, response.status_code)
 
 
