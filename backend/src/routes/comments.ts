@@ -169,11 +169,6 @@ export async function upvoteComments(req: Request<CommentRouteParams>, res: Resp
         return;
     }
 
-    // check to see if has been downvoted TODO
-    if (user.upvoted.includes(commentId)) {
-        res.status(400).json('Already upvoted');
-        return;
-    }
 
     const commentRows = getConnection().getRepository(CommentDb);
     const comment = await commentRows.findOne({ where: { commentId} });
@@ -183,10 +178,24 @@ export async function upvoteComments(req: Request<CommentRouteParams>, res: Resp
         return;
     }
 
-    comment.upvotes += 1;
+    let vote = 1;
+
+    // check to see if has been upvoted
+    if (user.upvoted.includes(commentId)) {
+        vote = -1;
+        user.upvoted = user.upvoted.filter((id) => id !== commentId);
+    } else {
+        user.upvoted.push(commentId);
+    }
+    
+    if (user.downvoted.includes(commentId)) {
+        comment.downvotes -= 1;
+        user.downvoted = user.downvoted.filter((id) => id !== commentId);
+    }
+
+    comment.upvotes += vote;
     await commentRows.update(comment.commentId, comment);
 
-    user.upvoted.push(commentId);
     await userRows.update(user.userId, user);
 
     res.status(200).json('Comment upvoted');
@@ -209,12 +218,6 @@ export async function downvoteComments(req: Request<CommentRouteParams>, res: Re
         return;
     }
 
-    // check to see if has been upvoted TODO
-    if (user.downvoted.includes(commentId)) {
-        res.status(400).json('Already downvoted');
-        return;
-    }
-
     const commentRows = getConnection().getRepository(CommentDb);
     const comment = await commentRows.findOne({ where: { commentId } });
 
@@ -223,10 +226,24 @@ export async function downvoteComments(req: Request<CommentRouteParams>, res: Re
         return;
     }
 
-    comment.downvotes += 1;
+    let vote = 1;
+
+    // check to see if has been upvoted
+    if (user.downvoted.includes(commentId)) {
+        vote = -1;
+        user.downvoted = user.downvoted.filter((id) => id !== commentId);
+    } else {
+        user.downvoted.push(commentId);
+    }
+    
+    if (user.upvoted.includes(commentId)) {
+        comment.upvotes -= 1;
+        user.upvoted = user.upvoted.filter((id) => id !== commentId);
+    }
+
+    comment.downvotes += vote;
     await commentRows.update(comment.commentId, comment);
 
-    user.downvoted.push(commentId);
     await userRows.update(user.userId, user);
 
     res.status(200).json('Comment downvoted');
