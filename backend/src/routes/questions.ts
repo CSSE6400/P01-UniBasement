@@ -1,6 +1,6 @@
 // Imports
 import { Request, Response } from 'express'; // Import Request and Response types
-import { QuestionBodyParams, QuestionRouteParams } from '../types';
+import { QuestionBodyParams, QuestionQueryParams, QuestionRouteParams } from '../types';
 
 import { getConnection } from '../db/index';
 import { Exam as ExamDb } from '../db/Exam';
@@ -90,8 +90,9 @@ export async function postQuestion(req: Request<any, any, QuestionBodyParams>, r
     res.status(201).json({ questionId: savedQuestion.questionId});
 }
 
-export async function getQuestionComments(req: Request<QuestionRouteParams>, res: Response) {
-    const { questionId, userId } = req.params;
+export async function getQuestionComments(req: Request<QuestionRouteParams, any, any, QuestionQueryParams>, res: Response) {
+    const { questionId } = req.params;
+    const { userId } = req.query;
 
     const commentRepository = getConnection().getRepository(CommentDb);
     const questionRepository = getConnection().getRepository(QuestionDb);

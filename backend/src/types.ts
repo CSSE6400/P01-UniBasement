@@ -52,7 +52,10 @@ export type QuestionBodyParams = Partial<Omit<Question, 'questionId'>> & {
 
 export type QuestionRouteParams = {
     questionId: number
-    userId: string
+}
+
+export type QuestionQueryParams = {
+    userId?: string
 }
 
 export type ExamBodyParams = Partial<Omit<Exam, 'examId'>> & {
