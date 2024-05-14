@@ -14,6 +14,5 @@ COPY ./tsconfig.json .
 COPY ./typography.ts .
 COPY ./src ./src
 COPY ./public ./public
-RUN test -e .env.local || touch .env.local
 COPY ./.env.local .
 CMD ["npm", "run", "dev"]

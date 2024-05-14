@@ -29,6 +29,11 @@ jobs:
       with:
         node-version: 20.x
     - uses: levibostian/action-hide-sensitive-inputs@v1
+    - name: Create .env.local
+      run: |
+        cd frontend
+        touch .env.local
+        cd ..
     - name: Deploy to AWS
       run: |
         eval "${{ github.event.inputs.awsCredentials }}"
