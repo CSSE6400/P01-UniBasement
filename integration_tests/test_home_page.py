@@ -18,8 +18,3 @@ class TestFrontEnd:
         assert re.compile("EVAN").search(
             page.title()), "Title does not contain 'Evan' who is our lord and saviour."
 
-    # def test_get_started_link(self, page):
-    #     page.goto("https://localhost:3000")
-    #     page.click("text=Get started")
-    #     assert page.wait_for_selector(
-    #         "text=Installation"), "Installation heading not found"
