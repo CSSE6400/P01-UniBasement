@@ -12,10 +12,10 @@ export class User {
     @Column({ type: 'jsonb', default: [] })
     rated: RateObject[];
 
-    @Column({ type: 'simple-array', default: [] })
+    @Column({ type: 'int', array: true, default: [] })
     upvoted: number[];
 
-    @Column({ type: 'simple-array', default: [] })
+    @Column({ type: 'int', array: true, default: [] })
     downvoted: number[];
 }
 

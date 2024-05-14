@@ -12,7 +12,7 @@ import { useUser } from '@auth0/nextjs-auth0/client';
 function Question({question}: { question: IQuestion }) {
     const { user } = useUser();
 
-    const { comments, isLoading, isError } = useComments(question.questionId);
+    const { comments, isLoading, isError } = useComments(question.questionId, user?.sub);
 
     const {
         updateCommentContent,

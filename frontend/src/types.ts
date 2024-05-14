@@ -31,6 +31,8 @@ export type Comment = {
     isEndorsed: boolean
     upvotes: number
     downvotes: number
+    upvoted: boolean
+    downvoted: boolean
     created_at: string
     updated_at: string
     userId: string

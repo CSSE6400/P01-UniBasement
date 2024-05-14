@@ -19,7 +19,7 @@ export default function useUpdateComments(questionId: number) {
 
         if (res.ok) {
             // upvote successful, invalidate the comments cache so it refetches updated data
-            await mutate(ENDPOINT + '/questions/' + questionId + '/comments');
+            await mutate(ENDPOINT + '/questions/' + questionId + '/comments' + `${!!userId ? `?userId=${userId}` : ''}`);
         }
     };
 
@@ -35,7 +35,7 @@ export default function useUpdateComments(questionId: number) {
 
         if (res.ok) {
             // downvote successful, invalidate the comments cache so it refetches updated data
-            await mutate(ENDPOINT + '/questions/' + questionId + '/comments');
+            await mutate(ENDPOINT + '/questions/' + questionId + '/comments' + `${!!userId ? `?userId=${userId}` : ''}`);
         }
     };
 
@@ -51,7 +51,7 @@ export default function useUpdateComments(questionId: number) {
 
         if (res.ok) {
             // updates successful, invalidate the comments cache so it refetches updated data
-            await mutate(ENDPOINT + '/questions/' + questionId + '/comments');
+            await mutate(ENDPOINT + '/questions/' + questionId + '/comments' + `${!!userId ? `?userId=${userId}` : ''}`);
         }
     };
 

@@ -34,12 +34,12 @@ export default function Comment({
                     />
                     <Upvote
                         count={comment.upvotes}
-                        selected
+                        selected={comment.upvoted}
                         onClick={user ? async () => await updateCommentUpvote(user.sub || '', comment.commentId) : () => {}}
                     />
                     <Downvote
                         count={comment.downvotes}
-                        selected={false}
+                        selected={comment.downvoted}
                         onClick={user ? async () => await updateCommentDownvote(user.sub || '', comment.commentId) : () => {}}
                     />
                 </div>
