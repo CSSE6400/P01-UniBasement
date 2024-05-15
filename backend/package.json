@@ -26,6 +26,8 @@
     "uuid": "^9.0.1"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.576.0",
+    "@aws-sdk/credential-providers": "^3.576.0",
     "multer": "^1.4.5-lts.1",
     "ts-node": "^10.9.2"
   }
