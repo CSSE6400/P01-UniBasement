@@ -2,8 +2,8 @@ import unittest
 import requests
 import sqlalchemy
 
-from .base import BaseCase
-from .base import update_timestamps
+from ..base import BaseCase
+from ..base import update_timestamps
 
 # TODO refactor to use the environment variables like comments
 class TestQuestions(BaseCase):
