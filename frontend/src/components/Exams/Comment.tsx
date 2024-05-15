@@ -7,7 +7,7 @@ import { Downvote, Upvote } from '@/components/Exams/CommentVotes';
 
 type CommentProps = {
     comment: IComment
-    updateCommentContent: (userId: string, commentId: number, commentText: string, commentPng: any) => Promise<void>
+    updateCommentContent: (userId: string, commentId: number, commentText: string, commentPNG: any) => Promise<void>
     updateCommentUpvote: (userId: string, commentId: number) => Promise<void>
     updateCommentDownvote: (userId: string, commentId: number) => Promise<void>
     postComment: (parentCommentId: number | null, newText?: string, newPng?: any) => Promise<void>
@@ -60,6 +60,7 @@ export default function Comment({
                             className="min-h-[120px] p-4 flex flex-col justify-between rounded-lg shadow-sm ring-1 ring-inset ring-gray-700 focus-within:ring-2 focus-within:ring-emerald-500"
                         >
                             {comment.commentText}
+                            <p className="flex items-center text-sm text-gray-500 dark:text-gray-400 font-medium">{comment.commentPNG}</p>
                             <div className="flex flex-row gap-3">
                                 <button
                                     onClick={() => setReplying(true)}
