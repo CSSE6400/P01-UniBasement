@@ -2,10 +2,11 @@
 import { Request, Response } from 'express'; // Import Request and Response types
 import { CommentBodyParams, CommentRouteParams } from '../types';
 
-import { getConnection } from '../db/index';
+import { getConnection } from '../db';
 import { User as UserDb } from '../db/User';
 import { Question as QuestionDb } from '../db/Questions';
 import { Comment as CommentDb } from '../db/Comments';
+import { pushImageToS3 } from './helpfulFriends';
 
 export async function editComments(req: Request<CommentRouteParams, any, CommentBodyParams>, res: Response) {
     const { commentId } = req.params;
@@ -47,7 +48,7 @@ export async function editComments(req: Request<CommentRouteParams, any, Comment
     }
 
     if (req.file) {
-        comment.commentPNG = req.file.originalname;
+        comment.commentPNG = await pushImageToS3(req.file.buffer, `${comment.questionId}_${req.file.originalname}`);
     }
 
     comment.updatedAt = new Date();
@@ -312,7 +313,7 @@ export async function postComment(req: Request<any, any, CommentBodyParams>, res
     }
 
     if (req.file) {
-        newComment.commentPNG = req.file.originalname;
+        newComment.commentPNG = await pushImageToS3(req.file.buffer, `${questionId}_${req.file.originalname}`);
     }
     const savedComment = await commentRepository.save(newComment);
 

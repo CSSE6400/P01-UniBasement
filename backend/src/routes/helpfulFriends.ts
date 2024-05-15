@@ -1,5 +1,7 @@
 // Imports
 import { Comment as IComment } from '../types';
+import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { ObjectCannedACL } from '@aws-sdk/client-s3/dist-types/models/models_0';
 
 // Helper functions
 
@@ -39,4 +41,24 @@ export function single_nest(commentRows: IComment[], commentId: number) {
 
     const resultJsonData = commentRows.filter(item => item.commentId === commentId);
     return resultJsonData;
+}
+
+const bucketName = process.env.S3_BUCKET_NAME;
+const region = process.env.AWS_REGION;
+// TODO: add creds here
+const s3Client = new S3Client({
+    region,
+});
+
+export async function pushImageToS3(file: Buffer, key: string) {
+    const params = {
+        Bucket: bucketName,
+        Key: key,
+        Body: file,
+        ACL: ObjectCannedACL.public_read,
+    };
+
+    await s3Client.send(new PutObjectCommand(params));
+
+    return `https://${bucketName}.s3.${region}.amazonaws.com/${key}`;
 }

@@ -2,13 +2,13 @@
 import { Request, Response } from 'express'; // Import Request and Response types
 import { QuestionBodyParams, QuestionQueryParams, QuestionRouteParams } from '../types';
 
-import { getConnection } from '../db/index';
+import { getConnection } from '../db';
 import { Exam as ExamDb } from '../db/Exam';
 import { Question as QuestionDb } from '../db/Questions';
 import { Comment as CommentDb } from '../db/Comments';
 import { User as UserDb } from '../db/User';
 
-import { nest } from './helpful_friends';
+import { nest } from './helpfulFriends';
 
 export async function editQuestion(req: Request<QuestionRouteParams, any, QuestionBodyParams>, res: Response) {
     const { questionId } = req.params;
