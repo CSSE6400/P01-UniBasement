@@ -1,7 +1,6 @@
 // Imports
 import { Comment as IComment } from '../types';
-import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
-import { ObjectCannedACL } from '@aws-sdk/client-s3/dist-types/models/models_0';
+import { ObjectCannedACL, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 
 // Helper functions
 
