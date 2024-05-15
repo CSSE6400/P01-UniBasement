@@ -2,11 +2,10 @@ import unittest
 import requests
 import sqlalchemy
 
-from .base import BaseCase
-from .base import update_timestamps
+from ..base import BaseCase
+from ..base import update_timestamps
 
-# TODO refactor to use the environment variables like comments
-class TestQuestions(BaseCase):
+class Questions(BaseCase):
     def setUp(self):
         self.session = self.get_db_session()
         self.Course = self.Base.classes['course']
@@ -14,13 +13,30 @@ class TestQuestions(BaseCase):
         self.Question = self.Base.classes['question']
         self.User = self.Base.classes['user']
         self.Comment = self.Base.classes['comment']
+        
+        # Constant data for tests
+        self.COURSE_CODE = "CSSE6400"
+        self.EXAM_YEAR = 2024
+        self.EXAM_SEMESTER = 1
+        self.EXAM_TYPE = "Final"
+        self.COURSE_CODE = "CSSE6400"
+        self.COURSE_NAME = "Software Architecture"
+        self.COURSE_DESCRIPTION = "I have created this course to test."
+        self.UNIVERSITY = "The University of Queensland"
+        self.QUESTION_TEXT = "Who is the best tutor at UQ?"
+        self.QUESTION_TYPE = "Multiple Choice"
+        self.QUESTION_PNG = None
+        self.USER_ID = "868686"
+        self.COMMENT_TEXT = "This is a comment for the question"
+        self.COMMENT_PNG = None
+        self.PARENT_COMMENT_ID = None
 
         # Create course
         course_data = {
-            "courseCode": "CSSE6400",
-            "courseName": "Software Architecture",
-            "courseDescription": "I have created this course to test questions.",
-            "university": "The University of Queensland"
+            "courseCode": self.COURSE_CODE,
+            "courseName": self.COURSE_NAME,
+            "courseDescription": self.COURSE_DESCRIPTION,
+            "university": self.UNIVERSITY
         }
 
         # Create a new course
@@ -31,10 +47,10 @@ class TestQuestions(BaseCase):
 
         # Create an Exam
         body = {
-            "examYear": 2024,
-            "examSemester": "1",
-            "examType": "Final",
-            "courseCode": "CSSE6400"
+            "examYear": self.EXAM_YEAR,
+            "examSemester": self.EXAM_SEMESTER,
+            "examType": self.EXAM_TYPE,
+            "courseCode": self.COURSE_CODE
         }
 
         newExam = self.Exam(**body)
@@ -42,14 +58,14 @@ class TestQuestions(BaseCase):
 
         # Get the id of the exam from db
         self.examId = self.session.query(self.Exam).filter_by(
-            examYear=2024, examSemester='1', examType='Final', courseCode='CSSE6400').first().examId
+            examYear=self.EXAM_YEAR, examSemester='1', examType=self.EXAM_TYPE, courseCode=self.COURSE_CODE).first().examId
 
         # Create a new question to be edited.
         body = {
             "examId": self.examId,
-            "questionText": "Who is the best tutor at UQ?",
-            "questionType": "Multiple Choice",
-            "questionPNG": None
+            "questionText": self.QUESTION_TEXT,
+            "questionType": self.QUESTION_TYPE,
+            "questionPNG": self.QUESTION_PNG
         }
 
         newQuestion = self.Question(**body)
@@ -57,7 +73,7 @@ class TestQuestions(BaseCase):
 
         # Get the id of the question from db
         self.questionId = self.session.query(self.Question).filter_by(
-            examId=self.examId, questionText='Who is the best tutor at UQ?', questionType='Multiple Choice').first().questionId
+            examId=self.examId, questionText=self.QUESTION_TEXT, questionType=self.QUESTION_TYPE).first().questionId
 
         # Create a new question to be edited 2
         body = {
@@ -88,8 +104,8 @@ class TestQuestions(BaseCase):
             "userId": self.userId,
             "questionId": self.questionId,
             "parentCommentId": None,
-            "commentText": "This is a comment for the question",
-            "commentPNG": None
+            "commentText": self.COMMENT_TEXT,
+            "commentPNG": self.COMMENT_PNG
         }
 
         newComment = self.Comment(**commentData)
@@ -97,7 +113,7 @@ class TestQuestions(BaseCase):
 
         # # Get the id of the comment from db
         self.commentId = self.session.query(self.Comment).filter_by(
-            commentText='This is a comment for the question').first().commentId
+            commentText=self.COMMENT_TEXT).first().commentId
 
         self.session.commit()
 
@@ -122,9 +138,9 @@ class TestQuestions(BaseCase):
         # Edit Question
         body = {
             "questionId": self.questionId,
-            "questionText": "Who is the best tutor at UQ?",
-            "questionType": "Multiple Choice",
-            "questionPNG": None
+            "questionText": "My new edited question text",
+            "questionType": self.QUESTION_TYPE,
+            "questionPNG": self.QUESTION_PNG
         }
         response = requests.put(
             self.host() + '/questions/' + str(self.questionId) + '/edit', json=body)
@@ -146,7 +162,7 @@ class TestQuestions(BaseCase):
         questionId = 8686
         body = {
             "questionId": questionId,
-            "questionText": "Who is the best tutor at UQ?",
+            "questionText": "An invalid put request",
             "questionType": "Multiple Choice",
             "questionPNG": None
         }
@@ -355,8 +371,8 @@ class TestQuestions(BaseCase):
         expectedResponse = {
             "examId": self.examId,
             "questionId": self.questionId,
-            "questionText": "Who is the best tutor at UQ?",
-            "questionType": "Multiple Choice",
+            "questionText": self.QUESTION_TEXT,
+            "questionType": self.QUESTION_TYPE,
             "questionPNG": None,
             "createdAt": response.json()['createdAt'],
             "updatedAt": response.json()['updatedAt']

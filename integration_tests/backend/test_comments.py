@@ -1,11 +1,11 @@
 import unittest
 import requests
 
-from .base import BaseCase
-from .base import update_timestamps
+from ..base import BaseCase
+from ..base import update_timestamps
 
 
-class TestComments(BaseCase):   
+class Comments(BaseCase):   
     def setUp(self):
         self.session = self.get_db_session()
         self.Course = self.Base.classes['course']

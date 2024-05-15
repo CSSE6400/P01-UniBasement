@@ -7,6 +7,7 @@ from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy import create_engine, MetaData
 
+
 class BaseCase(unittest.TestCase):
     def host(self):
         base = os.getenv('API_URL', "http://localhost:8080/api")
@@ -23,31 +24,34 @@ class BaseCase(unittest.TestCase):
 
             if isinstance(value, list):
                 if len(value) > 0 and isinstance(value[0], dict):
-                    self.assertEqual(sorted(value, key=dict_sort), sorted(whole[key], key=dict_sort))
+                    self.assertEqual(sorted(value, key=dict_sort),
+                                     sorted(whole[key], key=dict_sort))
                 else:
                     self.assertEqual(sorted(value), sorted(whole[key]))
             else:
                 self.assertEqual(value, whole[key])
-                
+
     def get_db_session(self):
         db_url = f"postgresql://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}@{os.getenv('DB_HOST')}/{os.getenv('DB_DATABASE')}"
         engine = create_engine(db_url)
-        
+
         # Reflect existing tables
         metadata = MetaData()
         metadata.reflect(bind=engine)
-        
+
         # Create a base for automap
         self.Base = automap_base(metadata=metadata)
         self.Base.prepare(engine)
-        
+
         Session = scoped_session(sessionmaker(bind=engine))
         session = Session()
-        
+
         return session
-    
+
 # This function is used to update the timestamps of the response dictionary
 # Can handle both list and dict
+
+
 def update_timestamps(response_dict, created_at, updated_at):
     if isinstance(response_dict, list):
         for item in response_dict:
