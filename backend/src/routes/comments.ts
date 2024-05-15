@@ -263,7 +263,7 @@ export async function postComment(req: Request<any, any, CommentBodyParams>, res
         return;
     }
 
-    if (!commentText || !req.file) {
+    if (!commentText && !req.file) {
         res.status(400).json('Missing commentText or commentPNG');
         return;
     }
