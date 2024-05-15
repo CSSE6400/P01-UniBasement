@@ -9,14 +9,14 @@ import { Comment as CommentDb } from '../db/Comments';
 
 export async function editComments(req: Request<CommentRouteParams, any, CommentBodyParams>, res: Response) {
     const { commentId } = req.params;
-    const { commentText, commentPNG, userId } = req.body;
+    const { commentText, userId } = req.body;
 
     if (!commentId || !userId) {
         res.status(400).json('Invalid commentId');
         return;
     }
 
-    if (!commentText && !commentPNG) {
+    if (!commentText && !req.file) {
         res.status(400).json('No changes made');
         return;
     }
@@ -46,8 +46,8 @@ export async function editComments(req: Request<CommentRouteParams, any, Comment
         comment.commentText = commentText;
     }
 
-    if (commentPNG) {
-        comment.commentPNG = commentPNG;
+    if (req.file) {
+        comment.commentPNG = req.file.originalname;
     }
 
     comment.updatedAt = new Date();
@@ -255,7 +255,6 @@ export async function postComment(req: Request<any, any, CommentBodyParams>, res
         questionId,
         parentCommentId,
         commentText,
-        commentPNG,
     } = req.body;
 
     // Check key
@@ -264,7 +263,7 @@ export async function postComment(req: Request<any, any, CommentBodyParams>, res
         return;
     }
 
-    if (!commentText && !commentPNG) {
+    if (!commentText || !req.file) {
         res.status(400).json('Missing commentText or commentPNG');
         return;
     }
@@ -294,7 +293,7 @@ export async function postComment(req: Request<any, any, CommentBodyParams>, res
             res.status(404).json('Parent comment not found');
             return;
         }
-        if (parentComment.questionId !== questionId) {
+        if (parentComment.questionId !== +questionId) {
             res.status(400).json('Parent comment is not from the same question');
             return;
         }
@@ -302,7 +301,7 @@ export async function postComment(req: Request<any, any, CommentBodyParams>, res
     // Query the database and get the id of the new comment
     const newComment = new CommentDb();
     newComment.userId = userId;
-    newComment.questionId = questionId;
+    newComment.questionId = +questionId;
 
     if (parentCommentId) {
         newComment.parentCommentId = parentCommentId;
@@ -312,8 +311,8 @@ export async function postComment(req: Request<any, any, CommentBodyParams>, res
         newComment.commentText = commentText;
     }
 
-    if (commentPNG) {
-        newComment.commentPNG = commentPNG;
+    if (req.file) {
+        newComment.commentPNG = req.file.originalname;
     }
     const savedComment = await commentRepository.save(newComment);
 
