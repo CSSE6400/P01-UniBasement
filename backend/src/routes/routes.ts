@@ -25,6 +25,7 @@ import { EVAN, healthCheck } from './health';
 
 import { setupData } from './sketch';
 import { getRecentChanges } from './recentChanges';
+import multer from 'multer';
 
 // Export Routers
 export const router = Router();
@@ -45,7 +46,7 @@ export const router = Router();
 router.put('/questions/:questionId/edit', editQuestion);
 
 // Edits a comment
-router.put('/comments/:commentId/edit', editComments);
+router.put('/comments/:commentId/edit', <any>multer().single('commentPNG'), editComments);
 
 router.get('/recent_changes', getRecentChanges);
 
@@ -93,7 +94,7 @@ router.patch('/comments/:commentId/upvote', upvoteComments);
 router.post('/users', postUser);
 
 // Adds a new comment to the database
-router.post('/comments', postComment);
+router.post('/comments', multer().single('commentPNG'), postComment);
 
 // Adds a new question to the database
 router.post('/questions', postQuestion);

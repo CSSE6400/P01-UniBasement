@@ -38,7 +38,7 @@ export type Comment = {
 }
 
 
-export type CommentBodyParams = Partial<Omit<Comment, 'children' | 'commentId'>> & {
+export type CommentBodyParams = Partial<Omit<Comment, 'children' | 'commentId' | 'commentPNG'>> & {
     questionId?: number
 }
 
