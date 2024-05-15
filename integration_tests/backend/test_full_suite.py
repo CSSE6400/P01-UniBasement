@@ -1,10 +1,10 @@
 import unittest
 import requests
 
-from base import BaseCase
+from ..base import BaseCase
 
 
-class TestFullSuite(BaseCase):
+class FullSuite(BaseCase):
     def setUp(self):
         self.session = self.get_db_session()
         self.Course = self.Base.classes['course']
