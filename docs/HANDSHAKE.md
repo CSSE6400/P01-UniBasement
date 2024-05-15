@@ -104,7 +104,7 @@ None
 ]
 ```
 
-# /questions/:questionid
+# /questions/:questionid GET
 ### Path params:
 | Name | Description |
 |----|----|
@@ -144,6 +144,8 @@ None
     downvotes: Integer - How many downvotes does the comment have i.e. 2
     createdAt: timestamp - When the comment was made
     updatedAt: timestamp - When the comment was last edited or updated
+    upvoted: Boolean - If the user has upvoted that comment
+    downvoted: Boolean - If the user has downvoted that comment
   }
 ]
 ```
@@ -156,6 +158,8 @@ None
 |----|----|
 | commentId | Integer - The question id REQUIRED |
 ### Query params:
+None
+### Body params:
 None
 ### Responses
 200 - List all exam information for one course as well as the course informatiom
@@ -173,3 +177,74 @@ None
   updatedAt: timestamp - When the comment was last edited or updated
 }
 ```
+
+
+# /comments/:commentId/edit PUT
+### Description
+Edits a comment
+### Path params: 
+| Name | Description |
+|----|----|
+| commentId | Integer - The comment's id REQUIRED |
+### Query params:
+None
+### Body params:
+| Name | Description |
+|----|----|
+| commentPNG | String - The comment's picture REQUIRED |
+| commentText | String - The comment's text REQUIRED |
+| userId | String - The user id to check auth REQUIRED |
+### Responses
+200
+
+# /question/:questionId/edit PATCH
+### Description
+Edits a question
+### Path params: 
+| Name | Description |
+|----|----|
+| questionId | Integer - The question's id REQUIRED |
+### Query params:
+None
+### Body params:
+| Name | Description |
+|----|----|
+| questionPNG | String - The question's picture REQUIRED |
+| questionText | String - The question's text REQUIRED |
+| questionType | String - The type of question i.e. multiple choice REQUIRED |
+### Responses
+200
+
+# /exam POST
+### Description
+Makes a new exam in the database
+### Path params: 
+None
+### Query params:
+None
+### Body params:
+| Name | Description |
+|----|----|
+| examYear | Integer - The year that the exam happened REQUIRED |
+| examSemester | Integer - The semeester that the exam REQUIRED |
+| examType | String - The type of exam i.e. midstem REQUIRED |
+| courseCode | String - The course code of the course REQUIRED 8 characters max |
+### Responses
+201 - with the exam id
+
+# /question POST
+### Description
+Makes a new question in the database
+### Path params: 
+None
+### Query params:
+None
+### Body params:
+| Name | Description |
+|----|----|
+| questionPNG | String - The question's picture REQUIRED |
+| questionText | String - The question's text REQUIRED |
+| questionType | String - The type of question i.e. multiple choice REQUIRED |
+| examId | Integer - The course code of the course REQUIRED 8 characters max |
+### Responses
+201 - with the exam id
