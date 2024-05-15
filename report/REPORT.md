@@ -55,6 +55,12 @@ The purpose of this report is to document the various design decision made throu
 Throughout the project there were required changes compared to what was outlined in the proposal due to limitations in time as well as to better adhere to the quality attributes we aimed to achieve. 
 
 #### Accounts 
+In the project proposal it was outlined that the users should be able to create an account and register there university affiliation. However, due to time constraints we were forced to cut out university affiliation and centre the project around University of Queensland students.
+
+The team had also realised that the allowing users to sign up would require us to handle the variety of security risks it would introduce such as storing user login data. Therefore, we decided to use AUTH0 to handle the login using external accounts such as gmail or github. This however, had the unintended affect that it removed our ability to allow users to update the account information or profile picture as that is decided by AUTH0. 
+
+
+
 Initially, we wanted users to sign up for their account. However, this would require us to take into account the various secuirty risks that comes with storing user data, especially user passwords. Instead of having to implement a hashing system to safely secure the users passwords we decided to use AUTH0 as this would allow them to log in with their external accounts such as gmail or github and would make us not liable to the security risks. We didn't just use AUTH0 blindly, beleiving it to be the miracle solution to our problem but did a deep dive analysis into AUTH0 to ensure that it handled the data security properly and helped us achieve the quality attributes we set. 
 
 Using AUTH0 however, removed our ability to update the users profile information as that was passed onto whatever account the user used to login. 
