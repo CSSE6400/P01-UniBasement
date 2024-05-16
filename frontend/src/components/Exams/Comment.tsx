@@ -5,6 +5,16 @@ import { useUser } from '@auth0/nextjs-auth0/client';
 import CommentForm from '@/components/Exams/CommentForm';
 import { Downvote, Upvote } from '@/components/Exams/CommentVotes';
 
+export function sortCommentsByUpvotes(a: IComment, b: IComment) {
+    if (a.upvotes > b.upvotes) {
+        return -1;
+    } else if (a.upvotes < b.upvotes) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
 type CommentProps = {
     comment: IComment
     updateCommentContent: (userId: string, commentId: number, commentText: string, commentPNG: any) => Promise<void>
@@ -90,7 +100,7 @@ export default function Comment({
                             }}
                         />
                     )}
-                    {comment.children?.map(
+                    {comment.children?.sort(sortCommentsByUpvotes).map(
                         (ch) => <Comment
                             postComment={postComment}
                             comment={ch}

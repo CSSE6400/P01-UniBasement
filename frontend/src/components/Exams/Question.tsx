@@ -3,7 +3,7 @@ import Card from '@/components/Card';
 import { Question as IQuestion } from '@/types';
 import useComments from '@/api/useComments';
 import { useMemo, useState } from 'react';
-import Comment from '@/components/Exams/Comment';
+import Comment, { sortCommentsByUpvotes } from '@/components/Exams/Comment';
 import useUpdateComments from '@/api/useUpdateComments';
 import usePostComment from '@/api/usePostComment';
 import EditableComment from '@/components/Exams/EditableComment';
@@ -25,7 +25,7 @@ function Question({ question }: { question: IQuestion }) {
     const [editing, setEditing] = useState(false);
 
     const commentContent = useMemo(() => (
-        comments?.map((c) => (
+        comments?.sort(sortCommentsByUpvotes).map((c) => (
             <Comment
                 updateCommentContent={updateCommentContent}
                 updateCommentDownvote={updateCommentDownvote}
