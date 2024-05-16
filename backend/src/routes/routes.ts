@@ -43,7 +43,7 @@ export const router = Router();
  */
 
 // Edits a question
-router.put('/questions/:questionId/edit', editQuestion);
+router.put('/questions/:questionId/edit', <any>multer().single('questionPNG'), editQuestion);
 
 // Edits a comment
 router.put('/comments/:commentId/edit', <any>multer().single('commentPNG'), editComments);
@@ -97,7 +97,7 @@ router.post('/users', postUser);
 router.post('/comments', multer().single('commentPNG'), postComment);
 
 // Adds a new question to the database
-router.post('/questions', postQuestion);
+router.post('/questions', multer().single('questionPNG'), postQuestion);
 
 // Adds a new exam to the database
 router.post('/exams', postExam);

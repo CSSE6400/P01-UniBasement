@@ -46,7 +46,7 @@ export type CommentRouteParams = {
     commentId: number
 }
 
-export type QuestionBodyParams = Partial<Omit<Question, 'questionId'>> & {
+export type QuestionBodyParams = Partial<Omit<Question, 'questionId' | 'commentPNG'>> & {
     examId?: number
 }
 
