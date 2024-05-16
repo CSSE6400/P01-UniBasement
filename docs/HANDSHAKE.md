@@ -54,9 +54,9 @@ None
 [
   {
     examId: Integer - The id for the exam, used for database i.e. 1
-    examyear: Integer - The year the exam took place i.e. 2023
-    examsemester: Interger [1 - 3] - First = 1, Second = 2, Summer = 3 i.e. 2
-    examtype: String - The type of the exam i.e. Midterm
+    examYear: Integer - The year the exam took place i.e. 2023
+    examSemester: Interger [1 - 3] - First = 1, Second = 2, Summer = 3 i.e. 2
+    examType: String - The type of the exam i.e. Midterm
   }
 ]
 
@@ -76,9 +76,9 @@ None
 ```
 {
   examId: Integer - The id for the exam, used for database i.e. 1
-  examyear: Integer - The year the exam took place i.e. 2023
-  examsemester: Interger [1 - 3] - First = 1, Second = 2, Summer = 3 i.e. 2
-  examtype: String - The type of the exam i.e. Midterm
+  examYear: Integer - The year the exam took place i.e. 2023
+  examSemester: Interger [1 - 3] - First = 1, Second = 2, Summer = 3 i.e. 2
+  examType: String - The type of the exam i.e. Midterm
 }
 ```
 
@@ -96,10 +96,10 @@ None
 ```
 [
   {
-    questionid: Integer - The id for the question, used for database i.e. 1
-    questiontext: String - The year the exam took place i.e. What is 2 + 2 in Python3
-    questiontype: String - The type of the exam i.e. Multiple Choice
-    questionpng: BYTEA - A picture of the exam question
+    questionId: Integer - The id for the question, used for database i.e. 1
+    questionText: String - The year the exam took place i.e. What is 2 + 2 in Python3
+    questionType: String - The type of the exam i.e. Multiple Choice
+    questionPNG: String - A url to an image associated with the question
   }
 ]
 ```
@@ -115,20 +115,20 @@ None
 200 - List all exam information for one course as well as the course informatiom
 ```
 {
-  questionid: Integer - The id for the question, used for database i.e. 1
-  questiontext: String - The year the exam took place i.e. What is 2 + 2 in Python3
-  questiontype: String - The type of the exam i.e. Multiple Choice
-  questionpng: BYTEA - A picture of the exam question
+  questionId: Integer - The id for the question, used for database i.e. 1
+  questionText: String - The year the exam took place i.e. What is 2 + 2 in Python3
+  questionType: String - The type of the exam i.e. Multiple Choice
+  questionPNG: String - A url to an image associated with the question
 }
 ```
 
-# /questions/:questionid/comments
+# /questions/:questionid/comments?userId=\<userId\> GET
 ### Path params:
-| Name | Description |
-|----|----|
-| questionid | Integer - The question id REQUIRED |
+| Name       | Description |
+|------------|----|
+| questionId | Integer - The question id REQUIRED |
 ### Query params:
-None
+userId - the user id for which to check upvotes and downvotes for
 ### Responses
 200 - List all exam information for one course as well as the course informatiom
 ```
@@ -136,10 +136,10 @@ None
   {
     commentId: Integer - The id for the comment, used for database i.e. 1
     parentCommentId - The id for the parent comment used for replies, null if no parent i.e. 1
-    commenttext: String - The year the exam took place i.e. What is 2 + 2 in Python3
-    commentpng: BYTEA - A picture of the exam question
-    iscorrect: boolean - Is the comment correct i.e. true
-    isendoresed: boolean - Is the comment endorsed i.e. false
+    commentText: String - The year the exam took place i.e. What is 2 + 2 in Python3
+    commentPNG: String - A url to an image associated with the comment
+    isCorrect: boolean - Is the comment correct i.e. true
+    isEndoresed: boolean - Is the comment endorsed i.e. false
     upvotes: Integer - How many upvotes does the comment have i.e. 3
     downvotes: Integer - How many downvotes does the comment have i.e. 2
     createdAt: timestamp - When the comment was made
@@ -150,7 +150,7 @@ None
 ]
 ```
 
-# /comments/:commentId
+# /comments/:commentId GET
 ### Description
 
 ### Path params:
@@ -167,10 +167,10 @@ None
 {
   commentId: Integer - The id for the comment, used for database i.e. 1
   parentCommentId - The id for the parent comment used for replies, null if no parent i.e. 1
-  commenttext: String - The year the exam took place i.e. What is 2 + 2 in Python3
-  commentpng: BYTEA - A picture of the exam question
-  iscorrect: boolean - Is the comment correct i.e. true
-  isendoresed: boolean - Is the comment endorsed i.e. false
+  commentText: String - The year the exam took place i.e. What is 2 + 2 in Python3
+  commentPNG: String - A url to an image associated with the comment
+  isCorrect: boolean - Is the comment correct i.e. true
+  isEndoresed: boolean - Is the comment endorsed i.e. false
   upvotes: Integer - How many upvotes does the comment have i.e. 3
   downvotes: Integer - How many downvotes does the comment have i.e. 2
   createdAt: timestamp - When the comment was made
@@ -188,11 +188,11 @@ Edits a comment
 | commentId | Integer - The comment's id REQUIRED |
 ### Query params:
 None
-### Body params:
-| Name | Description |
-|----|----|
-| commentPNG | String - The comment's picture REQUIRED |
-| commentText | String - The comment's text REQUIRED |
+### Multi-part form data:
+| Name | Description                                 |
+|----|---------------------------------------------|
+| commentPNG | Binary - The comment's picture      |
+| commentText | String - The comment's text         |
 | userId | String - The user id to check auth REQUIRED |
 ### Responses
 200
@@ -206,12 +206,13 @@ Edits a question
 | questionId | Integer - The question's id REQUIRED |
 ### Query params:
 None
-### Body params:
+### Multi-part form data:
 | Name | Description |
 |----|----|
-| questionPNG | String - The question's picture REQUIRED |
-| questionText | String - The question's text REQUIRED |
-| questionType | String - The type of question i.e. multiple choice REQUIRED |
+| questionPNG | Binary - The question's picture  |
+| questionText | String - The question's text  |
+| questionType | String - The type of question i.e. multiple choice  |
+| userId | String - The user id to check auth REQUIRED |
 ### Responses
 200
 
@@ -239,12 +240,12 @@ Makes a new question in the database
 None
 ### Query params:
 None
-### Body params:
-| Name | Description |
-|----|----|
-| questionPNG | String - The question's picture REQUIRED |
-| questionText | String - The question's text REQUIRED |
-| questionType | String - The type of question i.e. multiple choice REQUIRED |
+### Multi-part form data:
+| Name | Description                                                       |
+|----|-------------------------------------------------------------------|
+| questionPNG | Binary - The question's picture                           |
+| questionText | String - The question's text                              |
+| questionType | String - The type of question i.e. multiple choice REQUIRED       |
 | examId | Integer - The course code of the course REQUIRED 8 characters max |
 ### Responses
 201 - with the exam id
