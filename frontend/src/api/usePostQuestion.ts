@@ -7,15 +7,21 @@ export default function usePostQuestion(examId: number) {
     // use the global mutate
     const { mutate } = useSWRConfig();
 
-    const postQuestion = async (userId: string, questionText: string, questionPNG: File) => {
+    const postQuestion = async (userId: string, questionText: string | null, questionPNG: File | null) => {
         const formData = new FormData();
         formData.append('userId', userId);
         formData.append('examId', examId.toString());
-        formData.append('questionPNG', questionPNG);
-        formData.append('questionText', questionText);
+        if (questionPNG) {
+            formData.append('questionPNG', questionPNG);
+        }
+        if (questionText) {
+            formData.append('questionText', questionText);
+        }
+        // TODO: update this to take questionType as input
+        formData.append('questionType', 'Short Answer');
 
         // send the question
-        const res = await fetch(`${ENDPOINT}/comments`, {
+        const res = await fetch(`${ENDPOINT}/questions`, {
             method: 'POST',
             body: formData,
         });

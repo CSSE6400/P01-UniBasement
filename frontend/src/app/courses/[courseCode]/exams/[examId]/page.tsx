@@ -7,6 +7,11 @@ import Title from '@/components/Title';
 import usePostQuestion from '@/api/usePostQuestion';
 import useUpdateQuestions from '@/api/useUpdateQuestions';
 import { Question as IQuestion } from '@/types';
+import Card from '@/components/Card';
+import { useState } from 'react';
+import ContentForm from '@/components/Exams/ContentForm';
+import { useUser } from '@auth0/nextjs-auth0/client';
+import { IconCirclePlus } from '@tabler/icons-react';
 
 function sortQuestionsById(a: IQuestion, b: IQuestion) {
     if (a.questionId < b.questionId) {
@@ -19,6 +24,7 @@ function sortQuestionsById(a: IQuestion, b: IQuestion) {
 }
 
 function Exam({ params }: { params: { courseCode: string; examId: number } }) {
+    const { user } = useUser();
     const { exam, isLoading, isError } = useExam(params.examId);
     const {
         questions,
@@ -28,6 +34,8 @@ function Exam({ params }: { params: { courseCode: string; examId: number } }) {
 
     const { postQuestion } = usePostQuestion(params.examId);
     const { updateQuestionContent } = useUpdateQuestions(params.examId);
+
+    const [addingQuestion, setAddingQuestion] = useState(false);
 
     return (
         <main>
@@ -49,6 +57,26 @@ function Exam({ params }: { params: { courseCode: string; examId: number } }) {
                             updateQuestionContent={updateQuestionContent}
                         />
                     ))}
+
+                    {addingQuestion ? (
+                        <Card>
+                            <ContentForm
+                                initialText=""
+                                initialPNG=""
+                                onCancel={() => setAddingQuestion(false)}
+                                onSubmit={async (newText, newPng) => {
+                                    await postQuestion(user?.sub || '', newText, newPng);
+                                    setAddingQuestion(false);
+                                }}
+                            />
+                        </Card>
+                    ) : (
+                        <button onClick={() => setAddingQuestion(true)}>
+                            <Card>
+                                <p className="flex items-center justify-center gap-1 text-md text-gray-500 dark:text-gray-400 font-medium">Add Question <IconCirclePlus/></p>
+                            </Card>
+                        </button>
+                    )}
                 </div>
             </div>
         </main>
