@@ -8,13 +8,13 @@ import { Question as QuestionDb } from '../db/Questions';
 import { Comment as CommentDb } from '../db/Comments';
 import { User as UserDb } from '../db/User';
 
-import { nest } from './helpfulFriends';
+import { nest, pushImageToS3 } from './helpfulFriends';
 
 export async function editQuestion(req: Request<QuestionRouteParams, any, QuestionBodyParams>, res: Response) {
     const { questionId } = req.params;
-    const { questionText, questionType, questionPNG } = req.body;
+    const { questionText, questionType } = req.body;
 
-    if (!questionText && !questionType && !questionPNG) {
+    if (!questionText && !questionType && !req.file) {
         res.status(400).json('No changes made');
         return;
     }
@@ -35,8 +35,8 @@ export async function editQuestion(req: Request<QuestionRouteParams, any, Questi
         question.questionType = questionType;
     }
 
-    if (questionPNG) {
-        question.questionPNG = questionPNG;
+    if (req.file) {
+        question.questionPNG = await pushImageToS3(req.file.buffer, `${question.examId}_${req.file.originalname}`);
     }
 
     question.updatedAt = new Date();
@@ -50,7 +50,6 @@ export async function postQuestion(req: Request<any, any, QuestionBodyParams>, r
         examId,
         questionText,
         questionType,
-        questionPNG,
     } = req.body;
 
     // Check key
@@ -81,9 +80,10 @@ export async function postQuestion(req: Request<any, any, QuestionBodyParams>, r
         newQuestion.questionText = questionText;
     }
 
-    if (questionPNG) {
-        newQuestion.questionPNG = questionPNG;
+    if (req.file) {
+        newQuestion.questionPNG = await pushImageToS3(req.file.buffer, `${examId}_${req.file.originalname}`);
     }
+
     newQuestion.questionType = questionType;
     const savedQuestion = await questionRepository.save(newQuestion);
 
