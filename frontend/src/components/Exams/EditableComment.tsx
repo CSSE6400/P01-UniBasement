@@ -1,11 +1,11 @@
 import { Comment as IComment } from '@/types';
-import CommentForm from '@/components/Exams/CommentForm';
+import ContentForm from '@/components/Exams/ContentForm';
 import { Downvote, Upvote } from '@/components/Exams/CommentVotes';
 
 export function EditableComment({ comment, onCancel, onSubmit }: {
     comment?: IComment,
     onCancel: () => void,
-    onSubmit: (newText?: string, newPng?: any) => void
+    onSubmit: (newText: string | null, newPng: File | null) => void
 }) {
     return (
         <>
@@ -34,8 +34,9 @@ export function EditableComment({ comment, onCancel, onSubmit }: {
                     )}
                 </div>
                 <div className="min-w-0 flex-1">
-                    <CommentForm
-                        comment={comment}
+                    <ContentForm
+                        initialText={comment?.commentText || null}
+                        initialPNG={comment?.commentPNG || null}
                         onSubmit={onSubmit}
                         onCancel={onCancel}
                     />

@@ -4,6 +4,19 @@ import useQuestions from '@/api/useQuestions';
 import requireAuth from '@/app/requireAuth';
 import Question from '@/components/Exams/Question';
 import Title from '@/components/Title';
+import usePostQuestion from '@/api/usePostQuestion';
+import useUpdateQuestions from '@/api/useUpdateQuestions';
+import { Question as IQuestion } from '@/types';
+
+function sortQuestionsById(a: IQuestion, b: IQuestion) {
+    if (a.questionId < b.questionId) {
+        return -1;
+    } else if (a.questionId > b.questionId) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
 
 function Exam({ params }: { params: { courseCode: string; examId: number } }) {
     const { exam, isLoading, isError } = useExam(params.examId);
@@ -12,6 +25,9 @@ function Exam({ params }: { params: { courseCode: string; examId: number } }) {
         isLoading: isLoadingQuestions,
         isError: isErrorQuestions,
     } = useQuestions(params.examId);
+
+    const { postQuestion } = usePostQuestion(params.examId);
+    const { updateQuestionContent } = useUpdateQuestions(params.examId);
 
     return (
         <main>
@@ -26,10 +42,11 @@ function Exam({ params }: { params: { courseCode: string; examId: number } }) {
                     </>
                 )}
                 <div className="grid grid-cols-1 gap-4 w-full">
-                    {!isErrorQuestions && !isLoadingQuestions && questions?.map(question => (
+                    {!isErrorQuestions && !isLoadingQuestions && questions?.sort(sortQuestionsById)?.map(question => (
                         <Question
                             key={question.questionId}
                             question={question}
+                            updateQuestionContent={updateQuestionContent}
                         />
                     ))}
                 </div>

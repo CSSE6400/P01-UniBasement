@@ -17,15 +17,15 @@ export type Exam = {
 
 export type Question = {
     questionId: number
-    questionText: string
+    questionText: string | null
     questionType: string
-    questionPNG: string
+    questionPNG: string | null
 }
 
 export type Comment = {
     commentId: number
     parentCommentId: number | null
-    commentText: string
+    commentText: string | null
     commentPNG: string | null
     isCorrect: boolean
     isEndorsed: boolean

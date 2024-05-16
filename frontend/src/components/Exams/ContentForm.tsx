@@ -1,15 +1,15 @@
-import { Comment as IComment } from '@/types';
 import { IconPaperclip, IconX } from '@tabler/icons-react';
 import { useRef, useState } from 'react';
 
-export function CommentForm({ comment, onCancel, onSubmit }: {
-    comment?: IComment,
+export function ContentForm({ initialText, initialPNG, onCancel, onSubmit }: {
+    initialText: string | null,
+    initialPNG: string | null,
     onCancel: () => void,
-    onSubmit: (newText?: string, newPng?: File) => void
+    onSubmit: (newText: string | null, newPng: File | null) => void
 }) {
-    const [text, setText] = useState(comment?.commentText);
-    const [imgText, setImgText] = useState(comment?.commentPNG);
-    const [img, setImg] = useState<File>();
+    const [text, setText] = useState(initialText);
+    const [imgText, setImgText] = useState(initialPNG);
+    const [img, setImg] = useState<File | null>(null);
     const imgRef = useRef<HTMLInputElement>(null);
 
     return (
@@ -31,7 +31,7 @@ export function CommentForm({ comment, onCancel, onSubmit }: {
                     className="block w-full resize-none border-0 bg-transparent p-4 text-zinc-900 dark:text-white placeholder:text-gray-400 focus:ring-0 sm:leading-6"
                     placeholder="Add an answer..."
                     defaultValue={''}
-                    value={text}
+                    value={text || ''}
                     onChange={(e) => setText(e.target.value)}
                 />
 
@@ -59,8 +59,8 @@ export function CommentForm({ comment, onCancel, onSubmit }: {
                             <span className="hidden">Attach a file</span>
                             <input
                                 onChange={(e) => {
-                                    setImg(e.target.files?.[0]);
-                                    setImgText(e.target.files?.[0]?.name);
+                                    setImg(e.target.files?.[0] || null);
+                                    setImgText(e.target.files?.[0]?.name || null);
                                 }}
                                 multiple={false}
                                 ref={imgRef}
@@ -76,7 +76,7 @@ export function CommentForm({ comment, onCancel, onSubmit }: {
                                 type="button"
                                 className="ml-1 flex h-5 w-5 items-center justify-center rounded-full text-gray-400 hover:text-gray-500"
                                 onClick={() => {
-                                    setImg(undefined);
+                                    setImg(null);
                                     setImgText(null);
                                 }}
                             >
@@ -106,4 +106,4 @@ export function CommentForm({ comment, onCancel, onSubmit }: {
     );
 }
 
-export default CommentForm;
+export default ContentForm;
