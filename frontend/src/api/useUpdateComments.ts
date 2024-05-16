@@ -39,11 +39,15 @@ export default function useUpdateComments(questionId: number) {
         }
     };
 
-    const updateCommentContent = async (userId: string, commentId: number, commentText: string, commentPNG: File) => {
+    const updateCommentContent = async (userId: string, commentId: number, commentText: string | null, commentPNG: File | null) => {
         const formData = new FormData();
         formData.append('userId', userId);
-        formData.append('commentPNG', commentPNG);
-        formData.append('commentText', commentText);
+        if (commentPNG) {
+            formData.append('commentPNG', commentPNG);
+        }
+        if (commentText) {
+            formData.append('commentText', commentText);
+        }
 
         // send the updates
         const res = await fetch(`${ENDPOINT}/comments/${commentId}/edit`, {

@@ -2,7 +2,7 @@ import { Comment as IComment } from '@/types';
 import { useState } from 'react';
 import EditableComment from '@/components/Exams/EditableComment';
 import { useUser } from '@auth0/nextjs-auth0/client';
-import CommentForm from '@/components/Exams/CommentForm';
+import ContentForm from '@/components/Exams/ContentForm';
 import { Downvote, Upvote } from '@/components/Exams/CommentVotes';
 
 export function sortCommentsByUpvotes(a: IComment, b: IComment) {
@@ -17,10 +17,10 @@ export function sortCommentsByUpvotes(a: IComment, b: IComment) {
 
 type CommentProps = {
     comment: IComment
-    updateCommentContent: (userId: string, commentId: number, commentText: string, commentPNG: any) => Promise<void>
+    updateCommentContent: (userId: string, commentId: number, commentText: string | null, commentPNG: File | null) => Promise<void>
     updateCommentUpvote: (userId: string, commentId: number) => Promise<void>
     updateCommentDownvote: (userId: string, commentId: number) => Promise<void>
-    postComment: (parentCommentId: number | null, newText?: string, newPng?: any) => Promise<void>
+    postComment: (parentCommentId: number | null, newText: string | null, newPng: File | null) => Promise<void>
 }
 export default function Comment({
     comment,
@@ -57,11 +57,12 @@ export default function Comment({
                 </div>
                 <div className="min-w-0 flex-1 flex flex-col gap-3">
                     {editing ? (
-                        <CommentForm
-                            comment={comment}
+                        <ContentForm
+                            initialText={comment.commentText}
+                            initialPNG={comment.commentPNG}
                             onCancel={() => setEditing(false)}
-                            onSubmit={async (newText?: string, newPng?: any) => {
-                                await updateCommentContent(user?.sub || '', comment.commentId, newText || '', newPng);
+                            onSubmit={async (newText, newPng) => {
+                                await updateCommentContent(user?.sub || '', comment.commentId, newText, newPng);
                                 setEditing(false);
                             }}
                         />
@@ -70,7 +71,13 @@ export default function Comment({
                             className="min-h-[120px] p-4 flex flex-col justify-between rounded-lg shadow-sm ring-1 ring-inset ring-gray-700 focus-within:ring-2 focus-within:ring-emerald-500"
                         >
                             {comment.commentText}
-                            <p className="flex items-center text-sm text-gray-500 dark:text-gray-400 font-medium">{comment.commentPNG}</p>
+                            {!!comment.commentPNG && (
+                                <img
+                                    src={comment.commentPNG}
+                                    alt="Comment"
+                                    className="w-full my-3"
+                                />
+                            )}
                             <div className="flex flex-row gap-3">
                                 <button
                                     onClick={() => setReplying(true)}
@@ -95,12 +102,12 @@ export default function Comment({
                         <EditableComment
                             onCancel={() => setReplying(false)}
                             onSubmit={async (newText, newPng) => {
-                                await postComment(comment.commentId, newText || '', newPng);
+                                await postComment(comment.commentId, newText, newPng);
                                 setReplying(false);
                             }}
                         />
                     )}
-                    {comment.children?.sort(sortCommentsByUpvotes).map(
+                    {comment.children?.sort(sortCommentsByUpvotes)?.map(
                         (ch) => <Comment
                             postComment={postComment}
                             comment={ch}

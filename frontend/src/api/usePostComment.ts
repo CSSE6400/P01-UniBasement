@@ -7,12 +7,16 @@ export default function usePostComment(questionId: number) {
     // use the global mutate
     const { mutate } = useSWRConfig();
 
-    const postComment = async (userId: string, commentText: string, commentPNG: File, parentCommentId: number | null) => {
+    const postComment = async (userId: string, commentText: string | null, commentPNG: File | null, parentCommentId: number | null) => {
         const formData = new FormData();
         formData.append('userId', userId);
         formData.append('questionId', questionId.toString());
-        formData.append('commentPNG', commentPNG);
-        formData.append('commentText', commentText);
+        if (commentPNG) {
+            formData.append('commentPNG', commentPNG);
+        }
+        if (commentText) {
+            formData.append('commentText', commentText);
+        }
         if (parentCommentId) {
             formData.append('parentCommentId', parentCommentId.toString());
         }
