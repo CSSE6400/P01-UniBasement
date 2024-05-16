@@ -60,12 +60,10 @@ In the project proposal it was outlined that the users should be able to create 
 The team had also realised that the allowing users to sign up would require us to handle the variety of security risks it would introduce such as storing user login data. Therefore, we decided to use AUTH0 to handle the login using external accounts such as gmail or github. This however, had the unintended affect that it removed our ability to allow users to update the account information or profile picture as that is was handled by AUTH0. The decision to use AUTH0 was made after careful consideration of the it's security practices and its effect on the project.
 
 #### Courses 
-The project proposal also outlined that users should be able to create new courses and update that information. Due to the time restrictions and complexitiy this functionality would of caused we very quickly decided to not include this feature in our MVP. This decision also lead to us only adding a few courses to our website to demonstrate the rest of the projects functionality. This cutting of the scope allowed us to refocuse our efforts on enabling the user to filter/ search courses and pin their favorite courses. 
+The project proposal also outlined that users should be able to create new courses and update that information. Due to the time restrictions and complexitiy this functionality would of caused we very quickly decided to not include this feature in our MVP. This decision also lead to us only adding a few courses to our website to demonstrate the rest of the projects functionality. This cutting of the scope allowed us to refocuse our efforts on enabling the user to filter/ search courses and pin their favorite courses. We also used the extra resources to expand the scope and allow users to rate a course.
 
 #### Exams
-
-
-
+We weren't able to fully implement the exam functionality. We were able have to implement functionality to allow users to add new questions to an exam.
 
 ## Changes to propsal
 NEEDS TO BE WRITTERN PROPERLY (dot points probs ok but should be expanded upon)
@@ -82,8 +80,10 @@ NEEDS TO BE WRITTERN PROPERLY (dot points probs ok but should be expanded upon)
 - Was expanded to be more than just having documentation and github actions, from things like listed ADRs (so people can understand why we did what we did) to decisions that were purely made for readability and maintainability reasons.
 ## Architecture Options
 
+## Arcjotecture Options
+
 ## Architecture
-The architecture we decided upon was a 3-Layered Architecture, as it nicely seperates the code into three blocks, presentation, business and persistence. 
+The project's architecture is a Layered Architecture where the project is seperated into four layers, a presentaion, business and persistence and database layer. Our presentation layer was implemented with next.js with tailwind for styling. This layer takes the data from the business layer and formats it sensibly for the user. Our business layer is our api backend code code in javascript using node (TODO CHECK THIS???) using a ORM for the persistence layer which is our postgres database which is our database layer. 
 
 ## Trade-Offs
 
