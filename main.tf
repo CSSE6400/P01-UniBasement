@@ -8,6 +8,10 @@ terraform {
         source  = "kreuzwerker/docker"
         version = "3.0.2"
       }
+      auth0 = {
+        source = "auth0/auth0"
+        version = "1.2.0"
+      }
   }
   backend "s3" {
     bucket = "unibasementtfstate"
@@ -18,6 +22,12 @@ terraform {
 
 provider "aws" {
     region = "us-east-1"
+}
+
+provider "auth0" {
+  domain = var.auth0_domain
+  client_id = var.auth0_client_id
+  client_secret = var.auth0_client_secret
 }
 
 provider "docker" {
@@ -114,12 +124,8 @@ resource "aws_ecs_service" "unibasement_frontend" {
   }
 }
 
-variable "auth0_secret" {
-  description = "Auth0 Secret"
-}
-
-variable "auth0_issuer_base_url" {
-  description = "Auth0 Issuer Base URL"
+variable "auth0_domain" {
+  description = "Auth0 Domain"
 }
 
 variable "auth0_client_id" {
@@ -130,6 +136,25 @@ variable "auth0_client_secret" {
   description = "Auth0 Client Secret"
 }
 
+resource "auth0_client" "unibasement" {
+  name = "unibasement"
+  app_type = "regular_web"
+  callbacks = ["http://${aws_lb.unibasement.dns_name}:3000/"]
+  web_origins = ["http://${aws_lb.unibasement.dns_name}:3000/"]
+  allowed_logout_urls = ["http://${aws_lb.unibasement.dns_name}:3000"]
+  oidc_conformant = true
+}
+
+data "auth0_client" "unibasement" {
+  name = auth0_client.unibasement.name
+}
+
+output "auth0_client_domain_url" {
+  value = data.auth0_tenant.unibasement.domain
+}
+
+
+data "auth0_tenant" "unibasement" {}
 resource "aws_ecs_task_definition" "unibasement_frontend" {
     family                   = "unibasement_frontend"
     network_mode             = "awsvpc"
@@ -158,8 +183,20 @@ resource "aws_ecs_task_definition" "unibasement_frontend" {
           "value": "http://${data.aws_network_interface.unibasement_backend_ip.association[0].public_ip}:8080"
         },
         {
-          "name": "AUTH0_SECRET",
-          "value": "${var.auth0_secret}"
+          "name": "AUTH0_CLIENT_DOMAIN",
+          "value": "${var.auth0_domain}"
+        },
+        {
+          "name": "AUTH0_CLIENT_ID",
+          "value": "${auth0_client.unibasement.client_id}"
+        },
+        {
+          "name": "AUTH0_CLIENT_SECRET",
+          "value": "${data.auth0_client.unibasement.client_secret}"
+        },
+        {
+        "name": "AUTH0_SECRET",
+        "value": "ff7eb6072eb762d21999e7fda733feba681970b781f3ba0d55867b7d0c83ca2a"
         },
         {
           "name": "AUTH0_BASE_URL",
@@ -167,15 +204,7 @@ resource "aws_ecs_task_definition" "unibasement_frontend" {
         },
         {
           "name": "AUTH0_ISSUER_BASE_URL",
-          "value": "${var.auth0_issuer_base_url}"
-        },
-        {
-          "name": "AUTH0_CLIENT_ID",
-          "value": "${var.auth0_client_id}"
-        },
-        {
-          "name": "AUTH0_CLIENT_SECRET",
-          "value": "${var.auth0_client_secret}"
+          "value": "https://${data.auth0_tenant.unibasement.domain}/"
         }
       ],
       "logConfiguration": {
@@ -191,6 +220,8 @@ resource "aws_ecs_task_definition" "unibasement_frontend" {
   ]
   DEFINITION
 }
+
+# the client secret is a session encryption key and therefore the above is not  a gross violation of like every security principle ever lmao. we could generate it every now and then but this like way too much effort for an mvp. hi evan!!!
 
 #TODO pass in auth0 variables into the above. 
 
@@ -434,28 +465,6 @@ resource "local_file" "url" {
     content = "http://${aws_lb.unibasement.dns_name}:3000/" # TODO figure out
     filename = "./unibasement.txt"
 }
-
-
-#TODO some sort of auth0 setup at somepoint in the future lmao need to get from the workflow env variables.
-# variable "AUTH0_SECRET" {
-#   type = string
-# }
-
-# variable "AUTH0_BASE_URL" {
-#   type = string
-# }
-
-# variable "AUTH0_ISSUER_BASE_URL" {
-#   type = string
-# }
-
-# variable "AUTH0_CLIENT_ID" {
-#   type = string
-# }
-
-# variable "AUTH0_CLIENT_SECRET" {
-#   type = string
-# }
 
 
 
