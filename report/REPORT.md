@@ -66,7 +66,7 @@ The project proposal also outlined that users should be able to create new cours
 We weren't able to fully implement the exam functionality. We were able have to implement functionality to allow users to add new questions to an exam. (TODO Need to Finish)
 
 ## Architecture Options
-There were a multitude of architectures (TODO Need to Finish)
+There were a multitude of architectures that were considered when planning on how to tackle this project. The first architecture that we considered was a micro-services architecutre, the allure of this architecutre was the paritioning of services to achieve modularisation ensuring that each service is independent of each other. This would of also allowed us to use a load balancer on individual services to scale resources based on usage. As our project is only the smaller side with only a few services, we felt the benefit gained from the modularisation was overtaken by the time taken to dockerise each service and ensure the terraform works together. 
 
 ## Architecture
 The project's architecture is a Layered Architecture where the project is seperated into four layers, a presentaion, business and persistence and database layer. Our presentation layer was implemented with next.js with tailwind for styling. This layer takes the data from the business layer and formats it sensibly for the user. Our business layer is our api backend code code in javascript using node (TODO CHECK THIS???) using a ORM for the persistence layer which is our postgres database which is our database layer. 
