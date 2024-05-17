@@ -32,6 +32,7 @@ This project is brought to you by the Evan Hughes FanClub. Our team consists of:
 ### DevOps
 
 - [Shanon Lakshan Chandrasekara](https://github.com/86LAK)
+- [Olivia Ronda](https://github.com/vilnor)
 
 ### QUT Guy Who Has Vanished!
 - [Ibrahim Cassim](https://github.com/IbrahimCassim)
