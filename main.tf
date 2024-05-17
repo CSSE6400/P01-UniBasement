@@ -90,7 +90,43 @@ resource "aws_security_group" "unibasement_database" {
 //////////////////////////////// Database //////////////////////////////////////
 
 
+resource "aws_s3_bucket" "unibasement_images" {
+  bucket = "unibasement-images"
 
+  tags = {
+    Name = "UniBasement Images"
+  }
+}
+
+resource "aws_s3_bucket_public_access_block" "unibasement_images" {
+  bucket = aws_s3_bucket.unibasement_images.id
+
+  block_public_acls   = false
+  block_public_policy = false
+  ignore_public_acls  = false
+  restrict_public_buckets = false
+}
+
+data "aws_iam_policy_document" "public_read" {
+  statement {
+    sid    = "PublicReadGetObject"
+    effect = "Allow"
+
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
+
+    actions   = ["s3:GetObject"]
+    resources = ["arn:aws:s3:::${aws_s3_bucket.unibasement_images.bucket}/*"]
+  }
+}
+
+resource "aws_s3_bucket_policy" "unibasement_images" {
+  bucket = aws_s3_bucket.unibasement_images.id
+  policy = data.aws_iam_policy_document.public_read.json
+  depends_on = [aws_s3_bucket_public_access_block.unibasement_images]
+}
 
 //////////////////////////////// Frontend //////////////////////////////////////
 resource "docker_image" "unibasement_frontend" {
@@ -320,6 +356,7 @@ resource "aws_ecs_task_definition" "unibasement_backend" {
   cpu                      = 4096
   memory                   = 12288
   execution_role_arn       = data.aws_iam_role.lab.arn
+  task_role_arn            = data.aws_iam_role.lab.arn
 
   container_definitions = <<DEFINITION
   [
@@ -362,6 +399,18 @@ resource "aws_ecs_task_definition" "unibasement_backend" {
         {
           "name": "DB_PORT",
           "value": "5432"
+        },
+        {
+          "name": "S3_BUCKET_NAME",
+          "value": "${aws_s3_bucket.unibasement_images.bucket}"
+        },
+        {
+          "name": "S3_BUCKET_URL",
+          "value": "${aws_s3_bucket.unibasement_images.bucket_regional_domain_name}"
+        },
+        {
+          "name": "AWS_REGION",
+          "value": "us-east-1"
         }
       ]
     }
