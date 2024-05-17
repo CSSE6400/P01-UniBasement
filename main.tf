@@ -200,7 +200,7 @@ resource "aws_ecs_task_definition" "unibasement_frontend" {
         },
         {
           "name": "AUTH0_BASE_URL",
-          "value": "http://${aws_lb.unibasement.dns_name}:3000/"
+          "value": "http://${aws_lb.unibasement.dns_name}:3000/api/auth/callback"
         },
         {
           "name": "AUTH0_ISSUER_BASE_URL",
@@ -253,7 +253,6 @@ resource "aws_security_group" "unibasement_frontend" {
       cidr_blocks = ["0.0.0.0/0"]
     }
 }
-
 
 
 
