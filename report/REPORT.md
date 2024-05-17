@@ -63,24 +63,10 @@ The team had also realised that the allowing users to sign up would require us t
 The project proposal also outlined that users should be able to create new courses and update that information. Due to the time restrictions and complexitiy this functionality would of caused we very quickly decided to not include this feature in our MVP. This decision also lead to us only adding a few courses to our website to demonstrate the rest of the projects functionality. This cutting of the scope allowed us to refocuse our efforts on enabling the user to filter/ search courses and pin their favorite courses. We also used the extra resources to expand the scope and allow users to rate a course.
 
 #### Exams
-We weren't able to fully implement the exam functionality. We were able have to implement functionality to allow users to add new questions to an exam.
+We weren't able to fully implement the exam functionality. We were able have to implement functionality to allow users to add new questions to an exam. (TODO Need to Finish)
 
-## Changes to propsal
-NEEDS TO BE WRITTERN PROPERLY (dot points probs ok but should be expanded upon)
-#### Account
-- Users do not make accounts nor do they register with an institution, they instead use AUTH0 to sign in with a different login (taking security risks off of us to an extent),
-- They also then do not really have the ability to update information or profile pictures without changing their original account
-#### Courses
-- Users should not be able to edit courses information due to changes of correct information to incorrect or malicious information being a key factor in designing the software
-#### Exams
-- Users should not be able to edit exams information due to changes of correct information to incorrect or malicious information being a key factor in designing the software
-#### Scope
-- No real changes to scope, we do add alot more than 'some units' though
-#### Maintability
-- Was expanded to be more than just having documentation and github actions, from things like listed ADRs (so people can understand why we did what we did) to decisions that were purely made for readability and maintainability reasons.
 ## Architecture Options
-
-## Arcjotecture Options
+There were a multitude of architectures (TODO Need to Finish)
 
 ## Architecture
 The project's architecture is a Layered Architecture where the project is seperated into four layers, a presentaion, business and persistence and database layer. Our presentation layer was implemented with next.js with tailwind for styling. This layer takes the data from the business layer and formats it sensibly for the user. Our business layer is our api backend code code in javascript using node (TODO CHECK THIS???) using a ORM for the persistence layer which is our postgres database which is our database layer. 
