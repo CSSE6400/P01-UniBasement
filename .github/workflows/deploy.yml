@@ -9,8 +9,8 @@ on:
       auth0Secret:
         description: 'Auth0 Secret'
         required: true
-      auth0IssuerBaseUrl:
-        description: 'Auth0 Issuer Base URL'
+      auth0Domain:
+        description: 'Auth0 Domain'
         required: true
       auth0ClientId:
         description: 'Auth0 Client ID'
@@ -39,7 +39,6 @@ jobs:
         eval "${{ github.event.inputs.awsCredentials }}"
         terraform init
         terraform apply -auto-approve \
-          -var "auth0_secret=${{ github.event.inputs.auth0Secret }}" \
-          -var "auth0_issuer_base_url=${{ github.event.inputs.auth0IssuerBaseUrl }}" \
+          -var "auth0_domain=${{ github.event.inputs.auth0Domain }}" \
           -var "auth0_client_id=${{ github.event.inputs.auth0ClientId }}" \
           -var "auth0_client_secret=${{ github.event.inputs.auth0ClientSecret }}"
