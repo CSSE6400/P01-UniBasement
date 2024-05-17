@@ -92,6 +92,8 @@ resource "aws_security_group" "unibasement_database" {
 
 resource "aws_s3_bucket" "unibasement_images" {
   bucket = "unibasement-images"
+  # TODO: remove for prod version
+  force_destroy = true
 
   tags = {
     Name = "UniBasement Images"
