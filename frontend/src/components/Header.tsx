@@ -102,7 +102,7 @@ export const Header = forwardRef<
                     {user ? (
                         <ProfileCard></ProfileCard>
                     ) : (
-                        <Button href="/api/auth/login">Sign in</Button>
+                        <a href="/api/auth/login">Sign in</a>
                     )}
                 </div>
                 <div className="hidden min-[416px]:contents"></div>

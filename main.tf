@@ -139,10 +139,18 @@ variable "auth0_client_secret" {
 resource "auth0_client" "unibasement" {
   name = "unibasement"
   app_type = "regular_web"
-  callbacks = ["http://${aws_lb.unibasement.dns_name}:3000/"]
+  callbacks = ["http://${aws_lb.unibasement.dns_name}:3000/api/auth/callback"]
   web_origins = ["http://${aws_lb.unibasement.dns_name}:3000/"]
+  allowed_origins = ["http://${aws_lb.unibasement.dns_name}:3000/"]
   allowed_logout_urls = ["http://${aws_lb.unibasement.dns_name}:3000"]
   oidc_conformant = true
+}
+
+resource "auth0_client_credentials" "unibasement" {
+  client_id = auth0_client.unibasement.id
+
+  # for MVP only
+  authentication_method = "none"
 }
 
 data "auth0_client" "unibasement" {
@@ -200,7 +208,7 @@ resource "aws_ecs_task_definition" "unibasement_frontend" {
         },
         {
           "name": "AUTH0_BASE_URL",
-          "value": "http://${aws_lb.unibasement.dns_name}:3000/api/auth/callback"
+          "value": "http://${aws_lb.unibasement.dns_name}:3000/"
         },
         {
           "name": "AUTH0_ISSUER_BASE_URL",
