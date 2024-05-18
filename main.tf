@@ -195,10 +195,6 @@ data "auth0_client" "unibasement" {
   name = auth0_client.unibasement.name
 }
 
-output "auth0_client_domain_url" {
-  value = data.auth0_tenant.unibasement.domain
-}
-
 
 data "auth0_tenant" "unibasement" {}
 resource "aws_ecs_task_definition" "unibasement_frontend" {
@@ -345,11 +341,6 @@ data "aws_network_interface" "unibasement_backend_ip" {
   depends_on = [ aws_ecs_service.unibasement_backend ]
   id = data.aws_network_interfaces.unibasement_backend_ip.ids[0]
 }
-
-output "thebackendip" {
-  value = data.aws_network_interface.unibasement_backend_ip.association[0].public_ip
-}
-
 
 resource "aws_ecs_task_definition" "unibasement_backend" {
   family                   = "unibasement_backend"
