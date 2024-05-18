@@ -63,10 +63,14 @@ The team had also realised that the allowing users to sign up would require us t
 The project proposal also outlined that users should be able to create new courses and update that information. Due to the time restrictions and complexitiy this functionality would of caused we very quickly decided to not include this feature in our MVP. This decision also lead to us only adding a few courses to our website to demonstrate the rest of the projects functionality. This cutting of the scope allowed us to refocuse our efforts on enabling the user to filter/ search courses and pin their favorite courses. We also used the extra resources to expand the scope and allow users to rate a course.
 
 #### Exams
-We weren't able to fully implement the exam functionality. We were able have to implement functionality to allow users to add new questions to an exam. (TODO Need to Finish)
+We weren't able to fully implement the exam functionality. We were able have to implement functionality to allow users to add new questions to an exam. (TODO Maybe not the case anymore)
 
 ## Architecture Options
-There were a multitude of architectures that were considered when planning on how to tackle this project. The first architecture that we considered was a micro-services architecutre, the allure of this architecutre was the paritioning of services to achieve modularisation ensuring that each service is independent of each other. This would of also allowed us to use a load balancer on individual services to scale resources based on usage. As our project is only the smaller side with only a few services, we felt the benefit gained from the modularisation was overtaken by the time taken to dockerise each service and ensure the terraform works together. 
+There were a multitude of architectures that were considered when planning on how to tackle this project. The first architecture that we considered was a micro-services architecutre, the allure of this architecutre was the partitioning of services to achieve modularisation ensuring that each service is independent of each other. The partitioning of services would of also enabled our team to develop in our most comfortable languages. Each service could be written with a different coding language eliminiating the need for a few developers to learn a new language / technology. The improved fault isolation would have also been a benefit as if there were to be an issue in one service it would not affect the other services. Finally, althoght scalability was not one of the primary quality attributes, the microservices architecture would have allowed us to scale each service independently as demand increased or decreased. 
+
+There were also some downsides that were discoverd when evaluating if the microservices architecture was the right fit for our project. The overall complexity of our project would have increased as we would of needed to handle the communication between services and then would have to deal with the latency of our api calls increasing. Secondly, deploying our application to Amazon Web Services (AWS) would have increaased as we would need to handle each service/ container deploying correctly. Finally, testing in a microservices architecture woudl require each dependent service to be confirmed working before having the tests run. 
+
+The other architecture that was considered was a Monolithic Architecture. 
 
 ## Architecture
 The project's architecture is a Layered Architecture where the project is seperated into four layers, a presentaion, business and persistence and database layer. Our presentation layer was implemented with next.js with tailwind for styling. This layer takes the data from the business layer and formats it sensibly for the user. Our business layer is our api backend code code in javascript using node (TODO CHECK THIS???) using a ORM for the persistence layer which is our postgres database which is our database layer. 
@@ -92,3 +96,6 @@ The containerazation of UniBasement allows for two different code bases / contai
 
 
 ## Reflection
+
+## References
+https://cloudacademy.com/blog/microservices-architecture-challenge-advantage-drawback/
