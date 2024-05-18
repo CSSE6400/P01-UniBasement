@@ -94,9 +94,20 @@ resource "aws_s3_bucket" "unibasement_images" {
   bucket = "unibasement-images"
   # TODO: remove for prod version
   force_destroy = true
+  # TODO for prod version uncomment below. 
+  # lifecycle {
+  #   prevent_destroy = true
+  # }
 
   tags = {
     Name = "UniBasement Images"
+  }
+}
+
+resource "aws_s3_bucket_versioning" "unibasement_images" {
+  bucket = aws_s3_bucket.unibasement_images.id
+  versioning_configuration {
+    status = "Enabled"
   }
 }
 
@@ -161,6 +172,35 @@ resource "aws_ecs_service" "unibasement_frontend" {
       container_port   = 3000
   }
 }
+
+
+# Autoscaling for frontend
+resource "aws_appautoscaling_target" "unibasement_frontend" {
+  max_capacity       = 1 # 
+  min_capacity       = 1
+  resource_id        = "service/${aws_ecs_cluster.unibasement.name}/${aws_ecs_service.unibasement_frontend.name}"
+  scalable_dimension = "ecs:service:DesiredCount"
+  service_namespace  = "ecs"
+}
+
+resource "aws_appautoscaling_policy" "unibasement_frontend" {
+  name               = "unibasement_frontend"
+  policy_type        = "TargetTrackingScaling"
+  resource_id        = aws_appautoscaling_target.unibasement_frontend.resource_id
+  scalable_dimension = aws_appautoscaling_target.unibasement_frontend.scalable_dimension
+  service_namespace  = aws_appautoscaling_target.unibasement_frontend.service_namespace
+
+  target_tracking_scaling_policy_configuration {
+    predefined_metric_specification {
+      predefined_metric_type = "ECSServiceAverageCPUUtilization"
+    }
+
+    target_value = 50.0
+  }
+}
+
+
+
 
 variable "auth0_domain" {
   description = "Auth0 Domain"
@@ -413,6 +453,34 @@ resource "aws_ecs_task_definition" "unibasement_backend" {
   DEFINITION
 }
 
+
+# Autoscaling for backend
+resource "aws_appautoscaling_target" "unibasement_backend" {
+  max_capacity       = 1
+  min_capacity       = 1
+  resource_id        = "service/${aws_ecs_cluster.unibasement.name}/${aws_ecs_service.unibasement_backend.name}"
+  scalable_dimension = "ecs:service:DesiredCount"
+  service_namespace  = "ecs"
+}
+
+resource "aws_appautoscaling_policy" "unibasement_backend" {
+  name               = "unibasement_backend"
+  policy_type        = "TargetTrackingScaling"
+  resource_id        = aws_appautoscaling_target.unibasement_backend.resource_id
+  scalable_dimension = aws_appautoscaling_target.unibasement_backend.scalable_dimension
+  service_namespace  = aws_appautoscaling_target.unibasement_backend.service_namespace
+
+  target_tracking_scaling_policy_configuration {
+    predefined_metric_specification {
+      predefined_metric_type = "ECSServiceAverageCPUUtilization"
+    }
+
+    target_value = 50.0
+  }
+}
+
+
+
 resource "aws_security_group" "unibasement_backend" {
     name = "unibasement_backend"
     description = "unibasement Security Group"
@@ -511,6 +579,24 @@ resource "aws_lb_listener" "unibasement" {
     target_group_arn  = aws_lb_target_group.unibasement.arn
   }
 }
+
+data "aws_route53_zone" "unibasement" {
+  name = "g6.csse6400.xyz"
+  private_zone = false
+}
+
+resource "aws_route53_record" "unibasement" {
+  zone_id = data.aws_route53_zone.unibasement.zone_id
+  name    = "g6"
+  type    = "A"
+  alias {
+    name                   = aws_lb.unibasement.dns_name
+    zone_id                = aws_lb.unibasement.zone_id
+    evaluate_target_health = true
+  }
+}
+
+
 
 resource "local_file" "url" {
     content = "http://${aws_lb.unibasement.dns_name}:3000/"
