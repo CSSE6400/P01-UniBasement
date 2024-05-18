@@ -238,7 +238,7 @@ resource "aws_ecs_task_definition" "unibasement_frontend" {
         },
         {
         "name": "AUTH0_SECRET",
-        "value": "ff7eb6072eb762d21999e7fda733feba681970b781f3ba0d55867b7d0c83ca2a"
+        "value": "${random_string.auth0_secret.result}"
         },
         {
           "name": "AUTH0_BASE_URL",
@@ -263,10 +263,12 @@ resource "aws_ecs_task_definition" "unibasement_frontend" {
   DEFINITION
 }
 
-# the client secret is a session encryption key and therefore the above is not  a gross violation of like every security principle ever lmao. we could generate it every now and then but this like way too much effort for an mvp. hi evan!!!
 
-#TODO pass in auth0 variables into the above. 
-
+# Generate a random string for the secret
+resource "random_string" "auth0_secret" {
+  length  = 64
+  special = true
+}
 
 #TODO need scalability stuff for front, back db ?
 
@@ -511,8 +513,12 @@ resource "aws_lb_listener" "unibasement" {
 }
 
 resource "local_file" "url" {
-    content = "http://${aws_lb.unibasement.dns_name}:3000/" # TODO figure out
+    content = "http://${aws_lb.unibasement.dns_name}:3000/"
     filename = "./unibasement.txt"
+}
+
+output "url" {
+    value = "http://${aws_lb.unibasement.dns_name}:3000/"
 }
 
 
