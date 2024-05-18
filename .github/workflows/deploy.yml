@@ -6,9 +6,6 @@ on:
       awsCredentials:
         description: 'AWS Credentials'
         required: true
-      auth0Secret:
-        description: 'Auth0 Secret'
-        required: true
       auth0Domain:
         description: 'Auth0 Domain'
         required: true

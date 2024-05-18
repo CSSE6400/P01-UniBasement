@@ -7,7 +7,7 @@ on:
         description: 'AWS Credentials'
         required: true
       auth0Domain:
-        description: 'Auth0 Issuer Base URL'
+        description: 'Auth0 Domain'
         required: true
       auth0ClientId:
         description: 'Auth0 Client ID'
