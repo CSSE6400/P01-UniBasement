@@ -92,9 +92,9 @@ The architecture we decided on implementing for our project was the Layered Arch
 #### Maintainability
 The core functionality of UniBasement and the way it has been designed, allows for future use with minimal maintenance needed.  
   
-For example, adding new courses and/or exams is not something done with code, and as such can be done by someone with no techincal understanding of the underlying system. This abstracts the course/exam mantenance off the deveolpers and to the students/admins leaving just new features and bug fixing to deveolpers.  
+For example, adding new courses and/or exams is not something done with code, and as such can be done by someone with no technical understanding of the underlying system. This abstracts the course/exam maintenance off the developers and to the students/admins leaving just new features and bug fixing to developers.  
   
-The containerazation of UniBasement allows for two different code bases / containers, that communicate to each other with highly [documented](../docs/HANDSHAKE.md) API calls. This not only allows for ease of use, but a way to understand what is expected on either end without having to search through the entire code base. Another key factor to consider is that both the front-end and the back-end is writtern in the same language, which if the documentation fails (not able to communicate effectively) or is no longer up to date, the developer should be able to understand each component of the system.
+The containerization of UniBasement allows for two different code bases / containers, that communicate to each other with highly [documented](../docs/HANDSHAKE.md) API calls. This not only allows for ease of use, but a way to understand what is expected on either end without having to search through the entire code base. Another key factor to consider is that both the front-end and the back-end is written in the same language, which if the documentation fails (not able to communicate effectively) or is no longer up to date, the developer should be able to understand each component of the system.
 
 
 ## Reflection
