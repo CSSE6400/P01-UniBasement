@@ -5,14 +5,22 @@ const afterCallback = async (
     req: NextApiRequest,
     session: Session,
 ) => {
-    // add the user to our database
-    await fetch(`${process.env.API_URL}/api/users`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ userId: session.user.sub }),
-    });
+    console.log('in da callback');
+    console.log(`user id: ${session.user.sub}, api url: ${process.env.API_URL}`);
+    try { 
+      // add the user to our database
+      await fetch(`${process.env.API_URL}/api/users`, {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ userId: session.user.sub }),
+      });
+      console.log('user added to database');
+    } catch (e) {
+      console.log('error adding user to database', e);
+    }
+   
     return session;
 };
 
