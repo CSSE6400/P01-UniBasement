@@ -8,7 +8,7 @@ The repo has a set of very basic unit tests which realistically only tests the b
 
 ### Running Unit Tests
 
-These tests are made using Jest and can be run using the command `npm test` from inside the backend directory. The tests
+These tests are made using Jest and can be run using the command `npm test` from inside the backend directory.
 
 ### Adding to Unit Tests
 
@@ -16,17 +16,19 @@ To add a new test, create a new test function inside the "backend.test.jest" fil
 
 ## Integration Testing
 
-### About Integration Tests
-
-The repo features fully functional and amazing integration tests which cover the majority of the backend. These tests utilise Python Unittest and is designed to be fully maintainable and accurate. The tests are located inside "integration_tests" in various ".py" files. Each file represents a different route in the backend. The exclusion to this is the "full_suite.py" file which features tests which are designed to be more in depth and go through various scenarios. These scenarios are designed to test the backend in a more real world scenario and ensure the backend is functioning as expected. The tests work by spinning up 3 containers (backend, database and the container running the tests). These containers are defined inside the "docker-compose.yml" file located inside the "integration_tests" directory. The tests can be run locally or in the GitHub Actions. Currently they are set to run in the GitHub Actions on every push or PR to the main branch. However, developers can manually run it as well by selecting run workflow and selecting the branch they want tested. Another important note is that the database must be cleared to ensure that no persistent data is left over. This is automated as part of the test.sh script. If you think the containers are not resetting properly please run ```docker-compose down --rmi all -v --remove-orphans``` to remove all containers and volumes. When the tests are run at the end it provides a short overview on how many tests passed and failed. To find more details about the test that failed scroll up until you find the test that failed and it will provide more information on why it failed. All tests (excluding the Full Suite testing) are designed to have a few asserts and to verify the function is working as expected. Each function currently has success tests which ensure normal functionality. And other functions nearby which handle ensuring the function fails when it should and returns the correct error message and code. The Full Suite testing is designed to test the backend in more real world scenarios and ensure the backend is functioning as expected.
-
 ### Running Integration Tests
 
 To run the integration tests, navigate to the "integration_tests" directory and run the command `./run_tests.sh`. This will run all the tests and output the results to the console.
 
 ### Adding to Integration Tests
 
+#### Adding to backend tests
+
 When adding new tests for routes. Ensure that basic testing of the success and errors are tested inside the appropriate ".py" file. Ensure tests are written to also test the error handling and returned HTTP code. After this try adding the test into one or more of the scenarios in the "test_full_suite.py" file. The added test should follow the format of the other tests in the file. Tests should have a meaningful name following the format of test_ROUTE_TYPE_MOREINFO. Where ROUTE = route to be tested, TYPE= get, post  etc and MOREINFO = meaningful information about what the test is doing. This will help developers understand what the test is doing and why it is there. Ensure that each tests asserts the returned http code and the returned data. Inside each test if something is unclear, add a comment to explain what is happening.
+
+#### Adding to frontend tests
+
+The easiest way to add tests to the frontend is to use playwrights vscode record feature to record the tests. This will generate the tests for you. After this, you can modify the tests to make them more readable and understandable. The tests should be placed inside the "integration_tests/frontend" directory. Where the filename represents the page type (e.g. test_home_page). To use playwright record please visit [PlayWright](https://playwright.dev/docs/getting-started-vscode).
 
 ## GitHub Workflow Actions
 

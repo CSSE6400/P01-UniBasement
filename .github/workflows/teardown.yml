@@ -15,6 +15,9 @@ on:
       auth0ClientSecret:
         description: 'Auth0 Client Secret'
         required: true
+      databasePassword:
+        description: 'Database Password'
+        required: true
 
 jobs:
   teardown:
@@ -33,4 +36,5 @@ jobs:
         terraform destroy -auto-approve \
           -var "auth0_domain=${{ github.event.inputs.auth0Domain }}" \
           -var "auth0_client_id=${{ github.event.inputs.auth0ClientId }}" \
-          -var "auth0_client_secret=${{ github.event.inputs.auth0ClientSecret }}"
+          -var "auth0_client_secret=${{ github.event.inputs.auth0ClientSecret }}" \ 
+          -var "database_password=${{ github.event.inputs.databasePassword }}"
