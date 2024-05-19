@@ -6,18 +6,10 @@ on:
       awsCredentials:
         description: 'AWS Credentials'
         required: true
-      auth0Domain:
-        description: 'Auth0 Domain'
+      auth0:
+        description: 'Auth0'
         required: true
-      auth0ClientId:
-        description: 'Auth0 Client ID'
-        required: true
-      auth0ClientSecret:
-        description: 'Auth0 Client Secret'
-        required: true
-      databasePassword:
-        description: 'Database Password'
-        required: true
+
 
 jobs:
   teardown:
@@ -32,9 +24,6 @@ jobs:
     - name: Teardown to AWS
       run: |
         eval "${{ github.event.inputs.awsCredentials }}"
+        eval "${{ github.event.inputs.auth0 }}"
         terraform init
-        terraform destroy -auto-approve \
-          -var "auth0_domain=${{ github.event.inputs.auth0Domain }}" \
-          -var "auth0_client_id=${{ github.event.inputs.auth0ClientId }}" \
-          -var "auth0_client_secret=${{ github.event.inputs.auth0ClientSecret }}" \
-          -var "database_password=${{ github.event.inputs.databasePassword }}"
+        terraform destroy -auto-approve
