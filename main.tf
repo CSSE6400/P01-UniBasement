@@ -40,106 +40,31 @@ provider "docker" {
 
 
 //////////////////////////////// Database //////////////////////////////////////
+
 locals {
   database_username = "administrator"
-  database_password = "verySecretPassword"
 }
 
-resource "aws_db_instance" "unibasement_database" {
-  allocated_storage      = 20
-  max_allocated_storage  = 1000
-  engine                 = "postgres"
-  engine_version         = "14"
-  instance_class         = "db.t4g.medium"
-  db_name                = "unibasement_database"
-  username               = local.database_username
-  password               = local.database_password
-  parameter_group_name   = "default.postgres14"
-  skip_final_snapshot    = true
-  vpc_security_group_ids = [aws_security_group.unibasement_database.id]
-  publicly_accessible    = true
+variable "database_password" {
+  description = "Password for the database"
+}
 
+
+data "aws_db_instance" "unibasement_database" {
   tags = {
     Name = "unibasement_database"
   }
 }
 
-resource "aws_security_group" "unibasement_database" {
-  name        = "unibasement_database"
-  description = "Allow inbound Postgresql traffic"
-
-  ingress {
-    from_port        = 5432
-    to_port          = 5432
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port        = 0
-    to_port          = 0
-    protocol         = "-1"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
-  }
-
-  tags = {
-    Name = "unibasement_database"
-  }
+data "aws_s3_bucket" "unibasement_images" {
+  bucket = "unibasement-images"
 }
+
+
+
+
 //////////////////////////////// Database //////////////////////////////////////
 
-
-resource "aws_s3_bucket" "unibasement_images" {
-  bucket = "unibasement-images"
-  # TODO: remove for prod version
-  force_destroy = true
-  # TODO for prod version uncomment below. 
-  # lifecycle {
-  #   prevent_destroy = true
-  # }
-
-  tags = {
-    Name = "UniBasement Images"
-  }
-}
-
-resource "aws_s3_bucket_versioning" "unibasement_images" {
-  bucket = aws_s3_bucket.unibasement_images.id
-  versioning_configuration {
-    status = "Enabled"
-  }
-}
-
-resource "aws_s3_bucket_public_access_block" "unibasement_images" {
-  bucket = aws_s3_bucket.unibasement_images.id
-
-  block_public_acls   = false
-  block_public_policy = false
-  ignore_public_acls  = false
-  restrict_public_buckets = false
-}
-
-data "aws_iam_policy_document" "public_read" {
-  statement {
-    sid    = "PublicReadGetObject"
-    effect = "Allow"
-
-    principals {
-      type        = "AWS"
-      identifiers = ["*"]
-    }
-
-    actions   = ["s3:GetObject"]
-    resources = ["arn:aws:s3:::${aws_s3_bucket.unibasement_images.bucket}/*"]
-  }
-}
-
-resource "aws_s3_bucket_policy" "unibasement_images" {
-  bucket = aws_s3_bucket.unibasement_images.id
-  policy = data.aws_iam_policy_document.public_read.json
-  depends_on = [aws_s3_bucket_public_access_block.unibasement_images]
-}
 
 //////////////////////////////// Frontend //////////////////////////////////////
 resource "docker_image" "unibasement_frontend" {
@@ -262,7 +187,7 @@ resource "aws_ecs_task_definition" "unibasement_frontend" {
         "environment": [
         {
           "name": "NEXT_PUBLIC_API_URL",
-          "value": "http://${data.aws_network_interface.unibasement_backend_ip.association[0].public_ip}:8080"
+          "value": "http://${aws_lb.unibasement_backend.dns_name}:8080"
         },
         {
           "name": "AUTH0_CLIENT_DOMAIN",
@@ -371,17 +296,12 @@ resource "aws_ecs_service" "unibasement_backend" {
     security_groups     = [aws_security_group.unibasement_backend.id]
     assign_public_ip    = true
   }
-}
 
-data "aws_network_interfaces" "unibasement_backend_ip" {
-  tags = {
-    "aws:ecs:serviceName" = aws_ecs_service.unibasement_backend.name
+  load_balancer {
+    target_group_arn = aws_lb_target_group.unibasement_backend.arn
+    container_name   = "unibasement_backend"
+    container_port   = 8080
   }
-}
-
-data "aws_network_interface" "unibasement_backend_ip" {
-  depends_on = [ aws_ecs_service.unibasement_backend ]
-  id = data.aws_network_interfaces.unibasement_backend_ip.ids[0]
 }
 
 resource "aws_ecs_task_definition" "unibasement_backend" {
@@ -401,6 +321,12 @@ resource "aws_ecs_task_definition" "unibasement_backend" {
       "memory": 12288,
       "name": "unibasement_backend",
       "networkMode": "awsvpc",
+      "portMappings": [
+        {
+          "containerPort": 8080,
+          "hostPort": 8080
+        }
+      ],
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
@@ -421,15 +347,15 @@ resource "aws_ecs_task_definition" "unibasement_backend" {
         },
         {
           "name": "DB_HOST",
-          "value": "${aws_db_instance.unibasement_database.address}"
+          "value": "${data.aws_db_instance.unibasement_database.address}"
         }, 
         {
           "name": "DB_DATABASE",
-          "value": "${aws_db_instance.unibasement_database.db_name}"
+          "value": "${data.aws_db_instance.unibasement_database.db_name}"
         },
         {
           "name": "DB_PASSWORD",
-          "value": "${local.database_password}"
+          "value": "${var.database_password}"
         }, 
         {
           "name": "DB_PORT",
@@ -437,11 +363,11 @@ resource "aws_ecs_task_definition" "unibasement_backend" {
         },
         {
           "name": "S3_BUCKET_NAME",
-          "value": "${aws_s3_bucket.unibasement_images.bucket}"
+          "value": "${data.aws_s3_bucket.unibasement_images.bucket}"
         },
         {
           "name": "S3_BUCKET_URL",
-          "value": "${aws_s3_bucket.unibasement_images.bucket_regional_domain_name}"
+          "value": "${data.aws_s3_bucket.unibasement_images.bucket_regional_domain_name}"
         },
         {
           "name": "AWS_REGION",
@@ -568,6 +494,42 @@ resource "aws_lb" "unibasement" {
   security_groups    = [aws_security_group.unibasement_frontend.id]
 }
 
+resource "aws_lb" "unibasement_backend" {
+  name               = "unibasementBackend"
+  internal           = false
+  load_balancer_type = "application"
+  subnets            = data.aws_subnets.private.ids
+  security_groups    = [aws_security_group.unibasement_backend.id]
+}
+
+resource "aws_lb_target_group" "unibasement_backend" {
+  name          = "unibasementBackend"
+  port          = 8080
+  protocol      = "HTTP"
+  vpc_id        = aws_security_group.unibasement_backend.vpc_id
+  target_type   = "ip"
+
+  health_check {
+    path                = "/api/health"
+    protocol            = "HTTP"
+    port                = "8080"
+    interval            = 30
+    timeout             = 5
+    healthy_threshold   = 2
+    unhealthy_threshold = 2
+  }
+}
+
+resource "aws_lb_listener" "unibasement_backend" {
+  load_balancer_arn   = aws_lb.unibasement_backend.arn
+  port                = "8080"
+  protocol            = "HTTP"
+
+  default_action {
+    type              = "forward"
+    target_group_arn  = aws_lb_target_group.unibasement_backend.arn
+  }
+}
 
 resource "aws_lb_listener" "unibasement" {
   load_balancer_arn   = aws_lb.unibasement.arn
@@ -580,21 +542,21 @@ resource "aws_lb_listener" "unibasement" {
   }
 }
 
-data "aws_route53_zone" "unibasement" {
-  name = "g6.csse6400.xyz"
-  private_zone = false
-}
+# data "aws_route53_zone" "unibasement" {
+#   name = "g6.csse6400.xyz"
+#   private_zone = false
+# }
 
-resource "aws_route53_record" "unibasement" {
-  zone_id = data.aws_route53_zone.unibasement.zone_id
-  name    = "g6"
-  type    = "A"
-  alias {
-    name                   = aws_lb.unibasement.dns_name
-    zone_id                = aws_lb.unibasement.zone_id
-    evaluate_target_health = true
-  }
-}
+# resource "aws_route53_record" "unibasement" {
+#   zone_id = data.aws_route53_zone.unibasement.zone_id
+#   name    = "g6"
+#   type    = "A"
+#   alias {
+#     name                   = aws_lb.unibasement.dns_name
+#     zone_id                = aws_lb.unibasement.zone_id
+#     evaluate_target_health = true
+#   }
+# }
 
 
 
@@ -610,3 +572,9 @@ output "url" {
 
 
 ////////////////////////////// Miscellaneous ///////////////////////////////////
+
+
+
+
+
+
