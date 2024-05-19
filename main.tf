@@ -190,6 +190,10 @@ resource "aws_ecs_task_definition" "unibasement_frontend" {
           "value": "http://${aws_lb.unibasement_backend.dns_name}:8080"
         },
         {
+          "name": "NEXT_PUBLIC_ROOT_DOMAIN",
+          "value": "${aws_route53_record.unibasement.name}.${data.aws_route53_zone.unibasement.name}:3000"
+        },
+        {
           "name": "AUTH0_CLIENT_DOMAIN",
           "value": "${var.auth0_domain}"
         },
