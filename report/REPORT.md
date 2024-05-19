@@ -89,6 +89,8 @@ The architecture we decided on implementing for our project was the Layered Arch
 
 ## Critique
 
+- layered architecture doesn't have the best maintainability because of the how layer being grouped together
+
 ## Evaluation
 
 ### Testing
