@@ -75,9 +75,9 @@ export async function deleteComments(req: Request<CommentRouteParams>, res: Resp
     }
 
     comment.commentText = 'Deleted';
-    comment.commentPNG = 'Deleted';
+    comment.commentPNG = null;
     comment.isCorrect = false;
-    comment.isEndorsed = false;
+    comment.isDeleted = true;
     comment.upvotes = 0;
     comment.downvotes = 0;
     await commentRepository.update(comment.commentId, comment);
@@ -117,40 +117,6 @@ export async function incorrectComments(req: Request<CommentRouteParams>, res: R
     await commentRepository.update(comment.commentId, comment);
 
     res.status(200).json('Comment marked as incorrect');
-}
-
-export async function endorseComments(req: Request<CommentRouteParams>, res: Response) {
-    const { commentId } = req.params;
-
-    const commentRepository = getConnection().getRepository(CommentDb);
-    const comment = await commentRepository.findOne({ where: { commentId } });
-
-    if (!comment) {
-        res.status(404).json('Comment not found');
-        return;
-    }
-
-    comment.isEndorsed = true;
-    await commentRepository.update(comment.commentId, comment);
-
-    res.status(200).json('Comment endorsed');
-}
-
-export async function unendorseComments(req: Request<CommentRouteParams>, res: Response) {
-    const { commentId } = req.params;
-
-    const commentRepository = getConnection().getRepository(CommentDb);
-    const comment = await commentRepository.findOne({ where: { commentId } });
-
-    if (!comment) {
-        res.status(404).json('Comment not found');
-        return;
-    }
-
-    comment.isEndorsed = false;
-    await commentRepository.update(comment.commentId, comment);
-
-    res.status(200).json('Comment removed endorsement');
 }
 
 export async function upvoteComments(req: Request<CommentRouteParams>, res: Response) {

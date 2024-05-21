@@ -71,9 +71,29 @@ export default function useUpdateComments(questionId: number) {
         }
     };
 
+    const deleteComment = async (userId: string, commentId: number) => {
+        // send the delete request
+        const res = await fetch(`${ENDPOINT}/comments/${commentId}/delete`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ userId }),
+        });
+
+        if (res.ok) {
+            toast.success('Deleted comment', { id: 'commentDelete' });
+            // delete successful, invalidate the comments cache so it refetches updated data
+            await mutate(ENDPOINT + '/questions/' + questionId + '/comments' + `${!!userId ? `?userId=${userId}` : ''}`);
+        } else {
+            toast.error('Error deleting comment', { id: 'commentDeleteError' });
+        }
+    };
+
     return {
         updateCommentContent,
         updateCommentUpvote,
         updateCommentDownvote,
+        deleteComment,
     };
 }

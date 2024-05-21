@@ -34,13 +34,13 @@ export class Comment {
     commentText: string;
 
     @Column('text', { nullable: true })
-    commentPNG: string;
+    commentPNG: string | null;
 
     @Column({ default: false })
     isCorrect: boolean;
 
     @Column({ default: false })
-    isEndorsed: boolean;
+    isDeleted: boolean;
 
     @Column({ default: 0 })
     upvotes: number;

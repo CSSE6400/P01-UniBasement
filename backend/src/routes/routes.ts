@@ -7,11 +7,9 @@ import {
     deleteComments,
     downvoteComments,
     editComments,
-    endorseComments,
     getComment,
     incorrectComments,
     postComment,
-    unendorseComments,
     upvoteComments,
 } from './comments';
 
@@ -69,12 +67,6 @@ router.patch('/comments/:commentId/correct', correctComments);
 
 // Sets a comment as incorrect
 router.patch('/comments/:commentId/incorrect', incorrectComments);
-
-// Endorses a comment
-router.patch('/comments/:commentId/endorse', endorseComments);
-
-// Removes endorsement from a comment
-router.patch('/comments/:commentId/unendorse', unendorseComments);
 
 // Downvotes a comment
 router.patch('/comments/:commentId/downvote', downvoteComments);

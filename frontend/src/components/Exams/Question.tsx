@@ -22,6 +22,7 @@ function Question({ question, updateQuestionContent }: {
         updateCommentContent,
         updateCommentUpvote,
         updateCommentDownvote,
+        deleteComment
     } = useUpdateComments(question.questionId);
 
     const { postComment } = usePostComment(question.questionId);
@@ -36,6 +37,7 @@ function Question({ question, updateQuestionContent }: {
                 updateCommentContent={updateCommentContent}
                 updateCommentDownvote={updateCommentDownvote}
                 updateCommentUpvote={updateCommentUpvote}
+                deleteComment={deleteComment}
                 key={c.commentId}
                 comment={c}
                 postComment={async (parentCommentId, newText, newPng) => {

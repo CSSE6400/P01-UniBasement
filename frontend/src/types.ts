@@ -28,7 +28,7 @@ export type Comment = {
     commentText: string | null
     commentPNG: string | null
     isCorrect: boolean
-    isEndorsed: boolean
+    isDeleted: boolean
     upvotes: number
     downvotes: number
     upvoted: boolean
