@@ -27,9 +27,11 @@ Access to this is restricted to the team. Please contact the team for the passwo
 ### Workflow
 
 1. After completing the requirements, go to the Github Actions and find the ```Manual AWS Deployment``` or ```Manual AWS Teardown``` workflow.
-2. When prompted paste in the credentials and run the workflow off the main branch
-3. The deployment will take a few minutes to complete.
-4. Once the deployment is complete, you will be able to access the application at [Link](http://g6.g6.csse6400.xyz:3000/).
+2. When prompted paste in the credentials into the credentials box
+3. When prompted paste the Auth0 credentials and the database password into the box, in the format.
+```export TF_VAR_auth0_domain=xxx \ export TF_VAR_auth0_client_id=xxx \ export TF_VAR_auth0_client_secret=xxx \ export TF_VAR_database_password=xxx```
+4. The deployment will take a few minutes to complete.
+5. Once the deployment is complete, you will be able to access the application at [Link](http://g6.g6.csse6400.xyz:3000/).
 
 ### Local
 
