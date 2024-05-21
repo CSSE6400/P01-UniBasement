@@ -43,12 +43,6 @@ function Courses() {
                                 key={course.code}
                             />
                         ))}
-                    <Card>
-                        {/* TODO: Make this do something */}
-                        <h3 className="text-sm font-semibold leading-7 text-zinc-900 dark:text-white">
-                            Add Course <IconCirclePlus/>
-                        </h3>
-                    </Card>
                 </div>
             </div>
         </main>
