@@ -6,8 +6,8 @@ on:
       awsCredentials:
         description: 'AWS Credentials'
         required: true
-      auth0:
-        description: 'Auth0'
+      environmentVariables:
+        description: 'Environment Variables'
         required: true
 
 
@@ -29,6 +29,6 @@ jobs:
     - name: Deploy to AWS
       run: |
         eval "${{ github.event.inputs.awsCredentials }}"
-        eval "${{ github.event.inputs.auth0 }}"
+        eval "${{ github.event.inputs.environmentVariables }}"
         terraform init
         terraform apply -auto-approve
