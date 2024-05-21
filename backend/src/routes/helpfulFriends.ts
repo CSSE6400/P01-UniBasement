@@ -13,6 +13,10 @@ export function nest(commentRows: IComment[]) {
     commentRows.forEach(item => {
         if (item.parentCommentId !== null) {
             const parent = dataDict[item.parentCommentId];
+            if (!parent) {
+                // parent comment not in results for some reason
+                return;
+            }
             if (!parent.children) {
                 parent.children = [];
             }
