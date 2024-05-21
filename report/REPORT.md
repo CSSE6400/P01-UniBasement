@@ -115,7 +115,7 @@ The repo features fully functioning integration tests which is capable of testin
 
 ### Quality Attributes
 #### Availability
-
+In order to enhance the availability of our software, we utilized tools from Amazon Web Services (AWS) and leveraged the benefits of a Layered Architecture. To manage website traffic, we implemented a load balancer to improve fault tolerance. This load balancer can automatically detect server issues and reroute traffic to operational servers. Furthermore, we used Terraform to configure our application to dynamically scale resources based on load, effectively handling peak usage times. The Layered Architecture plays a crucial role in fault isolation, allowing us to address and resolve issues in one layer without disrupting the others. To ensure the robustness of our website, we conducted rigorous testing. This approach ensures that any potential issues are identified and rectified promptly, thereby maintaining the website’s availability. Finally, we deployed the website over a 1 hour period and simulated a expected load and the website did not run into issues or downtime. 
 
 #### Reliability
 There were numerous techniques employed to achieve the high level of reliability that we had set at project conception. In the project proposal it was outlined to achieve the necessary level of reliability, the project should have unit tests that thoroughly covers the core functionality of the system. These tests should ensure that the system maintains expected behaviour. We used test driven development to implement the unit and integration tests that cover the entire functionality of our application and previously mentioned in the testing section. These tests are then used in a GitHub workflow to ensure that every time a code change is pushed to main the tests run to ensure the core functionality works before the code reaches main.  
@@ -127,9 +127,10 @@ Maintainability has been achieved primarily by the abstraction of code and layer
 
 We also made the effort to use the same programming language for both the front and backend. This acts as a redundancy that even if our documentation is unable to effectively communicate our decisions or is no longer update, the developer should be easily able to read the codebase and understand the importance and inner working of each component of the system.
 
-
 ## Reflection
+Understanding the difficulty of this project, as a group we had decided
 
 ## References
 
 https://cloudacademy.com/blog/microservices-architecture-challenge-advantage-drawback/
+https://aws.amazon.com/what-is/load-balancing/#:~:text=Load%20balancers%20improve%20application%20performance,closer%20server%20to%20reduce%20latency
