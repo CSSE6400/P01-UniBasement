@@ -133,7 +133,11 @@ We also made the effort to use the same programming language for both the front 
 
 ## Reflection
 
-Understanding the difficulty of this project, as a group we had decided
+Recognizing the complexity of this project, our team made a strategic decision to initiate the process as early as possible. We quickly grasped the magnitude of the task at hand, understanding that each component carried a different weight, with the report and video taking precedence. During the planning phase, we envisioned a more feature-rich product, but had to scale back due to the project’s demanding nature.
+
+Our experience exposed us to various architectural frameworks, their impact on development, and the time investment they require. If given another opportunity, we would prioritize the use of software development methodologies such as Agile and User Stories. This approach would enhance our project management, potentially allowing for the inclusion of additional features.
+
+Furthermore, we would consider implementing the project using a Microservices architecture. This would align more closely with the quality attributes we initially set, thereby improving the overall project outcome.
 
 ## References
 
