@@ -25,6 +25,7 @@ export type Comment = {
     commentId: number
     parentCommentId: number | null
     userId: string
+    picture?: string | null
     commentText: string
     commentPNG: string | null
     isCorrect: boolean

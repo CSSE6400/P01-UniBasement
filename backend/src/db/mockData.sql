@@ -1,15 +1,15 @@
-INSERT INTO "user" ("userId", "role", "rated", "upvoted", "downvoted") VALUES
-   ('auth0|664bd5d384b75fb6c997050f', 0, '{}', '{}', '{}'),
-   ('auth0|664bd4e728f06973e1ad995b', 0, '{}', '{}', '{}'),
-   ('auth0|664bd5133607699d90546f1f', 0, '{}', '{}', '{}'),
-   ('auth0|664bd549cd7249b0adc687da', 0, '{}', '{}', '{}'),
-   ('auth0|664bd56128f06973e1ad9992', 0, '{}', '{}', '{}'),
-   ('auth0|664bd57c63b005fba106f53c', 0, '{}', '{}', '{}'),
-   ('auth0|664bd59b84b75fb6c99704f1', 0, '{}', '{}', '{}'),
-   ('auth0|664bd5b4cd7249b0adc68813', 0, '{}', '{}', '{}'),
-   ('auth0|664bd5f163b005fba106f584', 0, '{}', '{}', '{}'),
-   ('auth0|664bd6110f4ade208667e532', 0, '{}', '{}', '{}'),
-   ('auth0|6649a759eddbd8048814d9ef', 0, '{}', '{}', '{}');
+INSERT INTO "user" ("userId", "role", "rated", "upvoted", "downvoted", "picture") VALUES
+   ('auth0|664bd5d384b75fb6c997050f', 0, '[]', '{}', '{}', 'https://cdn.auth0.com/avatars/ab.png'),
+   ('auth0|664bd4e728f06973e1ad995b', 0, '[]', '{}', '{}', 'https://cdn.auth0.com/avatars/cd.png'),
+   ('auth0|664bd5133607699d90546f1f', 0, '[]', '{}', '{}', 'https://cdn.auth0.com/avatars/ef.png'),
+   ('auth0|664bd549cd7249b0adc687da', 0, '[]', '{}', '{}', 'https://cdn.auth0.com/avatars/gh.png'),
+   ('auth0|664bd56128f06973e1ad9992', 0, '[]', '{}', '{}', 'https://cdn.auth0.com/avatars/ij.png'),
+   ('auth0|664bd57c63b005fba106f53c', 0, '[]', '{}', '{}', 'https://cdn.auth0.com/avatars/kl.png'),
+   ('auth0|664bd59b84b75fb6c99704f1', 0, '[]', '{}', '{}', 'https://cdn.auth0.com/avatars/mn.png'),
+   ('auth0|664bd5b4cd7249b0adc68813', 0, '[]', '{}', '{}', 'https://cdn.auth0.com/avatars/op.png'),
+   ('auth0|664bd5f163b005fba106f584', 0, '[]', '{}', '{}', 'https://cdn.auth0.com/avatars/qr.png'),
+   ('auth0|664bd6110f4ade208667e532', 0, '[]', '{}', '{}', 'https://cdn.auth0.com/avatars/st.png'),
+   ('auth0|6649a759eddbd8048814d9ef', 0, '[]', '{}', '{}', 'https://cdn.auth0.com/avatars/te.png');
 
 INSERT INTO course ("courseCode", "courseName", "courseDescription", "university") VALUES
     (

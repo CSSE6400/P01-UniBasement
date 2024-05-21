@@ -9,6 +9,9 @@ export class User {
     @Column({ default: 0 })
     role: number;
 
+    @Column({ nullable: true })
+    picture: string;
+
     @Column({ type: 'jsonb', default: [] })
     rated: RateObject[];
 

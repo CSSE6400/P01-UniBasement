@@ -14,7 +14,7 @@ const afterCallback = async (
           headers: {
               'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ userId: session.user.sub }),
+          body: JSON.stringify({ userId: session.user.sub, picture: session.user.picture}),
       });
       console.log('user added to database');
     } catch (e) {

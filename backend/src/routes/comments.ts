@@ -323,14 +323,21 @@ export async function postComment(req: Request<any, any, CommentBodyParams>, res
 export async function getComment(req: Request<CommentRouteParams, any, any>, res: Response) {
     const { commentId } = req.params;
     const commentRepository = getConnection().getRepository(CommentDb);
-    const comment = await commentRepository.findOne({ where: { commentId } });
+    const comment = await commentRepository
+        .createQueryBuilder('comment')
+        .leftJoin('comment.user', 'user')
+        .select('user.picture')
+        .where('comment.commentId = :commentId', { commentId })
+        .getOne();
 
     if (!comment) {
         res.status(404).json('Comment not found');
         return;
     }
 
-    res.status(200).json(comment);
+    const { user: commentUser, ...restOfComment } = comment;
+
+    res.status(200).json({ picture: commentUser.picture, ...restOfComment });
 }
 
 

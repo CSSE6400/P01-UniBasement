@@ -36,6 +36,7 @@ export type Comment = {
     createdAt: string
     updatedAt: string
     userId: string
+    picture: string | null
     children?: Comment[]
 }
 
