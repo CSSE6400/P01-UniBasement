@@ -1,5 +1,6 @@
 'use client';
 import { useSWRConfig } from 'swr';
+import toast from 'react-hot-toast';
 
 const ENDPOINT = `${process.env.API_URL}/api`;
 
@@ -18,8 +19,11 @@ export default function useUpdateCourse(courseCode: string) {
         });
 
         if (res.ok) {
+            toast.success('Rated course', { id: 'courseRate' });
             // rating successful, invalidate the course cache so it refetches updated data
             await mutate(ENDPOINT + '/courses/' + courseCode);
+        } else {
+            toast.error('Error rating course', { id: 'courseRateError' });
         }
     };
 

@@ -1,5 +1,6 @@
 'use client';
 import { useSWRConfig } from 'swr';
+import toast from 'react-hot-toast';
 
 const ENDPOINT = `${process.env.API_URL}/api`;
 
@@ -18,8 +19,11 @@ export default function useUpdateComments(questionId: number) {
         });
 
         if (res.ok) {
+            toast.success('Upvoted comment', { id: 'commentUpvote' });
             // upvote successful, invalidate the comments cache so it refetches updated data
             await mutate(ENDPOINT + '/questions/' + questionId + '/comments' + `${!!userId ? `?userId=${userId}` : ''}`);
+        } else {
+            toast.error('Error upvoting comment', { id: 'commentUpvoteError' });
         }
     };
 
@@ -34,8 +38,11 @@ export default function useUpdateComments(questionId: number) {
         });
 
         if (res.ok) {
+            toast.success('Downvoted comment', { id: 'commentDownvote' });
             // downvote successful, invalidate the comments cache so it refetches updated data
             await mutate(ENDPOINT + '/questions/' + questionId + '/comments' + `${!!userId ? `?userId=${userId}` : ''}`);
+        } else {
+            toast.error('Error downvoting comment', { id: 'commentDownvoteError' });
         }
     };
 
@@ -56,8 +63,11 @@ export default function useUpdateComments(questionId: number) {
         });
 
         if (res.ok) {
+            toast.success('Posted comment', { id: 'coursePost' });
             // updates successful, invalidate the comments cache so it refetches updated data
             await mutate(ENDPOINT + '/questions/' + questionId + '/comments' + `${!!userId ? `?userId=${userId}` : ''}`);
+        } else {
+            toast.error('Error posting comment', { id: 'commentPostError' });
         }
     };
 
