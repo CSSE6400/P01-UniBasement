@@ -101,7 +101,7 @@ resource "aws_ecs_service" "unibasement_frontend" {
 
 # Autoscaling for frontend
 resource "aws_appautoscaling_target" "unibasement_frontend" {
-  max_capacity       = 1 # 
+  max_capacity       = 8#6 
   min_capacity       = 1
   resource_id        = "service/${aws_ecs_cluster.unibasement.name}/${aws_ecs_service.unibasement_frontend.name}"
   scalable_dimension = "ecs:service:DesiredCount"
@@ -386,7 +386,7 @@ resource "aws_ecs_task_definition" "unibasement_backend" {
 
 # Autoscaling for backend
 resource "aws_appautoscaling_target" "unibasement_backend" {
-  max_capacity       = 1
+  max_capacity       = 8#6
   min_capacity       = 1
   resource_id        = "service/${aws_ecs_cluster.unibasement.name}/${aws_ecs_service.unibasement_backend.name}"
   scalable_dimension = "ecs:service:DesiredCount"
