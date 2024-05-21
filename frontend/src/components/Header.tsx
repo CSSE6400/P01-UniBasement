@@ -91,7 +91,6 @@ export const Header = forwardRef<
                         className="flex items-center gap-8"
                     >
                         <TopLevelNavItem href="/courses">Courses</TopLevelNavItem>
-                        <TopLevelNavItem href="#">Favourites</TopLevelNavItem>
                     </ul>
                 </nav>
                 <div className="hidden md:block md:h-5 md:w-px md:bg-zinc-900/10 md:dark:bg-white/15"/>
