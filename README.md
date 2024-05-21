@@ -33,10 +33,15 @@ This project is brought to you by the Evan Hughes FanClub. Our team consists of:
 
 - [Shanon Lakshan Chandrasekara](https://github.com/86LAK)
 
+### Team Carry
+
+- [Olivia Ronda](https://github.com/vilnor)
+
+
 ### QUT Guy Who Has Vanished!
 
 - [Ibrahim Cassim](https://github.com/IbrahimCassim)
-- [Olivia Ronda](https://github.com/vilnor)
+
 
 
 ## Deployment / Teardown
