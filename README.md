@@ -33,7 +33,7 @@ This project is brought to you by the Evan Hughes FanClub. Our team consists of:
 
 - [Shanon Lakshan Chandrasekara](https://github.com/86LAK)
 
-### Team Carry
+### Evan Hughes
 
 - [Olivia Ronda](https://github.com/vilnor)
 
