@@ -142,10 +142,10 @@ variable "auth0_client_secret" {
 resource "auth0_client" "unibasement" {
   name = "unibasement"
   app_type = "regular_web"
-  callbacks = ["http://${aws_route53_record.unibasement.name}.${data.aws_route53_zone.unibasement.name}:3000/api/auth/callback"]
-  web_origins = ["http://${aws_route53_record.unibasement.name}.${data.aws_route53_zone.unibasement.name}:3000/"]
-  allowed_origins = ["http://${aws_route53_record.unibasement.name}.${data.aws_route53_zone.unibasement.name}:3000/"]
-  allowed_logout_urls = ["http://${aws_route53_record.unibasement.name}.${data.aws_route53_zone.unibasement.name}:3000"]
+  callbacks = ["http://${aws_route53_record.unibasement.name}.${data.aws_route53_zone.unibasement.name}/api/auth/callback"]
+  web_origins = ["http://${aws_route53_record.unibasement.name}.${data.aws_route53_zone.unibasement.name}/"]
+  allowed_origins = ["http://${aws_route53_record.unibasement.name}.${data.aws_route53_zone.unibasement.name}/"]
+  allowed_logout_urls = ["http://${aws_route53_record.unibasement.name}.${data.aws_route53_zone.unibasement.name}"]
   oidc_conformant = true
 }
 
@@ -191,7 +191,7 @@ resource "aws_ecs_task_definition" "unibasement_frontend" {
         },
         {
           "name": "NEXT_PUBLIC_ROOT_DOMAIN",
-          "value": "${aws_route53_record.unibasement.name}.${data.aws_route53_zone.unibasement.name}:3000"
+          "value": "${aws_route53_record.unibasement.name}.${data.aws_route53_zone.unibasement.name}"
         },
         {
           "name": "AUTH0_CLIENT_DOMAIN",
@@ -211,7 +211,7 @@ resource "aws_ecs_task_definition" "unibasement_frontend" {
         },
         {
           "name": "AUTH0_BASE_URL",
-          "value": "http://${aws_route53_record.unibasement.name}.${data.aws_route53_zone.unibasement.name}:3000/"
+          "value": "http://${aws_route53_record.unibasement.name}.${data.aws_route53_zone.unibasement.name}/"
         },
         {
           "name": "AUTH0_ISSUER_BASE_URL",
