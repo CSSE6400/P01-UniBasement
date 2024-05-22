@@ -305,74 +305,6 @@ class Comments(BaseCase):
         self.assertEqual('Comment not found', response.json())
 
 
-    def test_patch_sets_comment_as_endorsed(self):
-        """
-        Checks for a 200 response from the /comments/:commentId/endorse endpoint
-        Checks for the correct response message
-        """
-        response = requests.patch(self.host() + '/comments/' + str(self.commentId) + '/endorse')
-        
-        # Verify response from API
-        self.assertEqual(200, response.status_code)
-        self.assertEqual('Comment endorsed', response.json())
-        
-        # Verify database changes
-        comment = self.session.query(self.Comment).filter_by(commentId=self.commentId).first()
-        self.session.refresh(comment)
-        self.assertEqual(True, comment.isEndorsed)
-
-
-    def test_patch_sets_comment_as_endorsed_invalid_id(self):
-        """
-        Checks for a 404 response from the /comments/:commentId/endorse endpoint
-        Checks for the correct response message
-        """
-        commentId = 86868686
-
-        response = requests.patch(self.host() + '/comments/' + str(commentId) + '/endorse')
-        
-        # Verify response from API
-        self.assertEqual(404, response.status_code)
-        self.assertEqual('Comment not found', response.json())
-
-
-    def test_patch_sets_comment_as_not_endorsed(self):
-        """
-        Checks for a 200 response from the /comments/:commentId/unendorse endpoint
-        Checks for the correct response message
-        """
-        
-        # Set as endorsed
-        comment = self.session.query(self.Comment).filter_by(commentId=self.commentId).first()
-        comment.isEndorsed = True
-        self.session.commit()
-
-        response = requests.patch(self.host() + '/comments/' + str(self.commentId) + '/unendorse')
-        
-        # Verify response from API
-        self.assertEqual(200, response.status_code)
-        self.assertEqual('Comment removed endorsement', response.json())
-        
-        # Verify database changes
-        comment = self.session.query(self.Comment).filter_by(commentId=self.commentId).first()
-        self.session.refresh(comment)
-        self.assertEqual(False, comment.isEndorsed)
-
-
-    def test_patch_sets_comment_as_not_endorsed_invalid_id(self):
-        """
-        Checks for a 404 response from the /comments/:commentId/unendorse endpoint
-        Checks for the correct response message
-        """
-        commentId = 86868686
-
-        response = requests.patch(self.host() + '/comments/' + str(commentId) + '/unendorse')
-        
-        # Verify response from API
-        self.assertEqual(404, response.status_code)
-        self.assertEqual('Comment not found', response.json())
-
-
     def test_patch_downvotes_comment(self):
         """
         Checks for a 200 response from the /comments/:commentId/downvote endpoint
@@ -460,7 +392,7 @@ class Comments(BaseCase):
             "commentText": self.COMMENT_TEXT,
             "commentPNG": self.COMMENT_PNG,
             "isCorrect": False,
-            "isEndorsed": False,
+            "isDeleted": False,
             "upvotes": 0,
             "downvotes": 0
         }
@@ -479,7 +411,7 @@ class Comments(BaseCase):
         self.assertEqual(self.COMMENT_TEXT, comment.commentText)
         self.assertEqual(self.COMMENT_PNG, comment.commentPNG)
         self.assertEqual(False, comment.isCorrect)
-        self.assertEqual(False, comment.isEndorsed)
+        self.assertEqual(False, comment.isDeleted)
         self.assertEqual(0, comment.upvotes)
         self.assertEqual(0, comment.downvotes)
         
@@ -496,7 +428,7 @@ class Comments(BaseCase):
             "commentText": "This is a comment",
             "commentPNG": None,
             "isCorrect": False,
-            "isEndorsed": False,
+            "isDeleted": False,
             "upvotes": 0,
             "downvotes": 0
         }
@@ -520,7 +452,7 @@ class Comments(BaseCase):
             "commentText": "This is a comment",
             "commentPNG": None,
             "isCorrect": False,
-            "isEndorsed": False,
+            "isDeleted": False,
             "upvotes": 0,
             "downvotes": 0
         }
@@ -544,7 +476,7 @@ class Comments(BaseCase):
             "commentText": None,
             "commentPNG": None,
             "isCorrect": False,
-            "isEndorsed": False,
+            "isDeleted": False,
             "upvotes": 0,
             "downvotes": 0
         }
@@ -568,7 +500,7 @@ class Comments(BaseCase):
             "commentText": "This is a nested comment",
             "commentPNG": None,
             "isCorrect": False,
-            "isEndorsed": False,
+            "isDeleted": False,
             "upvotes": 0,
             "downvotes": 0
         }
@@ -587,7 +519,7 @@ class Comments(BaseCase):
         self.assertEqual('This is a nested comment', comment.commentText)
         self.assertEqual(None, comment.commentPNG)
         self.assertEqual(False, comment.isCorrect)
-        self.assertEqual(False, comment.isEndorsed)
+        self.assertEqual(False, comment.isDeleted)
         self.assertEqual(0, comment.upvotes)
         self.assertEqual(0, comment.downvotes)
         
@@ -605,7 +537,7 @@ class Comments(BaseCase):
             "commentText": "This is a nested comment",
             "commentPNG": None,
             "isCorrect": False,
-            "isEndorsed": False,
+            "isDeleted": False,
             "upvotes": 0,
             "downvotes": 0
         }
@@ -629,7 +561,7 @@ class Comments(BaseCase):
             "commentText": "This is a nested comment",
             "commentPNG": None,
             "isCorrect": False,
-            "isEndorsed": False,
+            "isDeleted": False,
             "upvotes": 0,
             "downvotes": 0
         }
@@ -652,7 +584,7 @@ class Comments(BaseCase):
                 "commentText": self.COMMENT_TEXT,
                 "commentPNG": self.COMMENT_PNG,
                 "isCorrect": False,
-                "isEndorsed": False,
+                "isDeleted": False,
                 "upvotes": 0,
                 "downvotes": 0,
                 "questionId": self.questionId,

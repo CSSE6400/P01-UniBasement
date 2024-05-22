@@ -163,7 +163,7 @@ class FullSuite(BaseCase):
             "commentText": "I think the Toyota 86 is a great car!",
             "commentPNG": None,
             "isCorrect": False,
-            "isEndorsed": False,
+            "isDeleted": False,
             "upvotes": 0,
             "downvotes": 0
         }
@@ -185,7 +185,7 @@ class FullSuite(BaseCase):
             "commentText": comment['commentText'],
             "commentPNG": comment['commentPNG'],
             "isCorrect": comment['isCorrect'],
-            "isEndorsed": comment['isEndorsed'],
+            "isDeleted": comment['isDeleted'],
             "upvotes": comment['upvotes'],
             "downvotes": comment['downvotes'],
             "createdAt": response.json()[0]['createdAt'],
