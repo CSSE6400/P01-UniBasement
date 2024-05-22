@@ -246,8 +246,8 @@ resource "aws_security_group" "unibasement_frontend" {
     description = "unibasement Security Group"
   
     ingress {
-      from_port = 3000
-      to_port = 3000
+      from_port = 80
+      to_port = 80
       protocol = "tcp"
       cidr_blocks = ["0.0.0.0/0"]
     }
@@ -537,7 +537,7 @@ resource "aws_lb_listener" "unibasement_backend" {
 
 resource "aws_lb_listener" "unibasement" {
   load_balancer_arn   = aws_lb.unibasement.arn
-  port                = "3000"
+  port                = "80"
   protocol            = "HTTP"
 
   default_action {
