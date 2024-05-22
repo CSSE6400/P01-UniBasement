@@ -301,7 +301,7 @@ export async function getComment(req: Request<CommentRouteParams, any, any>, res
         return;
     }
 
-    const { user: commentUser, ...restOfComment } = comment;
+    const { user: commentUser, ...restOfComment } = comment[0];
 
     res.status(200).json({ picture: commentUser.picture, ...restOfComment });
 }
