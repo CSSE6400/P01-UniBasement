@@ -48,3 +48,8 @@ export type DisplayCourse = {
     lastViewedName?: string
     lastViewed?: number
 }
+
+export type RecentChange = {
+    courseCode: Course['courseCode']
+    exams: Array<Exam & { changes: number }>
+}

@@ -10,6 +10,7 @@ import uqWhite from '@/images/logos/uq-white.svg';
 import unibasement from '@/images/logos/unibasement.svg';
 import unibasementWhite from '@/images/logos/unibasement-white.svg';
 import useRecentChanges from '@/api/useRecentChanges';
+import Card from '@/components/Card';
 
 function SearchIcon(props: React.ComponentPropsWithoutRef<'svg'>) {
     return (
@@ -74,8 +75,8 @@ function LoginHome() {
                         </div>
                     </div>
                 </div>
-                <div className="flex min-h-60 items-center justify-center">
-                    <div className="w-full max-w-4xl space-y-10">
+                <div className="flex min-h-60 items-center justify-center mt-8">
+                    <div className="w-full max-w-4xl">
                         <div className="text-xl text-zinc-900 dark:text-white">
                             Pinned Courses
                         </div>
@@ -97,21 +98,28 @@ function LoginHome() {
                         </div>
                     </div>
                 </div>
-                <div className="min-h-60 items-center justify-center">
-                    <div className="w-full max-w-4xl space-y-10">
+                <div className="min-h-60 items-center justify-center mt-8">
+                    <div className="w-full max-w-4xl">
                         <div className="text-xl text-zinc-900 dark:text-white">
                             Recent Activity
                         </div>
 
-                        <div className="mt-4 flex flex-col sm:flex-row">
+                        <div className="mt-4 flex flex-col sm:flex-row w-full">
                             <ul
                                 role="list"
-                                className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
+                                className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 w-full"
                             >{
                                 recentChanges?.map((c) => (
-                                    <div key={c.commentId}>
-                                        {c.commentText}
-                                    </div>
+                                    <Card key={c.courseCode}>
+                                        <h3 className="text-md font-semibold leading-7 text-zinc-900 dark:text-white mb-2">{c.courseCode}</h3>
+                                        {c.exams.map((e) => (
+                                            <p key={e.examId}><a
+                                                className="text-emerald-300 hover:underline"
+                                                href={`/courses/${c.courseCode}/exams/${e.examId}`}
+                                            >{e.examYear} {e.examSemester} {e.examType}</a> had {e.changes} new answers
+                                            </p>
+                                        ))}
+                                    </Card>
                                 ))
                             }
                             </ul>

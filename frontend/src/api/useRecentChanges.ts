@@ -1,13 +1,13 @@
 'use client';
 import useSWR, { Fetcher } from 'swr';
-import { Comment as IComment } from '@/types';
+import { RecentChange } from '@/types';
 import { usePinned } from '@/api/usePins';
 import { useEffect } from 'react';
 import toast from 'react-hot-toast';
 
 const ENDPOINT = `${process.env.API_URL}/api/recent_changes`;
 
-const fetcher: Fetcher<IComment[], string> = async (...args) => {
+const fetcher: Fetcher<RecentChange[], string> = async (...args) => {
     const res = await fetch(...args);
 
     if (!res.ok) {

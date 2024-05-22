@@ -18,12 +18,45 @@ export async function getRecentChanges(req: Request<any, any, any, {
     }
 
     const commentRepository = getConnection().getRepository(CommentDb);
-    const comments = await commentRepository.createQueryBuilder('comment')
+    const recentChanges = await commentRepository.createQueryBuilder('comment')
+        .select([
+            'exam.courseCode',
+            'exam.examId AS "examId"',
+            'exam.examYear AS "examYear"',
+            'exam.examSemester AS "examSemester"',
+            'exam.examType AS "examType"',
+            'COUNT(comment.commentId) AS changes',
+        ])
         .innerJoin('comment.question', 'question')
         .innerJoin('question.exam', 'exam')
         .where('comment.createdAt > :lastVisited', { lastVisited: new Date(Number(lastVisited)) })
         .andWhere('exam.courseCode IN (:...courseCodes)', { courseCodes: courseCodes })
-        .getMany();
+        .groupBy('exam.courseCode')
+        .addGroupBy('exam."examId"')
+        .getRawMany();
 
-    res.status(200).json(comments);
+    const groupedChanges = recentChanges.reduce((acc, change) => {
+        const exam = {
+            examId: change.examId,
+            examYear: change.examYear,
+            examSemester: change.examSemester,
+            examType: change.examType,
+            changes: Number(change.changes),
+        };
+
+        if (acc.has(change.exam_courseCode)) {
+            acc.get(change.exam_courseCode).push(exam);
+        } else {
+            acc.set(change.exam_courseCode, [exam]);
+        }
+
+        return acc;
+    }, new Map());
+
+    const formattedChanges = Array.from(groupedChanges, ([courseCode, exams]) => ({
+        courseCode,
+        exams,
+    }));
+
+    res.status(200).json(formattedChanges);
 }
