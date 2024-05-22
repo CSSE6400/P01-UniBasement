@@ -5,9 +5,10 @@ import CourseCard from '@/components/CourseCard';
 import { usePinned } from '@/api/usePins';
 import { DisplayCourse } from '@/types';
 import Image from 'next/image';
-import image from '@/images/logos/logo.png';
 import uq from '@/images/logos/uq.svg';
-import { Button } from '@/components/Button';
+import uqWhite from '@/images/logos/uq-white.svg';
+import unibasement from '@/images/logos/unibasement.svg';
+import unibasementWhite from '@/images/logos/unibasement-white.svg';
 import useRecentChanges from '@/api/useRecentChanges';
 
 function SearchIcon(props: React.ComponentPropsWithoutRef<'svg'>) {
@@ -64,7 +65,7 @@ function LoginHome() {
         }
     };
     return (
-        <main>
+        <>
             <div className="mx-auto max-w-4xl text-zinc-900 dark:text-white">
                 <div className="mt-8 items-center justify-center lg:flex">
                     <div className="">
@@ -118,22 +119,29 @@ function LoginHome() {
                     </div>
                 </div>
             </div>
-        </main>
+        </>
     );
 }
 
 function SignupHome() {
     return (
-        <main>
-            <div className="mx-auto max-w-4xl text-zinc-900 dark:text-white">
-                <div className="mt-8 items-center justify-center lg:flex">
-                    <div className="">
+        <>
+            <div className="mx-auto max-w-4xl text-zinc-900 dark:text-white flex flex-col justify-between gap-10">
+                <div className="mt-8 flex flex-col items-center justify-center lg:flex">
+                    <div>
                         <Image
-                            src={image.src}
+                            src={unibasementWhite.src}
                             alt="Logo"
-                            width={256}
-                            height={256}
-                            className="mx-auto"
+                            width={666}
+                            height={666}
+                            className="mx-auto dark:hidden"
+                        />
+                        <Image
+                            src={unibasement.src}
+                            alt="Logo"
+                            width={666}
+                            height={666}
+                            className="mx-auto hidden dark:block"
                         />
                     </div>
                     <div className="max-w-96 text-center text-3xl font-bold sm:mx-auto">
@@ -141,24 +149,18 @@ function SignupHome() {
                             Enhance your exam revision and level up with the community!
                         </div>
                         <div className="flex flex-col">
-                            <Button
-                                variant="primary"
-                                className="mx-auto mt-2 max-w-xs"
+                            <a
+                                href="/api/auth/login"
+                                className="rounded bg-zinc-900 py-1 px-3 text-white hover:bg-zinc-700 dark:bg-emerald-400/10 dark:text-emerald-400 dark:ring-1 dark:ring-inset dark:ring-emerald-400/20 dark:hover:bg-emerald-400/10 dark:hover:text-emerald-300 dark:hover:ring-emerald-300 inline-flex gap-0.5 justify-center overflow-hidden text-sm font-medium transition mx-auto mt-2 max-w-xs"
                             >
                                 Get Started
-                            </Button>
-                            <Button
-                                variant="secondary"
-                                className="mx-auto mt-2 max-w-xs"
-                            >
-                                I already have an account
-                            </Button>
+                            </a>
                         </div>
                     </div>
                 </div>
-                <div className="">
-                    <div className="mt-16 flex flex-col items-center justify-between border-t border-zinc-900/5 pt-8 sm:flex-row dark:border-white/5"></div>
-                    <div className="mx-auto mb-2 font-light">
+                <div className="mt-16 flex flex-col items-center justify-between border-t border-zinc-900/5 pt-8 sm:flex-row dark:border-white/5"></div>
+                <div className="w-full">
+                    <div className="text-center mb-2 font-light text-xl">
                         Working with the following to give you all the exam prepartion you
                         need
                     </div>
@@ -168,19 +170,27 @@ function SignupHome() {
                             <Image
                                 src={uq.src}
                                 alt="University of Queensland Logo"
-                                width={128}
-                                height={128}
+                                width={300}
+                                height={300}
+                                className="dark:hidden"
+                            ></Image>
+                            <Image
+                                src={uqWhite.src}
+                                alt="University of Queensland Logo"
+                                width={300}
+                                height={300}
+                                className="hidden dark:block"
                             ></Image>
                         </div>
                         <IconChevronRight className="ml-8"/>
                     </div>
                 </div>
             </div>
-        </main>
+        </>
     );
 }
 
 export default function Home() {
     const { user } = useUser();
-    return <main>{user ? <LoginHome/> : <SignupHome/>}</main>;
+    return <main className="h-full">{user ? <LoginHome/> : <SignupHome/>}</main>;
 }
