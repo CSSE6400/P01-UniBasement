@@ -290,11 +290,11 @@ export async function getComment(req: Request<CommentRouteParams, any, any>, res
     const { commentId } = req.params;
     const commentRepository = getConnection().getRepository(CommentDb);
     const comment = await commentRepository
-        .createQueryBuilder('comment')
-        .leftJoin('comment.user', 'user')
-        .select('user.picture')
-        .where('comment.commentId = :commentId', { commentId })
-        .getOne();
+      .createQueryBuilder('comment')
+      .leftJoinAndSelect('comment.user', 'user')
+      .addSelect('user.picture')
+      .where('comment.commentId = :commentId', { commentId })
+      .getOne();
 
     if (!comment) {
         res.status(404).json('Comment not found');
