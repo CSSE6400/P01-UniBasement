@@ -590,6 +590,7 @@ class Comments(BaseCase):
                 "questionId": self.questionId,
                 "createdAt": "2001-06-01T09:00:00",
                 "updatedAt": "2001-06-01T09:00:00",
+                "picture": None
         }
 
         response = requests.get(self.host() + '/comments/' + str(self.commentId))
