@@ -589,14 +589,14 @@ class Comments(BaseCase):
                 "downvotes": 0,
                 "questionId": self.questionId,
                 "createdAt": "2001-06-01T09:00:00",
-                "updatedAt": "2001-06-01T09:00:00"
+                "updatedAt": "2001-06-01T09:00:00",
         }
 
         response = requests.get(self.host() + '/comments/' + str(self.commentId))
 
-        update_timestamps(expectedResponse, response.json()['createdAt'], response.json()['updatedAt'])
-
+        # Verify response from API
         self.assertEqual(200, response.status_code)
+        update_timestamps(expectedResponse, response.json()['createdAt'], response.json()['updatedAt'])
         self.assertEqual(expectedResponse, response.json())
 
 
