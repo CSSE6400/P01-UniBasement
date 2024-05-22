@@ -182,7 +182,7 @@ function CourseProfileTabs({course}: { course: Course }) {
     const tabs = [
         {name: 'Description', content: <CourseDescription course={course}/>},
         {name: 'Past Exams', content: <CourseExams course={course}/>},
-        {name: 'Calendar', content: 'Not ready yet...'},
+        // {name: 'Calendar', content: 'Not ready yet...'}, // not used atm
         {name: 'Rate The Course', content: <CourseRating course={course}/>},
     ];
     const [currentTab, setCurrentTab] = useState(tabs[0].name);

@@ -1,6 +1,6 @@
 'use client';
 
-import { forwardRef, Fragment, Suspense, useCallback, useEffect, useId, useRef, useState } from 'react';
+import { forwardRef, Fragment, Suspense, useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 import Highlighter from 'react-highlight-words';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import {
@@ -27,16 +27,14 @@ type Autocomplete = AutocompleteApi<
 >
 
 function useAutocomplete({ close }: { close: () => void }) {
-    let id = useId();
-    let router = useRouter();
-    let courses = useCourses();
-    let [autocompleteState, setAutocompleteState] = useState<
+    const id = useId();
+    const router = useRouter();
+    const { courses } = useCourses();
+    const [autocompleteState, setAutocompleteState] = useState<
         AutocompleteState<Result> | EmptyObject
     >({});
 
-    const courseData = useCourses()?.courses?.map((value) => value.courseCode);
-    const courseCodes = courseData;
-    console.log(courseCodes);
+    const courseCodes = useMemo(() => courses?.map((value) => value.courseCode), [courses]);
 
     function navigate({ itemUrl }: { itemUrl?: string }) {
         if (!itemUrl) {
@@ -53,7 +51,7 @@ function useAutocomplete({ close }: { close: () => void }) {
         }
     }
 
-    let [autocomplete] = useState<Autocomplete>(() =>
+    const autocomplete = useMemo<Autocomplete>(() =>
         createAutocomplete<
             Result,
             React.SyntheticEvent,
@@ -77,17 +75,15 @@ function useAutocomplete({ close }: { close: () => void }) {
                     {
                         sourceId: 'courses',
                         getItems() {
-                            const filteredCourses = courseCodes.filter((code) =>
+                            const filteredCourses = courseCodes?.filter((code) =>
                                 code.toLowerCase().includes(query.toLowerCase()),
                             );
-                            console.log(courseCodes, query, filteredCourses);
-                            const value = filteredCourses.map((courseCode) => ({
+                            const value = filteredCourses?.map((courseCode) => ({
                                 courseCode: courseCode,
-                                url: `/course/${courseCode}`,
+                                url: `/courses/${courseCode}`,
                                 title: courseCode, // Add the missing 'title' property
                             }));
-                            console.log(value);
-                            return value;
+                            return value || [];
                         },
                         getItemUrl({ item }) {
                             return item.url;
@@ -96,7 +92,7 @@ function useAutocomplete({ close }: { close: () => void }) {
                     },
                 ]);
             },
-        }),
+        }), [courseCodes, id, navigate]
     );
 
     return { autocomplete, autocompleteState };
@@ -486,7 +482,7 @@ export function Search() {
                 {...buttonProps}
             >
                 <IconSearch className="h-5 w-5 stroke-current"/>
-                Find something...
+                Find courses...
                 <kbd className="ml-auto text-2xs text-zinc-400 dark:text-zinc-500">
                     <kbd className="font-sans">{modifierKey}</kbd>
                     <kbd className="font-sans">K</kbd>
@@ -507,7 +503,7 @@ export function MobileSearch() {
             <button
                 type="button"
                 className="flex h-6 w-6 items-center justify-center rounded-md transition hover:bg-zinc-900/5 ui-not-focus-visible:outline-none lg:hidden dark:hover:bg-white/5"
-                aria-label="Find something..."
+                aria-label="Find courses..."
                 {...buttonProps}
             >
                 <IconSearch className="h-5 w-5 stroke-zinc-900 dark:stroke-white"/>
