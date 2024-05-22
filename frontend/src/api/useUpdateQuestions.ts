@@ -1,5 +1,6 @@
 'use client';
 import { useSWRConfig } from 'swr';
+import toast from 'react-hot-toast';
 
 const ENDPOINT = `${process.env.API_URL}/api`;
 
@@ -24,8 +25,11 @@ export default function useUpdateQuestions(examId: number) {
         });
 
         if (res.ok) {
+            toast.success('Updated question', { id: 'questionUpdate' });
             // updates successful, invalidate the questions cache so it refetches updated data
             await mutate(ENDPOINT + '/exams/' + examId + '/questions');
+        } else {
+            toast.error('Error updating question', { id: 'questionUpdateError' });
         }
     };
 

@@ -4,7 +4,7 @@ import { getConnection } from '../db';
 import { User as UserDb } from '../db/User';
 
 export async function postUser(req: Request, res: Response) {
-    const { userId } = req.body;
+    const { userId, picture } = req.body;
 
     if (!userId) {
         res.status(400).json('Missing userId');
@@ -24,6 +24,7 @@ export async function postUser(req: Request, res: Response) {
     // Add user
     const newUser = new UserDb();
     newUser.userId = userId;
+    newUser.picture = picture;
     await userRepository.save(newUser);
 
     res.status(201).json('User Added');

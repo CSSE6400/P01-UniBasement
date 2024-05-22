@@ -116,11 +116,17 @@ export async function getQuestionComments(req: Request<QuestionRouteParams, any,
         return;
     }
 
-    const comments = await commentRepository.find({ where: { questionId } });
+    const comments = await commentRepository
+        .createQueryBuilder("comment")
+        .leftJoin("comment.user", "user")
+        .addSelect("user.picture")
+        .where("comment.questionId = :questionId", { questionId })
+        .getMany();
 
-    let commentsWithFlag = comments.map((comment) => {
+    let commentsWithFlag = comments.map(({ user: commentUser, ...comment }) => {
         return {
             ...comment,
+            picture: commentUser?.picture,
             upvoted: user.upvoted.includes(comment.commentId),
             downvoted: user.downvoted.includes(comment.commentId),
         };

@@ -1,5 +1,6 @@
 'use client';
 import { useSWRConfig } from 'swr';
+import toast from 'react-hot-toast';
 
 const ENDPOINT = `${process.env.API_URL}/api`;
 
@@ -27,8 +28,11 @@ export default function usePostQuestion(examId: number) {
         });
 
         if (res.ok) {
+            toast.success('Posted comment', { id: 'coursePost' });
             // question successfully created, invalidate the comments cache so it refetches updated data
             await mutate(ENDPOINT + '/exams/' + examId + '/questions');
+        } else {
+            toast.error('Error posting comment', { id: 'commentPostError' });
         }
     };
 

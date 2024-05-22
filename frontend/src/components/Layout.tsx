@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 
 import { Footer } from '@/components/Footer';
 import { Header } from '@/components/Header';
+import { Toaster } from 'react-hot-toast';
 
 export function Layout({
     children,
@@ -25,6 +26,16 @@ export function Layout({
                 <main className="flex-auto">{children}</main>
                 <Footer/>
             </div>
+            <Toaster
+                toastOptions={{
+                    position: 'bottom-left',
+                    style: {
+                        borderRadius: '10px',
+                        background: '#25252a',
+                        color: '#fff',
+                    },
+                }}
+            />
         </div>
     );
 }

@@ -25,10 +25,11 @@ export type Comment = {
     commentId: number
     parentCommentId: number | null
     userId: string
+    picture?: string | null
     commentText: string
     commentPNG: string | null
     isCorrect: boolean
-    isEndorsed: boolean
+    isDeleted: boolean
     upvotes: number
     downvotes: number
     createdAt: Date

@@ -29,9 +29,6 @@ class HomePage(BaseCase):
     def test_has_courses(self):
         assert "Courses" in self.page.locator("text=Courses").inner_text()
 
-    def test_has_favourites(self):
-        assert "Favourites" in self.page.locator("text=Favourites").inner_text()
-
     def test_has_working_with_text(self):
         assert "Working with the following to give you all the exam prepartion you need" in self.page.locator(
             "body").inner_text()

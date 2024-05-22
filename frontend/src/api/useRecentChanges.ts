@@ -2,6 +2,8 @@
 import useSWR, { Fetcher } from 'swr';
 import { Comment as IComment } from '@/types';
 import { usePinned } from '@/api/usePins';
+import { useEffect } from 'react';
+import toast from 'react-hot-toast';
 
 const ENDPOINT = `${process.env.API_URL}/api/recent_changes`;
 
@@ -29,6 +31,12 @@ export default function useRecentChanges() {
         error,
         isLoading,
     } = useSWR(url, fetcher);
+
+    useEffect(() => {
+        if (error) {
+            toast.error('Error loading recent changes', { id: 'recentChangesError' });
+        }
+    }, [error]);
 
     return {
         recentChanges: data,

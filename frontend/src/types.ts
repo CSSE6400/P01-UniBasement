@@ -28,7 +28,7 @@ export type Comment = {
     commentText: string | null
     commentPNG: string | null
     isCorrect: boolean
-    isEndorsed: boolean
+    isDeleted: boolean
     upvotes: number
     downvotes: number
     upvoted: boolean
@@ -36,6 +36,7 @@ export type Comment = {
     createdAt: string
     updatedAt: string
     userId: string
+    picture: string | null
     children?: Comment[]
 }
 

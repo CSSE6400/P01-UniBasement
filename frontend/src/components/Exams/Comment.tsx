@@ -20,6 +20,7 @@ type CommentProps = {
     updateCommentContent: (userId: string, commentId: number, commentText: string | null, commentPNG: File | null) => Promise<void>
     updateCommentUpvote: (userId: string, commentId: number) => Promise<void>
     updateCommentDownvote: (userId: string, commentId: number) => Promise<void>
+    deleteComment: (userId: string, commentId: number) => Promise<void>
     postComment: (parentCommentId: number | null, newText: string | null, newPng: File | null) => Promise<void>
 }
 export default function Comment({
@@ -27,6 +28,7 @@ export default function Comment({
     updateCommentContent,
     updateCommentUpvote,
     updateCommentDownvote,
+    deleteComment,
     postComment,
 }: CommentProps) {
     const { user } = useUser();
@@ -39,7 +41,7 @@ export default function Comment({
                 <div className="flex-shrink-0 flex flex-col gap-1">
                     <img
                         className="inline-block h-10 w-10 rounded-full mb-2"
-                        src="https://images.unsplash.com/photo-1550525811-e5869dd03032?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                        src={comment.picture || ''}
                         alt=""
                     />
                     <Upvote
@@ -78,7 +80,8 @@ export default function Comment({
                                     className="w-full my-3"
                                 />
                             )}
-                            <div className="flex flex-row gap-3">
+                            {!comment.isDeleted && (
+                                <div className="flex flex-row gap-3">
                                 <button
                                     onClick={() => setReplying(true)}
                                     type="button"
@@ -95,7 +98,18 @@ export default function Comment({
                                         Edit
                                     </button>
                                 )}
+                                    <div className="flex-1"/>
+                                    {(comment.userId === user?.sub) && (
+                                        <button
+                                            onClick={async () => await deleteComment(user?.sub || '', comment.commentId)}
+                                            type="button"
+                                            className="flex items-center text-sm text-gray-500 hover:underline dark:text-gray-400 font-medium"
+                                        >
+                                            Delete
+                                        </button>
+                                    )}
                             </div>
+                            )}
                         </div>
                     )}
                     {replying && (
@@ -115,6 +129,7 @@ export default function Comment({
                             updateCommentContent={updateCommentContent}
                             updateCommentDownvote={updateCommentDownvote}
                             updateCommentUpvote={updateCommentUpvote}
+                            deleteComment={deleteComment}
                         />,
                     )}
                 </div>
