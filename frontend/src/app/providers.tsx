@@ -30,8 +30,11 @@ function ThemeWatcher() {
 export function Providers({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         const saveTimeToLocalStorage = () => {
+            const savedTime = localStorage.getItem('lastVisited') || '0';
             const time = new Date().getTime();
-            localStorage.setItem('lastVisited', time.toString());
+            if (time - parseInt(savedTime) > 10 * 1000 * 60) {
+                localStorage.setItem('lastVisited', time.toString());
+            }
         };
 
         // add page unload event listener

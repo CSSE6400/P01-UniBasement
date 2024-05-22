@@ -2,8 +2,6 @@ import { forwardRef } from 'react';
 import Link from 'next/link';
 import clsx from 'clsx';
 import { motion, useScroll, useTransform } from 'framer-motion';
-
-import { Button } from '@/components/Button';
 import { Logo } from '@/components/Logo';
 import { useIsInsideMobileNavigation, useMobileNavigationStore } from '@/components/MobileNavigation';
 import { MobileSearch, Search } from '@/components/Search';
@@ -74,7 +72,7 @@ export const Header = forwardRef<
                     <Logo className="h-6"/>
                 </Link>
             </div>
-            <Search/>
+            {!!user && (<Search/>)}
 
             <div className="flex items-center gap-5 lg:hidden">
                 <Link
@@ -94,9 +92,11 @@ export const Header = forwardRef<
                     </ul>
                 </nav>
                 <div className="hidden md:block md:h-5 md:w-px md:bg-zinc-900/10 md:dark:bg-white/15"/>
-                <div className="flex gap-4 lg:hidden">
-                    <MobileSearch/>
-                </div>
+                {!!user && (
+                    <div className="flex gap-4 lg:hidden">
+                        <MobileSearch/>
+                    </div>
+                )}
                 <div className="flex gap-4">
                     {user ? (
                         <ProfileCard></ProfileCard>
