@@ -553,7 +553,7 @@ data "aws_route53_zone" "unibasement" {
 
 resource "aws_route53_record" "unibasement" {
   zone_id = data.aws_route53_zone.unibasement.zone_id
-  name    = "g6"
+  name    = "www"
   type    = "A"
   alias {
     name                   = aws_lb.unibasement.dns_name
