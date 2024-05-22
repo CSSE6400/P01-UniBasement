@@ -303,7 +303,7 @@ class Questions(BaseCase):
             "upvotes": 0,
             "downvotes": 0,
             "isCorrect": False,
-            "isEndorsed": False,
+            "isDeleted": False,
             "userId": str(self.userId),
             "questionId" : questionId,
             "upvoted": False,
