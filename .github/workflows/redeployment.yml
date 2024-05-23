@@ -12,7 +12,7 @@ on:
 
 
 jobs:
-  reployment:
+  teardown:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -32,8 +32,25 @@ jobs:
         eval "${{ github.event.inputs.environmentVariables }}"
         terraform init
         terraform destroy -auto-approve
-        terraform apply -auto-approve
+
+  deploy:
+    needs: teardown
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Use Node.js 20.x
+      uses: actions/setup-node@v3
+      with:
+        node-version: 20.x
+    - uses: levibostian/action-hide-sensitive-inputs@v1
+    - name: Create .env.local
+      run: |
+        cd frontend
+        touch .env.local
+        cd ..
     - name: Deploy to AWS
       run: |
-          terraform apply -auto-approve
-  
+        eval "${{ github.event.inputs.awsCredentials }}"
+        eval "${{ github.event.inputs.environmentVariables }}"
+        terraform init
+        terraform apply -auto-approve
