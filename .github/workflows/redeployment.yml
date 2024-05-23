@@ -26,10 +26,14 @@ jobs:
         cd frontend
         touch .env.local
         cd ..
-    - name: Deploy to AWS
+    - name: Teardown to AWS
       run: |
         eval "${{ github.event.inputs.awsCredentials }}"
         eval "${{ github.event.inputs.environmentVariables }}"
         terraform init
         terraform destroy -auto-approve
         terraform apply -auto-approve
+    - name: Deploy to AWS
+      run: |
+          terraform apply -auto-approve
+  
