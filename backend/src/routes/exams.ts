@@ -1,14 +1,13 @@
 // Imports
 import { Request, Response, Router } from 'express'; // Import Request and Response types
-import { ExamBodyParams, ExamRouteParams } from '../types';
+import { ExamBodyParams, ExamRouteParams, UserRole } from '../types';
 
-import { getConnection } from '../db/index';
+import { getConnection } from '../db';
 import { Course as CourseDb } from '../db/Course';
 import { Exam as ExamDb } from '../db/Exam';
 import { Question as QuestionDb } from '../db/Questions';
+import { User as UserDb } from '../db/User';
 
-// Export Routers
-export const router = Router();
 
 export async function postExam(req: Request<any, any, ExamBodyParams>, res: Response) {
     const {
@@ -16,11 +15,25 @@ export async function postExam(req: Request<any, any, ExamBodyParams>, res: Resp
         examSemester,
         examType,
         courseCode,
+        userId,
     } = req.body;
 
     // Check key
     if (!courseCode || !examYear || !examSemester || !examType) {
         res.status(400).json('Missing courseCode, examYear, examSemester, or examType');
+        return;
+    }
+
+    if (!userId) {
+        res.status(400).json('Missing userId');
+        return;
+    }
+
+    const userRepository = getConnection().getRepository(UserDb);
+    const user = await userRepository.findOne({ where: { userId } });
+
+    if (!user || user.role !== UserRole.ADMIN) {
+        res.status(403).json('Unauthorized user');
         return;
     }
 

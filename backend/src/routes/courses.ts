@@ -1,6 +1,6 @@
 // Imports
 import { Request, Response } from 'express'; // Import Request and Response types
-import { CourseBodyParams, CourseQueryParams, CourseRouteParams, RateObject } from '../types';
+import { CourseBodyParams, CourseQueryParams, CourseRouteParams, RateObject, UserRole } from '../types';
 
 import { getConnection } from '../db/index';
 import { User as UserDb } from '../db/User';
@@ -64,10 +64,24 @@ export async function postCourse(req: Request<any, any, CourseBodyParams>, res: 
         courseName,
         courseDescription,
         university,
+        userId,
     } = req.body;
 
     if (!courseCode || !courseName || !courseDescription || !university) {
         res.status(400).json('Missing courseCode, courseName, courseDescription, or university');
+        return;
+    }
+
+    if (!userId) {
+        res.status(400).json('Missing userId');
+        return;
+    }
+
+    const userRepository = getConnection().getRepository(UserDb);
+    const user = await userRepository.findOne({ where: { userId } });
+
+    if (!user || user.role !== UserRole.ADMIN) {
+        res.status(403).json('Unauthorized user');
         return;
     }
 

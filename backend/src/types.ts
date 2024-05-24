@@ -61,13 +61,16 @@ export type QuestionQueryParams = {
 
 export type ExamBodyParams = Partial<Omit<Exam, 'examId'>> & {
     courseCode?: string
+    userId?: string
 }
 
 export type ExamRouteParams = {
     examId: number
 }
 
-export type CourseBodyParams = Course
+export type CourseBodyParams = Course & {
+    userId?: string
+}
 
 export type CourseRouteParams = {
     courseCode: string
@@ -81,4 +84,9 @@ export type CourseQueryParams = {
 export type RateObject = {
     courseCode: string
     stars: number
+}
+
+export enum UserRole {
+    USER = 0,
+    ADMIN = 1,
 }
