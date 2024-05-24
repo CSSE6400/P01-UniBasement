@@ -1,13 +1,16 @@
 'use client';
 import useCourses from '@/api/useCourses';
 import Card from '@/components/Card';
-import { IconCirclePlus } from '@tabler/icons-react';
 import CourseCard from '@/components/CourseCard';
 import { backendCourseToFrontend } from '@/lib/courseUtils';
 import requireAuth from '../requireAuth';
 import { usePinned } from '@/api/usePins';
 import { useMemo } from 'react';
 import Title from '@/components/Title';
+import requireRole from '@/app/requireRole';
+import { UserRole } from '@/types';
+import { IconCirclePlus } from '@tabler/icons-react';
+import Link from 'next/link';
 
 function Courses() {
     const { courses, isError, isLoading } = useCourses();
@@ -29,13 +32,28 @@ function Courses() {
             }),
         [courses, pinned]);
 
+    const AddCourse = requireRole(
+() => (
+            <Link href="/courses/add">
+                <Card>
+                    <div className="min-h-[100px] flex flex-col items-center justify-center">
+                        <p className="flex items-center justify-center gap-1 text-md text-gray-500 dark:text-gray-400 font-medium">
+                            Add Course <IconCirclePlus/>
+                        </p>
+                    </div>
+                </Card>
+            </Link>
+        ),
+        UserRole.ADMIN,
+    );
+
     return (
         <main>
             <div className="max-w-4xl w-full mx-auto flex flex-col items-center justify-center">
                 <Title title="Courses"/>
                 {isLoading && (
                     <div role="status" className="absolute left-[50%] top-[50%]">
-                        <svg aria-hidden="true"
+                    <svg aria-hidden="true"
                              className="inline w-16 h-16 text-gray-200 animate-spin dark:text-gray-600 fill-emerald-600"
                              viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path
@@ -58,6 +76,7 @@ function Courses() {
                                     key={course.code}
                                 />
                             ))}
+                        <AddCourse />
                     </div>
                 ) : (
                     <p className="text-xl text-zinc-900 dark:text-white">No courses available</p>
