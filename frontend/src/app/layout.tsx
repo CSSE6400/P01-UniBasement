@@ -8,8 +8,8 @@ import { UserProvider } from '@auth0/nextjs-auth0/client';
 
 export const metadata: Metadata = {
     title: {
-        template: '%s - EVAN',
-        default: 'Home - EVAN',
+        template: '%s - UniBasement',
+        default: 'Home - UniBasement',
     },
 };
 
