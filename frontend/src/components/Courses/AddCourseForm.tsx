@@ -3,17 +3,11 @@ import Input from '@/components/Input';
 import Select from '@/components/Select';
 import TextArea from '@/components/TextArea';
 import { Button } from '@/components/Button';
+import { AddCourseFormFields } from '@/types';
 
 const universityOptions = [
     { label: 'University of Queensland', value: 'UQ' },
 ];
-
-type AddCourseFormFields = {
-    courseCode: string
-    courseName: string
-    courseDescription: string
-    university: string
-}
 
 export default function AddCourseForm({ onSubmit }: { onSubmit: (data: AddCourseFormFields) => void }) {
     const { register, handleSubmit } = useForm<AddCourseFormFields>();

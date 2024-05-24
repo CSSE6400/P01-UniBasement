@@ -58,3 +58,17 @@ export enum UserRole {
     USER = 0,
     ADMIN = 1,
 }
+
+export type AddCourseFormFields = {
+    courseCode: string
+    courseName: string
+    courseDescription: string
+    university: string
+}
+
+
+export type AddExamFormFields = {
+    examYear: number
+    examSemester: number
+    examType: string
+}

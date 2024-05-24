@@ -1,15 +1,16 @@
 'use client';
 import useCourse from '@/api/useCourse';
 import useExams from '@/api/useExams';
-import { Course, Exam } from '@/types';
+import { Course, Exam, UserRole } from '@/types';
 import requireAuth from '@/app/requireAuth';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { IconStarFilled } from '@tabler/icons-react';
+import { IconCirclePlus, IconStarFilled } from '@tabler/icons-react';
 import Card from '@/components/Card';
 import { useUser } from '@auth0/nextjs-auth0/client';
 import useUpdateCourse from '@/api/useUpdateCourse';
 import Link from 'next/link';
 import Title from '@/components/Title';
+import requireRole from '@/app/requireRole';
 
 function CourseDescription({ course }: { course: Course }) {
 
@@ -41,6 +42,21 @@ function CourseExams({ course }: { course: Course }) {
     const { exams, isError, isLoading } = useExams(course!.courseCode);
 
     const groupedExams = useMemo(() => exams ? mapExamsBySemester(exams) : {}, [exams]);
+
+    const AddExam = requireRole(
+        () => (
+            <Link href={`/courses/${course.courseCode}/exams/add`}>
+                <Card>
+                    <div className="flex flex-col items-center justify-center">
+                        <p className="flex items-center justify-center gap-1 text-md text-gray-500 dark:text-gray-400 font-medium">
+                            Add Exam <IconCirclePlus/>
+                        </p>
+                    </div>
+                </Card>
+            </Link>
+        ),
+        UserRole.ADMIN,
+    );
 
     return (
         <div>
@@ -95,9 +111,10 @@ function CourseExams({ course }: { course: Course }) {
                             </div>
                         </div>
                     ))}
+                        <AddExam/>
                 </div>
                 ) : (
-                    <p className="text-xl text-zinc-900 dark:text-white">No exams available</p>
+                    <AddExam/>
                 )
             )}
         </div>
