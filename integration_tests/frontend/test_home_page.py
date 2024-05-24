@@ -19,8 +19,8 @@ class HomePage(BaseCase):
         
 
     def test_has_title(self):
-        assert re.compile("EVAN").search(
-            self.page.title()), "Title does not contain 'Evan' who is our lord and saviour."
+        assert re.compile("UniBasement").search(
+            self.page.title()), "Title does not contain UniBasement which is included in the page title."
 
     def test_has_body_text(self):
         assert "Enhance your exam revision and level up with the community!" in self.page.locator(
