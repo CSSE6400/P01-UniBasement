@@ -53,3 +53,8 @@ export type RecentChange = {
     courseCode: Course['courseCode']
     exams: Array<Exam & { changes: number }>
 }
+
+export enum UserRole {
+    USER = 0,
+    ADMIN = 1,
+}
