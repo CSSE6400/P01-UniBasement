@@ -30,6 +30,15 @@ class Exams(BaseCase):
         self.COMMENT_PNG = None
         self.PARENT_COMMENT_ID = None
 
+        # Creates a new user
+        userData = {
+            "userId": self.USER_ID,
+            "role": 1  # admin role
+        }
+
+        newUser = self.User(**userData)
+        self.session.add(newUser)
+
         # Create course
         courseData = {
             "courseCode": self.COURSE_CODE,
@@ -94,6 +103,7 @@ class Exams(BaseCase):
         Checks for the correct response message
         """
         body = {
+            "userId": self.USER_ID,
             "examYear": self.EXAM_YEAR,
             "examSemester": self.EXAM_SEMESTER,
             "examType": self.EXAM_TYPE,
@@ -118,6 +128,7 @@ class Exams(BaseCase):
         Checks for the correct response message
         """
         body = {
+            "userId": self.USER_ID,
             "examYear": self.EXAM_YEAR,
             "examSemester": self.EXAM_SEMESTER,
             "examType": self.EXAM_TYPE
@@ -140,6 +151,7 @@ class Exams(BaseCase):
         Checks for the correct response message
         """
         body = {
+            "userId": self.USER_ID,
             "examYear": self.EXAM_YEAR,
             "examSemester": self.EXAM_SEMESTER,
             "examType": self.EXAM_TYPE,
