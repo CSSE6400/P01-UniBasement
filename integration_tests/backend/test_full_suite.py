@@ -78,8 +78,19 @@ class FullSuite(BaseCase):
         response = requests.post(self.host() + '/users', json=user)
         self.assertEqual(201, response.status_code)
 
+        # Give them admin perms (has to be done manually for ~security~ reasons)
+        created_user = self.session.query(self.User).filter_by(
+            userId=str(self.USER_ID)).first()
+        created_user.role = 1
+        self.session.commit()
+
+        # Check they have the correct role
+        response = requests.get(self.host() + '/users/' + str(self.USER_ID) + '/role')
+        self.assertEqual(200, response.status_code)
+        self.assertEqual(1, response.json())
+
         # Create a course
-        response = requests.post(self.host() + '/courses', json=course)
+        response = requests.post(self.host() + '/courses', json={**course, "userId": self.USER_ID})
         self.assertEqual(201, response.status_code)
 
         # Check the course params set correctly
@@ -106,7 +117,7 @@ class FullSuite(BaseCase):
         }
 
         # Create the exam
-        response = requests.post(self.host() + '/exams', json=exam)
+        response = requests.post(self.host() + '/exams', json={**exam, "userId": self.USER_ID})
         self.assertEqual(201, response.status_code)
         # Testing examId returned and is a valid int
         examId = response.json()['examId']

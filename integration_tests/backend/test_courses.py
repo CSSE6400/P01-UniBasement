@@ -76,7 +76,8 @@ class Courses(BaseCase):
 
         # Creates a new user
         userData = {
-            "userId": self.USER_ID
+            "userId": self.USER_ID,
+            "role": 1  # admin role
         }
 
         newUser = self.User(**userData)
@@ -118,6 +119,7 @@ class Courses(BaseCase):
         Checks for the correct response message
         """
         courseData = {
+            "userId": self.USER_ID,
             "courseCode": "COMP3506",
             "courseName": "Data Structures and Algorithms",
             "courseDescription": "Doing some DSA",
@@ -148,6 +150,7 @@ class Courses(BaseCase):
         Checks for the correct response message
         """
         courseData = {
+            "userId": self.USER_ID,
             "courseCode": "",
             "courseName": "Software Architecture",
             "courseDescription": "Doing some software architecture stuff with Richard and Evan (my bestie)",
@@ -173,6 +176,7 @@ class Courses(BaseCase):
         Checks for the correct response message
         """
         courseData = {
+            "userId": self.USER_ID,
             "courseCode": "CSSE6400",
             "courseName": "Software Architecture",
             "courseDescription": "Doing some software architecture stuff with Richard and Evan (my bestie)",
