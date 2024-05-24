@@ -1,5 +1,4 @@
 'use client';
-import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
 import { useUser } from '@auth0/nextjs-auth0/client';
 import CourseCard from '@/components/CourseCard';
 import { usePinned } from '@/api/usePins';
@@ -11,43 +10,6 @@ import unibasement from '@/images/logos/unibasement.svg';
 import unibasementWhite from '@/images/logos/unibasement-white.svg';
 import useRecentChanges from '@/api/useRecentChanges';
 import Card from '@/components/Card';
-
-function SearchIcon(props: React.ComponentPropsWithoutRef<'svg'>) {
-    return (
-        <svg
-            viewBox="0 0 20 20"
-            fill="none"
-            aria-hidden="true" {...props}>
-            <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M12.01 12a4.25 4.25 0 1 0-6.02-6 4.25 4.25 0 0 0 6.02 6Zm0 0 3.24 3.25"
-            />
-        </svg>
-    );
-}
-
-function CourseSearch() {
-    return (
-        <div className="group relative flex h-12">
-            <SearchIcon className="pointer-events-none absolute left-3 top-0 h-full w-5 stroke-zinc-500"/>
-            <input
-                className="max-w-full flex-grow appearance-none bg-transparent pl-10 text-zinc-900 outline-none placeholder:text-zinc-500 focus:w-full focus:flex-none sm:text-sm [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden [&::-webkit-search-results-button]:hidden [&::-webkit-search-results-decoration]:hidden"
-                onKeyDown={(event) => {
-                    if (event.key === 'Escape') {
-                        // In Safari, closing the dialog with the escape key can sometimes cause the scroll position to jump to the
-                        // bottom of the page. This is a workaround for that until we can figure out a proper fix in Headless UI.
-                        if (document.activeElement instanceof HTMLElement) {
-                            document.activeElement.blur();
-                        }
-                    }
-                }}
-                placeholder="Find a course or exam"
-            />
-            <div className=""></div>
-        </div>
-    );
-}
 
 function LoginHome() {
     const { user, error, isLoading } = useUser();
@@ -173,7 +135,6 @@ function SignupHome() {
                         need
                     </div>
                     <div className="mx-auto flex items-center justify-center rounded-full">
-                        <IconChevronLeft className="mr-8"/>
                         <div className="my-4 ml-1 flex">
                             <Image
                                 src={uq.src}
@@ -190,7 +151,6 @@ function SignupHome() {
                                 className="hidden dark:block"
                             ></Image>
                         </div>
-                        <IconChevronRight className="ml-8"/>
                     </div>
                 </div>
             </div>

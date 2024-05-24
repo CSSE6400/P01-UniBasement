@@ -117,7 +117,7 @@ function SocialLink({
             className="group"
         >
             <span className="sr-only">{children}</span>
-            <Icon className="h-5 w-5 fill-zinc-700 transition group-hover:fill-zinc-900 dark:group-hover:fill-zinc-500"/>
+            <Icon className="h-5 w-5 fill-zinc-700 transition group-hover:fill-zinc-900 dark:group-hover:fill-zinc-500" />
         </Link>
     );
 }
@@ -136,7 +136,7 @@ function SmallPrint() {
                     Follow us on GitHub
                 </SocialLink>
                 <SocialLink
-                    href="#"
+                    href="https://discord.gg/MyqKKJfgxS"
                     icon={DiscordIcon}
                 >
                     Join our Discord server
@@ -149,8 +149,8 @@ function SmallPrint() {
 export function Footer() {
     return (
         <footer className="mx-auto w-full max-w-4xl space-y-10 pb-16">
-            <PageNavigation/>
-            <SmallPrint/>
+            <PageNavigation />
+            <SmallPrint />
         </footer>
     );
 }
