@@ -17,7 +17,7 @@ import { getExamInfo, getExamQuestions, postExam } from './exams';
 
 import { editQuestion, getQuestion, getQuestionComments, postQuestion } from './questions';
 
-import { postUser } from './users';
+import { getUserRole, postUser } from './users';
 
 import { EVAN, healthCheck } from './health';
 
@@ -104,6 +104,9 @@ router.post('/courses', postCourse);
  * See outputs and params in HANDSHAKE.md
  *
  */
+
+// Gets a user's role
+router.get('/users/:userId/role', getUserRole);
 
 // Gets comment by comment id
 router.get('/comments/:commentId', getComment);

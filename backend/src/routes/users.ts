@@ -29,3 +29,24 @@ export async function postUser(req: Request, res: Response) {
 
     res.status(201).json('User Added');
 }
+
+export async function getUserRole(req: Request, res: Response) {
+    const { userId } = req.params;
+
+    if (!userId) {
+        res.status(400).json('Missing userId');
+        return;
+    }
+
+    const userRepository = getConnection().getRepository(UserDb);
+
+    // Check for user
+    const user = await userRepository.findOne({ where: { userId } });
+
+    if (!user) {
+        res.status(404).json('User not found');
+        return;
+    }
+
+    res.status(200).json(user.role);
+}
