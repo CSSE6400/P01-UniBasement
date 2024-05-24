@@ -79,7 +79,7 @@ function Courses() {
                         <AddCourse />
                     </div>
                 ) : (
-                    <p className="text-xl text-zinc-900 dark:text-white">No courses available</p>
+                    <AddCourse/>
                 )}
             </div>
         </main>

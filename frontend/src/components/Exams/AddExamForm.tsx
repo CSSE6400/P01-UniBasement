@@ -2,6 +2,7 @@ import { useForm } from 'react-hook-form';
 import Input from '@/components/Input';
 import Select from '@/components/Select';
 import { Button } from '@/components/Button';
+import { AddExamFormFields } from '@/types';
 
 const examTypeOptions = [
     { label: 'Final', value: 'final' },
@@ -13,12 +14,6 @@ const examSemesterOptions = [
     { label: 'Semester 2', value: 2 },
     { label: 'Summer Semester', value: 3 },
 ];
-
-type AddExamFormFields = {
-    examYear: number
-    examSemester: number
-    examType: string
-}
 
 export default function AddExamForm({ onSubmit }: { onSubmit: (data: AddExamFormFields) => void }) {
     const { register, handleSubmit } = useForm<AddExamFormFields>();
