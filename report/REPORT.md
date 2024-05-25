@@ -89,11 +89,19 @@ To enable UniBasement to meet the described architecturally significant requirem
 
 UniBasement has been implemented in a manner to ensure that the architecturally significant requirements are achieved. A key focus is placed on the maintainability of the application through the use of industry wide technologies. This is evident through the implementation of actions running our unit tests, and providing documentation to ease the developer into the project. Additionally, reliability has been ensured through the implemention of thorough integration testing, the use of an ORM to provide abstraction which enables higher-level control of the DB, and through scaling of the application. The availability of the application is ensured through the deployment methodology.
 
+This architecture additionally, affected the design decisions regarding the implementation of UniBasement. To implement the layered architecture correctly, it was necessary to implement the layer isolation principle. This requires that the layers should not depend on implementation details of another layer (WEEK 1 LECTURE). Our implementation of UniBasement used this concept as we used layers of abstraction within the frontend and backend. Our use of TypeORM abstracted any implementation details for the database and our implementation of the frontend through our custom react hooks and http routing removes any implementation details of the backend. Additionally, our structure of the layers ensured that UniBasement would only communicate across layers through the neighbouring layers which maintains the Neighbour Communication Principle (WEEK 1 LECTURE). UniBasement, also, has a higher layer depend on a lower layer, and the layers only communicate through general interfaces, callbacks and events, thus, maintianing the downward dependency principle and the upward notification principle (WEEK 1 LECTURE). Finally, a layered architecture requires UniBasement to maintain the Sidecar Spanning Principle, but as no sidecar layer was implemented this did not affect the implementation details. The layered architecture affected the implementation details of UniBasement and all layered architecture principles were maintained.
+
 ## Trade-Offs
 
+Through the choice of the layered architecture, it detremintally affected the scalability and integration testing. As UniBasement's implementation of the layered architecture relied on a monolithic backend, it naturally raises concerns regarding the scalability. When designing UniBasement, one of the primary concerns was the viability for the minimum viable product (MVP). Given that the deadline for the task was the limiting factor, it was important for the architecture to be simple, this came at the cost of scalability. A micro-services archiecture could have scaled much more effective as opposed to the monolithic backend that UniBasement uses.This naturally will affect the scalability and the reliability of the application. Another aspect of UniBasement that was affected by the architecture choice was the integration testing. Due to the multiple layers of the architecture, it increased the complexity of the integration tests created. This added additional complexity and time required to complete the integration test. Whilst this was not a major concern, as one of the primary objectives was to deliver a product within a short period of time, this was a concern that was considered whilst determining the architecture UniBasement used. A layered architecture had two identified specific tradeoffs, scalability and affect to integration tests for UniBasement.
+
 ## Critique
+<!-- 
+To accurate critique the developed architecture for UniBasement,  -->
 
 - layered architecture doesn't have the best maintainability because of the how layer being grouped together
+
+
 
 ## Evaluation
 
