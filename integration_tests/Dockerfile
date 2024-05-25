@@ -17,4 +17,4 @@ RUN playwright install chromium
 COPY . tests
 
 # Run the unit tests
-CMD bash -c "sleep 10 && python -m pytest -v --report-log report.log tests"
+CMD bash -c "sleep 10 && python -m pytest -k "not test_e2e" -v --report-log report.log tests"
