@@ -94,7 +94,9 @@ We also made the effort to use the same programming language for both the front 
 
 #### Security
 
-By using a layered architecture, each layer can enforce its own security policies, reducing the risk of unauthorised access or breaches that could compromise the system or its data. The layered architecture also gives us a reduced attack surface, through the isolation of layers.
+The software effectively achieves its desired quality attributes, particularly in terms of security, through the combined benefits of a layered architecture and strategic decisions made by the developers. The layered architecture inherently provides isolation, which means that if one layer is compromised, the other layers remain unaffected. This architecture also offers flexibility, allowing us to enforce separate security policies for each layer, thereby reducing the risk of unauthorized access that could compromise the system or data.
+
+Furthermore, strategic decisions were made to enhance security. For instance, the use of Auth0 for handling login and registration means that we no longer directly handle sensitive user data such as passwords, names, and emails. By limiting the scope to only the University of Queensland, we ensured that there would be no connection of users to their respective universities. When accessing the website, all API calls are hidden behind the user creation process through Auth0, and all create/post requests require a user ID, unless it’s a request to create a user. This approach further strengthens the security of our application.
 
 ## Reflection
 
