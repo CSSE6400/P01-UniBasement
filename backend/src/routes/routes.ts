@@ -21,7 +21,6 @@ import { getUserRole, postUser } from './users';
 
 import { EVAN, healthCheck } from './health';
 
-import { setupData } from './sketch';
 import { getRecentChanges } from './recentChanges';
 import multer from 'multer';
 
@@ -45,8 +44,6 @@ router.put('/questions/:questionId/edit', <any>multer().single('questionPNG'), e
 
 // Edits a comment
 router.put('/comments/:commentId/edit', <any>multer().single('commentPNG'), editComments);
-
-router.get('/recent_changes', getRecentChanges);
 
 /*
  * Patches
@@ -105,6 +102,9 @@ router.post('/courses', postCourse);
  *
  */
 
+// Gets recent changes
+router.get('/recent_changes', getRecentChanges);
+
 // Gets a user's role
 router.get('/users/:userId/role', getUserRole);
 
@@ -139,6 +139,3 @@ router.get('/health', healthCheck);
 
 // Evan's Routes
 router.get('/Evan', EVAN);
-
-// The sketch route
-router.get('/sketch', setupData);
