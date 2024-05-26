@@ -239,8 +239,6 @@ resource "random_string" "auth0_secret" {
   special = true
 }
 
-#TODO need scalability stuff for front, back db ?
-
 resource "aws_security_group" "unibasement_frontend" {
     name = "unibasement_frontend"
     description = "unibasement Security Group"
