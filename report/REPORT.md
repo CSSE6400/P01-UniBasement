@@ -96,7 +96,7 @@ We also made the effort to use the same programming language for both the front 
 
 The software effectively achieves its desired quality attributes, particularly in terms of security, through the combined benefits of a layered architecture and strategic decisions made by the developers. The layered architecture inherently provides isolation, which means that if one layer is compromised, the other layers remain unaffected. This architecture also offers flexibility, allowing us to enforce separate security policies for each layer, thereby reducing the risk of unauthorized access that could compromise the system or data.
 
-Furthermore, strategic decisions were made to enhance security. For instance, the use of Auth0 for handling login and registration means that we no longer directly handle sensitive user data such as passwords, names, and emails. When accessing the website, all API calls are hidden behind the user creation process through Auth0, and all create/post requests require a user ID, unless it’s a request to create a user. There is another security layer on top of this for the requests to create courses and exams which are limited to admins. This approach further strengthens the security of our application.
+In addition to the aforementioned security measures, we have implemented an extra layer of protection specifically for requests related to the creation of courses and exams. This additional security layer restricts access exclusively to administrators, further bolstering the robustness of our system’s security.
 
 ## Reflection
 
