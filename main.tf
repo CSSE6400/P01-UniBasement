@@ -562,19 +562,6 @@ resource "aws_route53_record" "unibasement" {
   }
 }
 
-
-
-resource "local_file" "url" {
-    content = "http://${aws_lb.unibasement.dns_name}:3000/"
-    filename = "./unibasement.txt"
-}
-
-output "url" {
-    value = "http://${aws_lb.unibasement.dns_name}:3000/"
-}
-
-
-
 ////////////////////////////// Miscellaneous ///////////////////////////////////
 
 
