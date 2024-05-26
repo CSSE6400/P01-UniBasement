@@ -9,3 +9,7 @@ Authenticate user actions - don't want users editing or deleting content of othe
 - Add options here
 
 ## Outcome
+
+user or admin.
+
+By implementing this ADR, we can ensure that users are only able to edit or delete their own content or content they are allowed to edit. This will prevent unauthorized users from making changes to the database. Frontend authentication handled by Auth0. Backend user table added to track user IDs and associate with comments.

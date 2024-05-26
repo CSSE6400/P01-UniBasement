@@ -2,7 +2,7 @@
 
 ## Load Balancer
 
-putting lb in front of backend. allows availability. 
+putting lb in front of backend. allows availability.
 
 ## Options
 
@@ -10,4 +10,4 @@ putting lb in front of backend. allows availability.
 
 ## Outcome
 
-our layered architecture is more available. 
+our layered architecture is more available.

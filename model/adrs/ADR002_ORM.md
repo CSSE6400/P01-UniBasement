@@ -1,12 +1,16 @@
 # ADR002
+
 ## ORM
+
 Introduce an ORM to reduce coupling between the data and backend layers.
 
 ## Options
+
 - No ORM  
 - Orm
   
 ### No ORM over ORM
+
 | Pros | Cons |
 |----|----|
 | Deveolpers that are more comfortable in SQL can use SQL over an unfamilar package | The syntax and functions are more similar to the code language in use, helping devs understand code easier |
@@ -15,4 +19,5 @@ Introduce an ORM to reduce coupling between the data and backend layers.
 | - | Overall less boilerplate to do some things reduce the amount of code / failure points |
 
 ## Outcome
-Introduced TypeORM on the backend due to the cons of having no ORM being more siginificant than the pros. 
+
+Introduced TypeORM on the backend due to the cons of having no ORM being more siginificant than the pros.
