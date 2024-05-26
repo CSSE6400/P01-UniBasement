@@ -1,0 +1,13 @@
+# ADR006
+
+## Load Balancer
+
+putting lb in front of backend. allows availability. 
+
+## Options
+
+- Add options here
+
+## Outcome
+
+our layered architecture is more available. 

@@ -1,9 +1,14 @@
 # ADR004
-## Inegration Testing
+
+## Integration Testing
+
+This ADR was the decision
 Allowing the test container to verify changes made through the backend by directly communicating with the DB. 
 
 ## Options
+
 - Add options here
 
 ## Outcome
+
 Better test coverage and validation. 
