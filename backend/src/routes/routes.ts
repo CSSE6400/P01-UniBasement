@@ -35,7 +35,7 @@ export const router = Router();
  * Puts
  * ====
  *
- * Inputs and params are described within HANDSHAKE.md
+ * Inputs and params are described within API.md
  *
  */
 
@@ -49,7 +49,7 @@ router.put('/comments/:commentId/edit', <any>multer().single('commentPNG'), edit
  * Patches
  * =======
  *
- * Inputs and params are described within HANDSHAKE.md
+ * Inputs and params are described within API.md
  *
  */
 
@@ -75,7 +75,7 @@ router.patch('/comments/:commentId/upvote', upvoteComments);
  * Post Requests below
  * ===================
  *
- * Inputs and params are described within HANDSHAKE.md
+ * Inputs and params are described within API.md
  *
  */
 
@@ -98,7 +98,7 @@ router.post('/courses', postCourse);
  * Get Requests below
  * ==================
  *
- * See outputs and params in HANDSHAKE.md
+ * See outputs and params in API.md
  *
  */
 
