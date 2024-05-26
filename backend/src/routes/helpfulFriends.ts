@@ -50,7 +50,6 @@ export function single_nest(commentRows: IComment[], commentId: number) {
 const bucketName = process.env.S3_BUCKET_NAME;
 const bucketUrl = process.env.S3_BUCKET_URL;
 const region = process.env.AWS_REGION;
-// TODO: add creds here
 const s3Client = new S3Client({
     region,
     credentials: fromContainerMetadata(),

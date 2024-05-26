@@ -18,7 +18,6 @@ export default function usePostQuestion(examId: number) {
         if (questionText) {
             formData.append('questionText', questionText);
         }
-        // TODO: update this to take questionType as input
         formData.append('questionType', 'Short Answer');
 
         // send the question

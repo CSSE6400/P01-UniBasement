@@ -239,8 +239,6 @@ resource "random_string" "auth0_secret" {
   special = true
 }
 
-#TODO need scalability stuff for front, back db ?
-
 resource "aws_security_group" "unibasement_frontend" {
     name = "unibasement_frontend"
     description = "unibasement Security Group"
@@ -561,19 +559,6 @@ resource "aws_route53_record" "unibasement" {
     evaluate_target_health = true
   }
 }
-
-
-
-resource "local_file" "url" {
-    content = "http://${aws_lb.unibasement.dns_name}:3000/"
-    filename = "./unibasement.txt"
-}
-
-output "url" {
-    value = "http://${aws_lb.unibasement.dns_name}:3000/"
-}
-
-
 
 ////////////////////////////// Miscellaneous ///////////////////////////////////
 
