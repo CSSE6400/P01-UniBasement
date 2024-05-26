@@ -22,6 +22,17 @@ Grab your AWS credentials from the UQ Token Machine (link on Blackboard)
 
 Access to this is restricted to the team. Please contact the team for the password and why you need it.
 
+## To Redeploy (teardown followed by a deployment)
+
+### Redeployment Workflow
+
+1. After completing the requirements, go to the Github Actions and find the ```Manual AWS Redeployment``` workflow.
+2. When prompted paste in the credentials into the credentials box
+3. When prompted paste the Auth0 credentials and the database password into the box, in the format.
+```export TF_VAR_auth0_domain=xxx \ export TF_VAR_auth0_client_id=xxx \ export TF_VAR_auth0_client_secret=xxx \ export TF_VAR_database_password=xxx``` where xxx is the appropriate value.
+4. The redeployment will take a few minutes to complete.
+5. Once the deployment is complete, you will be able to access the application at [Link](http://unibasement.g6.csse6400.xyz).
+
 ## To Deploy / Teardown
 
 ### Workflow
@@ -31,7 +42,7 @@ Access to this is restricted to the team. Please contact the team for the passwo
 3. When prompted paste the Auth0 credentials and the database password into the box, in the format.
 ```export TF_VAR_auth0_domain=xxx \ export TF_VAR_auth0_client_id=xxx \ export TF_VAR_auth0_client_secret=xxx \ export TF_VAR_database_password=xxx```
 4. The deployment will take a few minutes to complete.
-5. Once the deployment is complete, you will be able to access the application at [Link](http://g6.g6.csse6400.xyz:3000/).
+5. Once the deployment is complete, you will be able to access the application at [Link](http://unibasement.g6.csse6400.xyz/).
 
 ### Local
 
