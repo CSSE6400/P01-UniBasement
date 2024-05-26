@@ -45,3 +45,7 @@ To manually run the workflow on your branch navigate to the GitHub Actions tab a
 #### Automatic Run
 
 The tests are run automatically on every push or PR to the main branch. This will run both the integration and unit tests.
+
+## Results of Tests
+
+This section has been added for the marker. For proof and evidence of the tests please visit the GitHub Actions and select the test workflow. Here you will find both the basic unit tests and integration tests being run and their results.
