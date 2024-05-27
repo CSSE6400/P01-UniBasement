@@ -2,6 +2,7 @@
 
 ## Abstract
 
+# TODO I think this is wrong, and more so summarises the spec for the report and not our report
 The purpose of this report is to document the various design decision made throughout the completion of the project. To begin, changes made to the project from what was outlined in the project proposal will be described and justified. Secondly, the types of architectures that were considered for the implementation of the project will be outlined alongside their pros and cons followed by the MVP's chosen software architecture being described in detail. Thirdly, the trade-offs that were made when designing the architecture will be justified. Fourthly, there will be a critique of the architecture implementation and how well it delivers the project. Fifthly, the report will contain an evaluation that summarises the testing results and justifies how well the software achieves its quality attributes. Finally, there will be a reflection on the lessons learnt throughout the project and if were able to start from the beginning what we would do differently.
 
 ## Changes
