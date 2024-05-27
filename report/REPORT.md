@@ -15,17 +15,15 @@ In the project proposal it was outlined that the users should be able to create 
 
 The team had also realised that the allowing users to sign up would require us to handle the variety of security risks it would introduce such as storing user login data. Therefore, we decided to use AUTH0 to handle the login using external accounts such as Gmail or GitHub. This however, had the unintended affect that it removed our ability to allow users to update the account information or profile picture as that it was handled by AUTH0. The decision to use AUTH0 was made after careful consideration of its security practices and its effect on the project, and is detailed further in [ADR001](../model/adrs/ADR001_AUTHENTICATION.md).
 
-<!--
-Most of this is no longer true 
+### Succes criteria
 
- ### Courses
+All of the functional requirements outlined in the proposal were, in their current state, untestable and questionable in quality. For example, "Over 99% uptime over a measured period", so if we run it for a second and it doesn't die is it okay? "All core functionality tested", but what is described as 'core'? From this we changed some of the succes criteria to be better defined and easily testable.  
 
-The project proposal also outlined that users should be able to create new courses and update that information. Due to the time restrictions and complexity this functionality would have caused we very quickly decided to not include this feature in our MVP. This decision also led to us only adding a few courses to our website to demonstrate the rest of the project’s functionality. This cutting of the scope allowed us to refocus our efforts on enabling the user to filter/ search courses and pin their favourite courses. We also used the extra resources to expand the scope and allow users to rate a course.
-
-### Exams
-
-We weren't able to fully implement the exam functionality. We were able have to implement functionality to allow users to add new questions to an exam. (TODO Maybe not the case anymore) 
--->
+| Old | New |
+|-------|---------|
+| Over 99% uptime over a measured period | Over 99% uptime over a 1 day span under some load (link k6 code if done here) |
+| All core functionality tested   | 100% of backend functions should have their main uses tested (i.e. 200/201 response) and most ( >50%) sub cases. On top of this general automated frontend testing should be done to ensure their is a connection  |
+| sum about maintain   | idk this shit is so dumb |    
 
 ## Architecture Options
 
