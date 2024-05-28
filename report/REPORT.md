@@ -4,6 +4,12 @@
 
 # TODO I think this is wrong, and more so summarises the spec for the report and not our report
 The purpose of this report is to document the various design decision made throughout the completion of the project. To begin, changes made to the project from what was outlined in the project proposal will be described and justified. Secondly, the types of architectures that were considered for the implementation of the project will be outlined alongside their pros and cons followed by the MVP's chosen software architecture being described in detail. Thirdly, the trade-offs that were made when designing the architecture will be justified. Fourthly, there will be a critique of the architecture implementation and how well it delivers the project. Fifthly, the report will contain an evaluation that summarises the testing results and justifies how well the software achieves its quality attributes. Finally, there will be a reflection on the lessons learnt throughout the project and if were able to start from the beginning what we would do differently.
+# New Abstract?
+The purpose of this report is to discuss the changes made throughout the creation of UniBasement due to the need to adhere to quality attibutes and time constraints. Initially, the goal was to allow users to create and tailor the account to a specific university but we pivitoed to focusing on the University of Queensland due to time limitations. To deal with secuirt risks associated with user sign-ups, AUTH0 was used for login via external accounts like Gmail or GitHub which limited the ability to customise accounts. 
+
+The report then highlights how the team came to the conclusion to revise the success criteria to make it more defined and testable. For example, the proposal specified that the uptime was to be 99% over a 1-day span under some load which was then clarified to mean that 100% of the backend functions should have the main usage tested, with more than 50% of sub-cases also tested. 
+
+The report then includes the considerations made of different architectures to implement UniBasement, including microservices, monolithic and the chosen layered architecture. Comparing and contrasting the advantages, disadvantages and suitability for the project. Finally, the reports then evaluates the layered architecture and how well it achieves the quality attributes in the proposal. 
 
 ## Changes
 
