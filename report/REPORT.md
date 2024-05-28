@@ -93,6 +93,9 @@ Isolation of services - by using a layered architecture and load balancers betwe
 
 One critique of our implementation is our lack of database replication, this has resulted in our DB being a single point of failure. Unfortunately due to time constraints we were unable to implement this and a load balancer in front of the db. Another benefit of our architecture is the replaceability of components. Specific layers can be replaced or upgraded independently.
 
+# TODO MIGHT NEED TO BE REARRANGE better
+In terms of the outlined succes criteria from the proposal, and the ones we redfined in an [eariler section](#Changes) we passed the tests extremely well, we set up a [basic k6 testing script](https://github.com/JTrenerry/UniBasement-Avaliability-Tests) that would run every 5 minutes for a day, and all requests sent were recieved and processed successfully. Full logs can be seen [here](https://github.com/JTrenerry/UniBasement-Avaliability-Tests/blob/main/log.txt)
+
 #### Reliability
 
 There were numerous techniques employed to achieve the high level of reliability that we had set at project conception. In the project proposal it was outlined to achieve the necessary level of reliability, the project should have unit tests that thoroughly covers the core functionality of the system. These tests should ensure that the system maintains expected behaviour. We used test driven development to implement the unit and integration tests that cover the entire functionality of our application as previously mentioned in the testing section. These tests are then used in a GitHub workflow to ensure that every time the code changes, the core functionality works before the changes reach main. 
