@@ -104,6 +104,8 @@ The availability of developer tools for deployment, teardown, redeployment and t
 
 By deploying our application to Amazon Web Services, we remove the necessity to ensure the webservers running our application are working correctly. Through the shared responsibility model, AWS is responsible for the infrastructure such as the hardware, software and networking that run AWS Cloud services. We then use terraform to ensure the containers we deploy are reliable on AWS. 
 
+Since we have tested all normal / base cases and a large majority of side cases, we successfully passed the outlined [success criteria](#Changes) in the sections above. This helps gurantee that all code will function under almost all circumstances.
+
 #### Maintainability
 
 Maintainability has been achieved primarily by the abstraction of code and layers. In the backend we have separated the functionality behind the endpoints in their own files and services to allow for easier maintainability. This also allows us to easily improve our architecture in the future by converting to a microservices architecture for better long-term maintainability. We also use docker and containerization to separate the frontend, backend and database into three independent containers that communicate with each other through highly documented API calls over HTTPS, as seen in the documentation in [API.md](../docs/API.md). This level of separation allows for ease of use and ease of access as each container has vastly different responsibilities.
