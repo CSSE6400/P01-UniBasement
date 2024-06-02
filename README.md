@@ -32,17 +32,33 @@ This project is brought to you by the Evan Hughes FanClub. Our team consists of:
 ### DevOps
 
 - [Shanon Lakshan Chandrasekara](https://github.com/86LAK)
-
-### Evan Hughes
-
 - [Olivia Ronda](https://github.com/vilnor)
-
 
 ### QUT Guy Who Has Vanished!
 
 - [Ibrahim Cassim](https://github.com/IbrahimCassim)
 
+## Local Development
 
+A local version of the application can be spun up using Docker, or alternatively by spinning up the database, backend and frontend separately as detailed in their respective READMEs.  
+
+To use Docker, navigate to the root directory and run the following command:
+
+```bash
+./local.sh
+```
+
+The frontend application will then be available at `http://localhost:3000/` and the backend API at `http://localhost:8080/`.  
+
+The docker-compose file also spins up [Adminer](https://www.adminer.org/) which allows interactions with the database. The Adminer GUI will be available at `http://localhost:8081/`. The mock data SQL script in `backend/src/db/mockData.sql` can be used to populate the database from Adminer.
+
+To shut down the application, run the following command:
+
+```bash
+./kill.sh
+```
+
+Note: this will reset the database too.
 
 ## Deployment / Teardown
 
