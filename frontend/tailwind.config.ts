@@ -5,7 +5,7 @@ import headlessuiPlugin from '@headlessui/tailwindcss'
 import forms from '@tailwindcss/forms'
 
 export default {
-  content: ['./src/**/*.{js,mjs,jsx,ts,tsx,mdx}'],
+  content: ['./src/**/*.{js,mjs,jsx,ts,tsx}'],
   darkMode: 'selector',
   theme: {
     fontSize: {
