@@ -2,13 +2,18 @@
 
 ## Load Balancer
 
-putting lb in front of backend. allows availability.
-This ADR is about putting a lb in front of the backend
+Putting lb in front of backend. Allows for better availability.
+This ADR is about putting a lb in front of the backend.
 
 ## Options
 
 - Leaving the frontend directly connected to the backend
 - Connecting the frontend to backend LB which is then forwarding to the backend
+
+Add a load balancer in front of backend vs not 
+| Pros | Cons |
+|----|----|
+| Increase the avaliability as if the backend fails the frontend can still connect to it | Slightly simpler code in terraform |
 
 ## Outcome
 
