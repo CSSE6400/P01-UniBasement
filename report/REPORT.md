@@ -1,5 +1,7 @@
 # UniBasement
 
+Our application is deployed (most likely) and can be seen [here](http://unibasement.g6.csse6400.xyz/).
+
 ## Abstract
 
 This report covers the design decisions made and changes made for the delivery of UniBasement's MVP. UniBasement is a platform designed to empower students to develop and share educational content, by collaboratively working on questions together. It allows students to post questions, answers, comments and vote on other solutions. To develop an MVP for this, we looked into multiple different software architectures and eventually choose a layered architecture as it was best suited for our project and its Non Functional Requirements. The architecture allowed for separation and isolation of functionality and allowed the system to be maintainable, reliable and available. In this report we also cover the critique and tradeoffs of our implementation and provide test plans plus results to support our findings. Finally, we reflect on the project and discuss what we would do differently if we were to start again.
@@ -118,7 +120,7 @@ The availability of developer tools for deployment, teardown, redeployment and t
 
 By deploying our application to Amazon Web Services, we remove the necessity to ensure the webservers running our application are working correctly. Through the shared responsibility model, AWS is responsible for the infrastructure such as the hardware, software and networking that run AWS Cloud services. We then use terraform to ensure the containers we deploy are reliable on AWS.
 
-Since we have tested all normal / base cases and a large majority of side cases, we successfully passed the outlined [success criteria](#Changes) in the sections above. This helps gurantee that all code will function under almost all circumstances.
+Since we have tested all normal / base cases and a large majority of side cases, we successfully passed the outlined [success criteria](#changes) in the sections above. This helps guarantee that all code will function under almost all circumstances.
 
 #### Maintainability
 
