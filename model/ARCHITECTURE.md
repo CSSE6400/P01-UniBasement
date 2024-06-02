@@ -1,6 +1,7 @@
 # System Context Diagram 
-![image](https://github.com/tristanduncombe/UniBasement/assets/105094182/80ab5877-186a-427b-ba01-9388ef963f6b)
+![image](https://github.com/CSSE6400/P01-UniBasement/blob/main/model/images/structurizr-SystemContext.png)
 # Container Diagram
+![image](https://github.com/CSSE6400/P01-UniBasement/blob/main/model/images/structurizr-Container.png)
 # Structurizr DLS
 ```
 workspace {
