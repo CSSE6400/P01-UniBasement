@@ -91,6 +91,7 @@ function Question({ question, updateQuestionContent }: {
                                     await postComment(user?.sub || '', newText, newPng, null);
                                     setAddingComment(false);
                                 }}
+                                userImg={user?.picture}
                             />
                         ) : (
                             <button

@@ -119,6 +119,7 @@ export default function Comment({
                                 await postComment(comment.commentId, newText, newPng);
                                 setReplying(false);
                             }}
+                            userImg={user?.picture}
                         />
                     )}
                     {comment.children?.sort(sortCommentsByUpvotes)?.map(
