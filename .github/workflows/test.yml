@@ -25,6 +25,8 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
+        cache-dependency-path: backend/package-lock.json
+
 
     # Run backend build and test
     - name: Build and test
