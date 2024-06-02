@@ -17,7 +17,8 @@ To add a new test, create a new test function inside the "backend.test.jest" fil
 ## Integration Testing
 
 ### About Integration Tests
-The integrations tests comprise of a backend integration suite and an e2e testing suite. The backend integration tests focus on testing the integration between the persistence and database layers of the architecture, by spinning up the backend server, calling various routes, and evaluating whether changes are reflected in the database. The e2e tests focus on testing the entire layered architecture, by spinning up the frontend, backend, and database, and testing the key functionality as though a user is interacting with the system. 
+
+The integrations tests comprise of a backend integration suite and an e2e testing suite. The backend integration tests focus on testing the integration between the persistence and database layers of the architecture, by spinning up the backend server, calling various routes, and evaluating whether changes are reflected in the database. The e2e tests focus on testing the entire layered architecture, by spinning up the frontend, backend, and database, and testing the key functionality as though a user is interacting with the system.
 
 ### Running Integration Tests
 
@@ -28,11 +29,13 @@ The full e2e test is excluded from the test script dockerfile as it requires Aut
 ### Adding to Integration Tests
 
 #### Adding to backend integration tests
+
 The backend integration tests are created using pytest.
 
 Ensure that basic testing of the success and errors are tested inside the appropriate ".py" file. Ensure tests are written to also test the error handling and returned HTTP code. After this try adding the test into one or more of the scenarios in the "test_full_suite.py" file. The added test should follow the format of the other tests in the file. Tests should have a meaningful name following the format of test_ROUTE_TYPE_MOREINFO. Where ROUTE = route to be tested, TYPE= get, post  etc and MOREINFO = meaningful information about what the test is doing. This will help developers understand what the test is doing and why it is there. Ensure that each tests asserts the returned http code and the returned data. Inside each test if something is unclear, add a comment to explain what is happening.
 
 #### Adding to e2e tests
+
 The e2e tests are created using PlayWright.
 
 Ensure that any new functionality is added to the full e2e test. Smaller e2e tests can be created if necessary. The easiest way to add tests to the frontend is to use playwrights vscode record feature to record the tests. This will generate the tests for you. After this, you can modify the tests to make them more readable and understandable. The tests should be placed inside the "integration_tests/frontend" directory. Where the filename represents the page type (e.g. test_home_page). To use playwright record please visit [PlayWright](https://playwright.dev/docs/getting-started-vscode).

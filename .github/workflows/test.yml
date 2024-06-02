@@ -51,7 +51,7 @@ jobs:
           touch .env.local
   
       - name: Run integration tests
-        working-directory: ./integration_tests
+        working-directory: ./tests/integration_tests
         run: |
           chmod +x ./tests.sh
           ./tests.sh
