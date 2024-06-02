@@ -1,3 +1,7 @@
+/**
+ * This file was taken from a Tailwind UI Template.
+ */
+
 'use client';
 
 import { useRef } from 'react';

@@ -1,3 +1,7 @@
+/**
+ * This file was taken from a Tailwind UI Template but modified by us.
+ */
+
 import { forwardRef } from 'react';
 import Link from 'next/link';
 import clsx from 'clsx';

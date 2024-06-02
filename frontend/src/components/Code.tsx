@@ -1,3 +1,7 @@
+/**
+ * This file was taken from a Tailwind UI Template.
+ */
+
 'use client';
 
 import { Children, createContext, isValidElement, useContext, useEffect, useRef, useState } from 'react';

@@ -1,3 +1,7 @@
+/**
+ * This file was taken from a Tailwind UI Template but modified by us.
+ */
+
 'use client';
 
 import { Fragment, Suspense, useEffect, useId, useMemo, useState } from 'react';

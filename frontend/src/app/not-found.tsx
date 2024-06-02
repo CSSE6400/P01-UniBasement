@@ -1,3 +1,7 @@
+/**
+ * This file was taken from a Tailwind UI Template but modified by us.
+ */
+
 import { Button } from '@/components/Button';
 
 export default function NotFound() {

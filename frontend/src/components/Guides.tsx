@@ -1,3 +1,7 @@
+/**
+ * This file was taken from a Tailwind UI Template.
+ */
+
 import { Button } from '@/components/Button';
 import { Heading } from '@/components/Heading';
 

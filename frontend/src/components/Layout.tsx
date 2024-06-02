@@ -1,3 +1,7 @@
+/**
+ * This file was taken from a Tailwind UI Template but modified by us.
+ */
+
 'use client';
 
 import { motion } from 'framer-motion';

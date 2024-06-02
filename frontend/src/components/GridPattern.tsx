@@ -1,3 +1,7 @@
+/**
+ * This file was taken from a Tailwind UI Template.
+ */
+
 import { useId } from 'react';
 
 export function GridPattern({
