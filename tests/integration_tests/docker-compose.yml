@@ -4,7 +4,7 @@ services:
   backend:
     build:
       dockerfile: Dockerfile
-      context: ../backend
+      context: ../../backend
     environment:
       PORT: 8080
       DB_TYPE: "postgres"
@@ -28,7 +28,7 @@ services:
   frontend:
     build:
       dockerfile: Dockerfile
-      context: ../frontend
+      context: ../../frontend
     environment:
       NEXT_PUBLIC_API_URL: "http://localhost:8080"
     ports:
