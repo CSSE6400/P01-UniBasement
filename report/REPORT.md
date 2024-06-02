@@ -73,17 +73,10 @@ Another change made during the development of our system was the change from a s
 
 As part of our reliability quality attribute we decided to change our integration tests. Originally the integration tests would send requests to the backend service and just confirmed the received HTTP response code and body. To increase the reliability of our project it was decided to implement [ADR004](../model/adrs/ADR004_INTEGRATION_TESTS_WITH_DB.md). ADDR004 covers the change to connect the test container directly to the database. By doing this we were able to verify the changes were indeed made to the DB and to validate what the backend service was doing. This greatly increased the reliability of our project.
 
-
-
-layered architecture good for project of our size but not very efficiently scalable. if an error happens the entire frontend goes down and needs to be recovered. this takes 5mins
-main reason we chose layered was project size and mvp timeline to deliver. microservice very complxand overkill for our project.
-also need to go through each adr here and create links to it.
-
-ADR006 availability.
-
-due to layered architecture where the entier front eendd backend is one  container each. it is very maintainable 
+To ensure the availability of UniBasement many things were considered. Firstly to ensure UniBasement is available we implemented via terraform an AWS autoscaling group on both the frontend and backend, which allows for the recovery of services if they go down. During testing we noticed that if one service went down the url for the service would change. This resulted in us having a frontend service and backend service that was no longer connected together. To fix this we implemented [ADR006](../model/adrs/ADR006_LOAD_BALANCERS.md) where a load balancer was placed between both user and frontend and between the frontend and backend service. The main change here was the implementation of a load balancer between the frontend and backend services. This allows for the frontend to not need to be recreated (to pass the url to the backend) if the backend service went down. This change increases the availability of our system, as the AWS autoscaling handles recovery of each service task and the entire system is only impacted for ~5 minutes overall while the task is spinning up. This also links us into our discussion about the chosen architecture. By using a layered architecture we ensured the availability of each service independently and scaled each part independently. Tradeoff of our architecture is that it is not as scalable as a microservices architecture. However, for the size of our project and time constraints a layered architecture was more appropriate. Especially since if we split the current backend service up we would have many services doing very little. Overall our use of the layered architecture ensured the availability, maintainability and reliability of our system.
 
 ## Evaluation & Testing
+
 ### Availability
 
 Amazon Web Services (AWS) was used to deploy our application and ensure its availability. To manage website traffic, we implemented a load balancer to improve fault tolerance. This load balancer can automatically detect server issues and reroute traffic to operational servers. Furthermore, we dynamically scale resources based on load, effectively handling peak usage times. Using autoscaling groups we ensure that a minimum of 1 service is always running for both the frontend and backend. If an error were to occur and a service to go down, the autoscaling group can recover the service. The Layered Architecture allows us to address and resolve downtime issues in one layer without disrupting the others.
