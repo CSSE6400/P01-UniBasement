@@ -9,7 +9,7 @@ Connecting the integration tests to the database.
 - Leaving integration tests to only verify return HTTP code and response.
 - Allowing integration tests to connect to the database to verify HTTP code, response and changes were made to the database.
 
-1st option vs 2nd option 
+1st option vs 2nd option
 | Pros | Cons |
 |----|----|
 | Easy to do and should test everything | There may be some things that are not 100% safe and may fail when a second computer is added |
