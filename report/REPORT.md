@@ -148,5 +148,5 @@ Furthermore, we would consider implementing the project using a Microservices ar
 
 ## References
 
-https://cloudacademy.com/blog/microservices-architecture-challenge-advantage-drawback/
-https://aws.amazon.com/what-is/load-balancing/#:~:text=Load%20balancers%20improve%20application%20performance,closer%20server%20to%20reduce%20latency
+[1] J. Nemer, “Advantages and Disadvantages of Microservices Architecture,” cloudacademy.com, Nov. 13, 2019. https://cloudacademy.com/blog/microservices-architecture-challenge-advantage-drawback/
+[2] “What is Load Balancing? - Load Balancing Algorithm Explained - AWS,” Amazon Web Services, Inc. https://aws.amazon.com/what-is/load-balancing/#:~:text=Load%20balancers%20improve%20application%20performance
