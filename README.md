@@ -1,5 +1,5 @@
 # UniBasement
-## [Report](report/REPORT.md) | [Video](https://drive.google.com/file/d/1eASH7J1LxkCDNZz9AwSx5kaf98NkxLsV/view?usp=sharing) | [Proposal](https://csse6400.github.io/project-proposal-2024/s4702098/proposal.html) | [Architecture](model/ARCHITECTURE.md) | [API](docs/API.md) | [Database](docs/DATABASE.md) | [AI](AI.md) | [Tests](docs/TESTS.MD)
+## [Website](http://unibasement.g6.csse6400.xyz/) | [Report](report/REPORT.md) | [Video](https://drive.google.com/file/d/1eASH7J1LxkCDNZz9AwSx5kaf98NkxLsV/view?usp=sharing) | [Proposal](https://csse6400.github.io/project-proposal-2024/s4702098/proposal.html) | [Architecture](model/ARCHITECTURE.md) | [API](docs/API.md) | [Database](docs/DATABASE.md) | [AI](AI.md) | [Tests](docs/TESTS.MD)
 
 ## Description
 
