@@ -140,11 +140,16 @@ In addition to the aforementioned security measures, we have implemented an extr
 
 ## Reflection
 
-Recognizing the complexity of this project, our team made a strategic decision to initiate the process as early as possible. We quickly grasped the magnitude of the task at hand, understanding that each component carried a different weight, with the report and video taking precedence. During the planning phase, we envisioned a more feature-rich product, but had to scale back due to the project’s demanding nature.
+Over the course of this project we, the Evan Hughes Fanclub learnt many things. The key things we learnt or would have done differently can be seen below:
 
-Our experience exposed us to various architectural frameworks, their impact on development, and the time investment they require. If given another opportunity, we would prioritize the use of software development methodologies such as Agile and User Stories. This approach would enhance our project management, potentially allowing for the inclusion of additional features.
+- The importance of planning and starting early. We found that the earlier we started the project the more time we had to implement features and the more time we had to test. This was crucial in ensuring that we met our success criteria and delivered a high quality MVP.
+- Automation benefits, by setting up workflows for testing and deployments early, we enhanced the developer experience and was able to catch bugs/ errors early. This helped pinpoint any issues early and allowed us to fix them before they became a larger issue.
+- Db replication. This was something we wanted to implement but unfortunately due to time constraints we had to shift our focus to the creation of the report and video. By implementing a load balancer in front of the db and implementing db replication we could have enhanced our availability and reliability.
+- We discovered NextAuth.js after we implemented auth0 into our application. Had we properly explored all solutions we would have discovered NextAuth.js and its benefits. It would have been a more seamless integration into our application as we use Next.js. This would have saved us many hours of trouble shooting and trying to get auth0 working. Through this we learnt the importance of reviewing all options before committing resources heavily into a solution.
+- Currently our implementation handles user roles. If we were to do this project again we would have utilised auth0's metadata for users to handle roles. This would have been a more secure and easier to implement solution. This would have also allowed us to easily change roles and permissions for users without having to change the database schema.
+- We would have also implemented automated generated API documentation. This would have enabled highly maintainable documentation that would not need manual intervention / updating.
 
-Furthermore, we would consider implementing the project using a Microservices architecture. This would align more closely with the quality attributes we initially set, thereby improving the overall project outcome.
+Overall we feel our project was a great success, and the key factor behind this was that we started early and always kept the project moving forward. Although we were a person short we still delivered a high quality MVP that met all the success criteria we set out to achieve.
 
 ## References
 
