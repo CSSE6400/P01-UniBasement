@@ -1,6 +1,7 @@
 # UniBasement
 
 Our application is deployed (most likely) and can be seen [here](http://unibasement.g6.csse6400.xyz/).
+Link to the original project proposal [UniBasement](https://github.com/CSSE6400/project-proposal-2024/blob/main/s4702098/proposal.md)
 
 ## Abstract
 
