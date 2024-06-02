@@ -12,17 +12,16 @@ Throughout the project there were required changes compared to what was outlined
 
 In the project proposal it was outlined that the users should be able to create an account and register their university affiliation. However, due to time constraints we were forced to cut out the university affiliation and centre the project around University of Queensland students.
 
-The team had also realised that the allowing users to sign up would require us to handle the variety of security risks it would introduce such as storing user login data. Therefore, we decided to use AUTH0 to handle the login using external accounts such as Gmail or GitHub. This however, had the unintended affect that it removed our ability to allow users to update the account information or profile picture as that it was handled by AUTH0. The decision to use AUTH0 was made after careful consideration of its security practices and its effect on the project, and is detailed further in [ADR001](../model/adrs/ADR001_AUTHENTICATION.md).
+The team had also realised that allowing users to sign up would require us to handle the variety of security risks it would introduce such as storing user login data. Therefore, we decided to use AUTH0 to handle the login using external accounts such as Gmail or GitHub. This however, had the unintended affect that it removed our ability to allow users to update the account information or profile picture as that it was handled by AUTH0. The decision to use AUTH0 was made after careful consideration of its security practices and its effect on the project, and is detailed further in [ADR001](../model/adrs/ADR001_AUTHENTICATION.md).
 
-### Succes criteria
+### Success criteria
 
-All of the functional requirements outlined in the proposal were, in their current state, untestable and questionable in quality. For example, "Over 99% uptime over a measured period", so if we run it for a second and it doesn't die is it okay? "All core functionality tested", but what is described as 'core'? From this we changed some of the succes criteria to be better defined and easily testable.  
+The project proposal had many ambiguities and untestable success criteria. An example of this is "99% uptime over a measured period," however the proposal does not specifically quantify the minimum measured time. To better define the success criteria we made clarifications on the ambiguous ones, this can be seen below.
 
 | Old | New |
 |-------|---------|
-| Over 99% uptime over a measured period | Over 99% uptime over a 1 day span under some load (link k6 code if done here) |
-| All core functionality tested   | 100% of backend functions should have their main uses tested (i.e. 200/201 response) and most ( >50%) sub cases. On top of this general automated frontend testing should be done to ensure their is a connection  |
-| sum about maintain   | idk this shit is so dumb |    
+| Over 99% uptime over a measured period | Over 99% uptime over a 2 day span with the checks happening to both frontend and backend in 5 minute intervals  |
+| All core functionality tested   | 100% of backend functions should have their main functionality tested (i.e. 200/201 response).  e2e testing should cover base use cases of logging in, creating course, exam, question and a comment.  |
 
 ## Architecture Options
 
