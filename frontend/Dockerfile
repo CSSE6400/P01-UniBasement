@@ -13,6 +13,5 @@ COPY ./tailwind.config.ts .
 COPY ./tsconfig.json .
 COPY ./typography.ts .
 COPY ./src ./src
-COPY ./public ./public
 COPY ./.env.local .
 CMD ["npm", "run", "dev"]
