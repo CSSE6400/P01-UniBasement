@@ -10,6 +10,13 @@ Implementing authentication of user actions. Every post/ patch/ edit action will
   - Regular user and Admin user roles
 - Not implementing roles
 
+Adding roles vs not adding roles
+| Pros | Cons |
+|----|----|
+| Allows for better security, as normal users should be allowed to edit everything | Have to change a large portin of code |
+| Helps keep our data accurate as malicous users cannot change the data | - |
+
+
 ## Outcome
 
 By implementing this ADR, we can ensure that users are only able to edit or delete their own content or content they are allowed to edit. This will prevent unauthorized users from making changes to the database. Frontend authentication handled by Auth0. Backend user table added to track user IDs and associate with comments.
