@@ -10,4 +10,4 @@ The k6 test:
 
 
 ## Results
-The test was running for 2 days, with only a 15 minute downtime at midnight on the 28th May. This means the uptime was 99.5%, which exceeds the required 99% uptime in the proposal.
+The test was running for 2 days, with only a 15 minute downtime at midnight on the 28th May. This means the uptime was 99.5%, which exceeds the required 99% uptime in the proposal. [Results Raw](https://github.com/JTrenerry/UniBasement-Avaliability-Tests/blob/main/log.txt)
