@@ -58,7 +58,7 @@ To shut down the application, run the following command:
 ./kill.sh
 ```
 
-Note: this will reset the database too.
+Note: this will reset the database too (and any other dockers that may be running).
 
 ## Deployment / Teardown
 
